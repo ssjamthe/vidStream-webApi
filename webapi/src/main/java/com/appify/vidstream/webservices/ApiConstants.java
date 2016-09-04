@@ -16,8 +16,7 @@ package com.appify.vidstream.webservices;
 public interface ApiConstants {
 	
 	//URL for .properties File
-		public static final String PROPERTIES_URL = "/appify/conf/vidStreamWebApi/conf.properties"; 
-		
+	public static final String PROPERTIES_URL = "/appify/conf/vidStreamWebApi/conf.properties";		
 //TODO:- Make sure do not change never ever below portion
 /***************************************************************************************************************************************************************************************************/
 		   		
