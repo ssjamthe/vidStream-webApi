@@ -39,8 +39,9 @@ public class ResourceHelper {
 				startedLoad=true;
 				InputStream input=null;
 				try{
-						input=new FileInputStream(resourceName);
-						if(input!=null){
+					//input=ResourceHelper.class.getResourceAsStream("/sampleConf.properties");
+					input=new FileInputStream(resourceName);	
+					if(input!=null){
 							resource=new Properties();
 							resource.load(input);
 							log.debug("Resource with name.."+resourceName+"..loaded");

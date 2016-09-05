@@ -18,28 +18,27 @@ import org.apache.log4j.Logger;
 public class imageServlet extends HttpServlet implements ApiConstants{
 	private static final long serialVersionUID = 1L;
 	private URL IMAGE_URL;
-	private Connection conn;
-	private RRLogs rrLogs = new RRLogs();
+	
 	static final Logger imageServletLOGGER = Logger
 			.getLogger("applicationLog");
 
 	public imageServlet() {
 		super();
 		try{
-		String Image_IP_Address = DataConnection.getImageURL();
-		IMAGE_URL= new URL(Image_IP_Address+FinalImageURL);
+			String Image_IP_Address = DataConnection.getImageURL();
+			IMAGE_URL= new URL(Image_IP_Address+FinalImageURL);
 		}
 		catch(Exception e){}
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+		RRLogs rrLogs = new RRLogs();
 		String getImgId = request.getParameter("imgId");
 		System.out.println("getImgId: "+getImgId);
 		long StartTime = System.currentTimeMillis();
 	    System.out.println("StartTime : "+ StartTime);
-
+	    Connection conn=null;
 		try {
 			Class.forName("org.postgresql.Driver");
 			conn = DataConnection.getConnection();
@@ -79,7 +78,6 @@ public class imageServlet extends HttpServlet implements ApiConstants{
 
 			st_image.close();
 			rs_image.close();
-			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

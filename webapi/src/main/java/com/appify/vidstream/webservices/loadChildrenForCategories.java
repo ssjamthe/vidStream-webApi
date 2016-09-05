@@ -27,10 +27,9 @@ import com.google.gson.GsonBuilder;
 public class loadChildrenForCategories extends HttpServlet implements
 		ApiConstants {
 	private static final long serialVersionUID = 1L;
-	private Connection conn;
-	private RRLogs rrLogs = new RRLogs();
 	static final Logger loadChildrenForCategoriesLOGGER = Logger
 			.getLogger("applicationLog");
+	
 	public loadChildrenForCategories() {
 		super();
 	}
@@ -38,13 +37,14 @@ public class loadChildrenForCategories extends HttpServlet implements
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		Connection conn=null;
+		RRLogs rrLogs = new RRLogs();
 		String PrevVidID = null;
 		String VIDEO_ATTRIBUTE_VIEW_COUNT_ID = null, VIDEO_ATTRIBUTE_PUBLISH_DATE_ID = null;
 		List vidAttrList, tokenList, vidList, ViewCountSortArray, PublishDateSortArray, UnsortedVideoArray, FinalSortedVideos;
-		PreparedStatement pst_videoID, pst_video, pst_subcategory,
-				pst_childcat, pst_token;
-		ResultSet rs_videoID, rs_video, rs_subcategory, rs_childcat, rs_token;
+		PreparedStatement pst_videoID=null, pst_video=null, pst_subcategory=null,
+				pst_childcat=null, pst_token=null;
+		ResultSet rs_videoID=null, rs_video=null, rs_subcategory=null, rs_childcat=null, rs_token=null;
 		JSONArray videosArray = new JSONArray();
 		JSONArray childCatArray = new JSONArray();
 		String Image_IP_Address = DataConnection.getImageURL();
@@ -931,28 +931,18 @@ public class loadChildrenForCategories extends HttpServlet implements
 				}
 			}
 			
-			pst_token.close();
-			rs_token.close();
-			conn.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			loadChildrenForCategoriesLOGGER.error("request : " + "appId = " + getAppId + ", catId = " + getCatId + ", deviceID = " + getdeviceId + ", - loadChildrenForCategories error - " + e);
-			try {
-				videosArray.clear();
-				childCatArray.clear();
-				// pst_childcat.close();
-				// rs_childcat.close();
-				conn.close();
-
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 		} finally {
 			try {
-				videosArray.clear();
-				childCatArray.clear();
-				conn.close();
+				if(conn !=null){
+					videosArray.clear();
+					childCatArray.clear();
+					pst_childcat.close();
+					rs_childcat.close();
+					conn.close();
+				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}

@@ -26,11 +26,7 @@ import com.google.gson.GsonBuilder;
 @WebServlet("/loadApp")
 public class loadApp extends HttpServlet implements ApiConstants {
 	private static final long serialVersionUID = 1L;
-	//private String getapp_id, getinstallTimestamp, getdeviceId;
-	private int bgimg_id;
-	private Connection conn;
 	static final Logger loadAppLOGGER = Logger.getLogger("applicationLog");
-	private RRLogs rrLogs = new RRLogs();
 
 	public loadApp() {
 		super();
@@ -39,7 +35,9 @@ public class loadApp extends HttpServlet implements ApiConstants {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		int bgimg_id;
+		RRLogs rrLogs = new RRLogs();
+		Connection conn=null;
 		String Image_IP_Address = DataConnection.getImageURL();
 		URL IMAGE_URL = new URL(Image_IP_Address+FinalImageURL);
 		List arrList, tokenList;
@@ -340,7 +338,6 @@ public class loadApp extends HttpServlet implements ApiConstants {
 			
 			pst_token.close();
 			rs_token.close();
-			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

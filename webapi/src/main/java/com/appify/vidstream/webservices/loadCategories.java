@@ -27,8 +27,6 @@ import com.google.gson.GsonBuilder;
 @WebServlet("/loadCategories")
 public class loadCategories extends HttpServlet implements ApiConstants{
 	private static final long serialVersionUID = 1L;
-	private Connection conn;
-	private RRLogs rrLogs = new RRLogs();
 	static final Logger loadCategoriesLOGGER = Logger.getLogger("applicationLog");
 
 	public loadCategories() {
@@ -38,7 +36,8 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		Connection conn=null;
+		RRLogs rrLogs = new RRLogs();
 		PreparedStatement ps , ps_child,pst_token;
 		ResultSet rs, rs_child,rs_token;
 		JSONArray catyArray = new JSONArray();
@@ -228,17 +227,10 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 			
 			pst_token.close();
 			rs_token.close();
-			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			loadCategoriesLOGGER.error("request : " + "appId = " + get_app_id + ", categorizationId = " + get_categorizationId + ", - loadCategories error - " + e);
-			try {
-				catyArray.clear();
-				conn.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 		} finally {
 			try {
 				catyArray.clear();

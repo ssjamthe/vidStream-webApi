@@ -23,24 +23,22 @@ import org.apache.log4j.Logger;
 @WebServlet("/videoViewed")
 public class videoViewed extends HttpServlet implements ApiConstants{
 	private static final long serialVersionUID = 1L;
-	//private String getAppID, getDeviceID, getVideoID, allData; 
-	private Connection conn;
-	private PreparedStatement pst_vid_present, pst_insert_new_vid, pst_update_time;
-	private ResultSet rs_vid_present;
-	private int finalCountNo, propCountNo, defaultCountNo;
 	static final Logger VideoViewedLOGGER = Logger.getLogger("applicationLog");
-	private RRLogs rrLogs = new RRLogs();
        
     public videoViewed() {
         super();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		Connection conn=null;
+		int finalCountNo, propCountNo, defaultCountNo;
+		PreparedStatement pst_vid_present=null, pst_insert_new_vid=null, pst_update_time=null;
+		ResultSet rs_vid_present=null;
 		String allData; 
 		String getAppID = request.getParameter("appId");
 		String getVideoID = request.getParameter("videoId");
 		String getDeviceID = request.getParameter("deviceId");
+		RRLogs rrLogs = new RRLogs();
 		
 		try {
 			conn = DataConnection.getConnection();
@@ -179,14 +177,14 @@ public class videoViewed extends HttpServlet implements ApiConstants{
 			String responseData = "{"+ allData +"}";
 			rrLogs.getVideoViewedData(apiname, requestparam, responseData);
 			
-			conn.close();
-			pst_vid_present.close();
-			rs_vid_present.close();
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			VideoViewedLOGGER.error("request : " + "appId = " + getAppID + ", videoID = " + getVideoID + ", deviceID = " + getDeviceID + ", - VideoViewed error - " + e);
 			try {
+				pst_vid_present.close();
+				rs_vid_present.close();
 				conn.close();
 			} catch (SQLException e1) {
 				e1.printStackTrace();

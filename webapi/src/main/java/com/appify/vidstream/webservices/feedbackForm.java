@@ -16,8 +16,6 @@ import org.apache.log4j.Logger;
 public class feedbackForm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private Connection conn;
-	private RRLogs rrLogs = new RRLogs();
 	static final Logger FeedbackLOGGER = Logger.getLogger("applicationLog");
        
     public feedbackForm() {
@@ -25,7 +23,8 @@ public class feedbackForm extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		RRLogs rrLogs = new RRLogs();
+		Connection conn=null;
 		String allData = null; 
 		String getAppId = request.getParameter("appId");
 		String getDeviceId = request.getParameter("deviceId");
@@ -57,7 +56,6 @@ public class feedbackForm extends HttpServlet {
 						rrLogs.getFeedbackFormData(apiname, requestparam, responseData);
 				
 			pst_feedback.close();			
-			conn.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
