@@ -185,8 +185,16 @@ public class videoViewed extends HttpServlet implements ApiConstants{
 			try {
 				pst_vid_present.close();
 				rs_vid_present.close();
-				conn.close();
+				
 			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}finally{
+			try{
+				if(conn!=null){
+					conn.close();
+				}
+			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

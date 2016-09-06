@@ -5,17 +5,20 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import com.appify.vidstream.util.WebAPIUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -43,7 +46,7 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 		JSONArray catyArray = new JSONArray();
 		JSONObject catyObject = new JSONObject();
 		List arrList, tokenList;
-		String Image_IP_Address = DataConnection.getImageURL();
+		String Image_IP_Address = WebAPIUtility.getImageURL();
 		URL IMAGE_URL= new URL(Image_IP_Address+FinalImageURL);
 		
 		//Get Parameters
@@ -232,10 +235,12 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 			e.printStackTrace();
 			loadCategoriesLOGGER.error("request : " + "appId = " + get_app_id + ", categorizationId = " + get_categorizationId + ", - loadCategories error - " + e);
 		} finally {
-			try {
 				catyArray.clear();
-				conn.close();
-			} catch (SQLException e1) {
+			try{
+				if(conn!=null){
+					conn.close();
+				}
+			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

@@ -5,17 +5,20 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import com.appify.vidstream.util.WebAPIUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -38,7 +41,7 @@ public class loadApp extends HttpServlet implements ApiConstants {
 		int bgimg_id;
 		RRLogs rrLogs = new RRLogs();
 		Connection conn=null;
-		String Image_IP_Address = DataConnection.getImageURL();
+		String Image_IP_Address = WebAPIUtility.getImageURL();
 		URL IMAGE_URL = new URL(Image_IP_Address+FinalImageURL);
 		List arrList, tokenList;
 		JSONArray listOfcatzation = new JSONArray();
@@ -342,24 +345,19 @@ public class loadApp extends HttpServlet implements ApiConstants {
 		} catch (Exception e) {
 			e.printStackTrace();
 			loadAppLOGGER.error("request : " + "AppID = " + getapp_id + ", - loadApp error - " + e);
-			try {
 				listOfcatzation.clear();
 				categories.clear();
-				conn.close();
-
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 
 		} finally {
-			try {
 				listOfcatzation.clear();
 				categories.clear();
-				conn.close();
-
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+				try{
+					if(conn!=null){
+						conn.close();
+					}
+				}catch (Exception e1) {
+					e1.printStackTrace();
+				}
 		}
 
 	}

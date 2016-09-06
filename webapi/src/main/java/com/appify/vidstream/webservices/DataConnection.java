@@ -14,11 +14,4 @@ public class DataConnection{
     	return DataSourceFactory.getDataSource().getConnection();
     }
     
-    public static String getImageURL(){
-    	Properties propt = ResourceHelper.getResource();
-    	return propt.getProperty("Image_IP_Address");
-    }
-
-	
-    
 }

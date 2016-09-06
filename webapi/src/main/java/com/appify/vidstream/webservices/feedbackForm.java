@@ -60,10 +60,12 @@ public class feedbackForm extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			FeedbackLOGGER.error("feedbackForm - " + e);
-			try {
-				conn.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
+		}finally{
+			try{
+				if(conn!=null){
+					conn.close();
+				}
+			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

@@ -8,14 +8,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import com.appify.vidstream.util.WebAPIUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -47,7 +51,7 @@ public class loadChildrenForCategories extends HttpServlet implements
 		ResultSet rs_videoID=null, rs_video=null, rs_subcategory=null, rs_childcat=null, rs_token=null;
 		JSONArray videosArray = new JSONArray();
 		JSONArray childCatArray = new JSONArray();
-		String Image_IP_Address = DataConnection.getImageURL();
+		String Image_IP_Address = WebAPIUtility.getImageURL();
 		URL IMAGE_URL = new URL(Image_IP_Address+FinalImageURL);
 		
 		//GetParameters
@@ -936,14 +940,18 @@ public class loadChildrenForCategories extends HttpServlet implements
 			loadChildrenForCategoriesLOGGER.error("request : " + "appId = " + getAppId + ", catId = " + getCatId + ", deviceID = " + getdeviceId + ", - loadChildrenForCategories error - " + e);
 		} finally {
 			try {
-				if(conn !=null){
 					videosArray.clear();
 					childCatArray.clear();
 					pst_childcat.close();
 					rs_childcat.close();
+			} catch (SQLException e1) {
+					e1.printStackTrace();
+			}
+			try{
+				if(conn!=null){
 					conn.close();
 				}
-			} catch (SQLException e1) {
+			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

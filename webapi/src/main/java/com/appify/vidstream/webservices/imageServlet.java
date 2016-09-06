@@ -14,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import org.apache.log4j.Logger;
 
+import com.appify.vidstream.util.WebAPIUtility;
+
 @WebServlet("/imageServlet")
 public class imageServlet extends HttpServlet implements ApiConstants{
 	private static final long serialVersionUID = 1L;
@@ -25,7 +27,7 @@ public class imageServlet extends HttpServlet implements ApiConstants{
 	public imageServlet() {
 		super();
 		try{
-			String Image_IP_Address = DataConnection.getImageURL();
+			String Image_IP_Address = WebAPIUtility.getImageURL();
 			IMAGE_URL= new URL(Image_IP_Address+FinalImageURL);
 		}
 		catch(Exception e){}
@@ -82,10 +84,12 @@ public class imageServlet extends HttpServlet implements ApiConstants{
 		} catch (Exception e) {
 			e.printStackTrace();
 			imageServletLOGGER.error("request : " + "imgId = " + getImgId + ", - imageServlet error - " + e);
-			try {
-				conn.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
+		}finally{
+			try{
+				if(conn!=null){
+					conn.close();
+				}
+			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
