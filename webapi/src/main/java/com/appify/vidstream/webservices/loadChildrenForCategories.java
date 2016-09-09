@@ -933,15 +933,17 @@ public class loadChildrenForCategories extends HttpServlet implements
 					e.printStackTrace();
 					loadChildrenForCategoriesLOGGER.error("Token = " + tokenHeader +" is not Available for appId = " + getAppId + ", catId = " + getCatId);
 				}
+				
 			}
+			
+			videosArray.clear();
+			childCatArray.clear();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			loadChildrenForCategoriesLOGGER.error("request : " + "appId = " + getAppId + ", catId = " + getCatId + ", deviceID = " + getdeviceId + ", - loadChildrenForCategories error - " + e);
 		} finally {
 			try {
-					videosArray.clear();
-					childCatArray.clear();
 					pst_childcat.close();
 					rs_childcat.close();
 			} catch (SQLException e1) {

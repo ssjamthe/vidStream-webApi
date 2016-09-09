@@ -182,6 +182,8 @@ public class videoViewed extends HttpServlet implements ApiConstants{
 		} catch (Exception e) {
 			e.printStackTrace();
 			VideoViewedLOGGER.error("request : " + "appId = " + getAppID + ", videoID = " + getVideoID + ", deviceID = " + getDeviceID + ", - VideoViewed error - " + e);
+			
+		}finally{
 			try {
 				pst_vid_present.close();
 				rs_vid_present.close();
@@ -189,7 +191,6 @@ public class videoViewed extends HttpServlet implements ApiConstants{
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-		}finally{
 			try{
 				if(conn!=null){
 					conn.close();

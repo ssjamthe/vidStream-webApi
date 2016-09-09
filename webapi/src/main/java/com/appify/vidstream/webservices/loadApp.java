@@ -349,8 +349,7 @@ public class loadApp extends HttpServlet implements ApiConstants {
 				categories.clear();
 
 		} finally {
-				listOfcatzation.clear();
-				categories.clear();
+				
 				try{
 					if(conn!=null){
 						conn.close();

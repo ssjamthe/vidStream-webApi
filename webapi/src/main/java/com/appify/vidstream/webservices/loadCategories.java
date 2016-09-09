@@ -227,7 +227,7 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 					loadCategoriesLOGGER.error("Token = " + tokenHeader +" is not Available for appId = " + get_app_id + ", categorizationId = " + get_categorizationId);
 				}
 			}
-			
+			catyArray.clear();
 			pst_token.close();
 			rs_token.close();
 
@@ -235,7 +235,7 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 			e.printStackTrace();
 			loadCategoriesLOGGER.error("request : " + "appId = " + get_app_id + ", categorizationId = " + get_categorizationId + ", - loadCategories error - " + e);
 		} finally {
-				catyArray.clear();
+				
 			try{
 				if(conn!=null){
 					conn.close();
