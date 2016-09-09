@@ -17,7 +17,8 @@ public interface ApiConstants {
 	
 	//URL for .properties File
 	public static final String PROPERTIES_URL = "/appify/conf/vidStreamWebApi/conf.properties";		
-//TODO:- Make sure do not change never ever below portion
+
+	//TODO:- Make sure do not change never ever below portion
 /***************************************************************************************************************************************************************************************************/
 		   		
 	//Image Url	

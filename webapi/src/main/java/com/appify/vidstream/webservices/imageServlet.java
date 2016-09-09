@@ -80,6 +80,7 @@ public class imageServlet extends HttpServlet implements ApiConstants{
 
 			st_image.close();
 			rs_image.close();
+			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

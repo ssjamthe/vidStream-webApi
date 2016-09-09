@@ -341,15 +341,12 @@ public class loadApp extends HttpServlet implements ApiConstants {
 			
 			pst_token.close();
 			rs_token.close();
+			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			loadAppLOGGER.error("request : " + "AppID = " + getapp_id + ", - loadApp error - " + e);
-				listOfcatzation.clear();
-				categories.clear();
-
 		} finally {
-				
 				try{
 					if(conn!=null){
 						conn.close();

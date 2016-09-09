@@ -55,7 +55,8 @@ public class feedbackForm extends HttpServlet {
 						String responseData = "{"+ allData +"}";
 						rrLogs.getFeedbackFormData(apiname, requestparam, responseData);
 				
-			pst_feedback.close();			
+			pst_feedback.close();
+			conn.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
