@@ -1,6 +1,7 @@
 package com.appify.vidstream.app_10;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,5 +41,13 @@ public class SplashScreen extends AppCompatActivity {
             }
         },TIME);
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        }
     }
 }

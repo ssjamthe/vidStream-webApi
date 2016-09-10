@@ -41,29 +41,35 @@ public class NoInternetScreen extends AppCompatActivity {
         netImg.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
-				intent.putExtra("flag",flag);
-				startActivity(intent);
-				NoInternetScreen.this.finish();
+				try {
+					Intent intent = new Intent(NoInternetScreen.this, CategorizationScreen.class);
+					intent.putExtra("flag", flag);
+					startActivity(intent);
+					NoInternetScreen.this.finish();
+				}catch (Exception e){e.printStackTrace();NoInternetScreen.this.finish();}
 			}
 		});
         netText = (TextView) findViewById(R.id.netText);
         netText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
-				intent.putExtra("flag",flag);
-				NoInternetScreen.this.finish();
+				try{
+					Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
+					intent.putExtra("flag",flag);
+					NoInternetScreen.this.finish();
+				}catch (Exception e){e.printStackTrace();NoInternetScreen.this.finish();}
 			}
 		});
         retry = (TextView) findViewById(R.id.sub_net_text);
         retry.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
-				intent.putExtra("flag",flag);
-				startActivity(intent);
-				NoInternetScreen.this.finish();
+				try {
+					Intent intent = new Intent(NoInternetScreen.this, CategorizationScreen.class);
+					intent.putExtra("flag", flag);
+					startActivity(intent);
+					NoInternetScreen.this.finish();
+				}catch (Exception e){e.printStackTrace();NoInternetScreen.this.finish();}
 			}
 		});
 	}

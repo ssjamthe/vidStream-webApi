@@ -1,5 +1,12 @@
 package com.appify.vidstream.app_10;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.appify.vidstream.constants.ApplicationConstants;
 import com.appify.vidstream.utility.CheckInternetConnection;
 import com.appify.vidstream.utility.SSLManager;
@@ -45,10 +52,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -233,8 +242,29 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 
 		//For Video Beacons
 		try {
-			final SendVideoAsyncTask sendVideoAsyncTask = new SendVideoAsyncTask();
-			sendVideoAsyncTask.execute(APP_ID,VIDEO_ID,deviceID);
+
+			final String VideoViewedUser_URL = URL_IP_ADDRESS + URL_YOUTUBEVIDEO + "?appId=" + URLEncoder.encode(APP_ID) + "&videoId=" + URLEncoder.encode(VIDEO_ID) + "&deviceId=" + URLEncoder.encode(deviceID.toString());
+			System.out.println("VideoViewedUser_URL = "+VideoViewedUser_URL);
+			JsonObjectRequest videoViewedRequest = new JsonObjectRequest(Request.Method.POST, VideoViewedUser_URL, null, new Response.Listener<JSONObject>() {
+				@Override
+				public void onResponse(JSONObject response) {
+
+					try {
+						String videoMessage = response.getString("allData");
+						System.out.println("VideoViewedUser_URL videoMessage= "+videoMessage);
+					}catch (Exception e){e.printStackTrace();}
+
+				}
+			}, new Response.ErrorListener() {
+				@Override
+				public void onErrorResponse(VolleyError volleyError) {
+					VolleyLog.d(TAG, "Spin Error: " + volleyError.getMessage());
+					System.out.println("VideoViewedUser_URL errorMessage= "+volleyError.getMessage());
+				}
+			});
+			RequestQueue videoviewedrequestQueue = Volley.newRequestQueue(YoutubePlayer.this);
+			videoviewedrequestQueue.add(videoViewedRequest);
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -486,39 +516,6 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 	private int toPixelUnits(int dipUnit) {
 		float density = getResources().getDisplayMetrics().density;
 		return Math.round(dipUnit * density);
-	}
-
-	public class SendVideoAsyncTask extends AsyncTask<String, String, String>{
-
-		@Override
-		protected String doInBackground(String... params) {
-
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(URL_IP_ADDRESS + URL_YOUTUBEVIDEO);
-			HttpResponse response = null;
-			String Resp = null;
-			try {
-				// Add your data
-				List<NameValuePair> nameValuePairs = new ArrayList<>();
-				nameValuePairs.add(new BasicNameValuePair("appId", params[0]));
-				nameValuePairs.add(new BasicNameValuePair("videoId", params[1]));
-				nameValuePairs.add(new BasicNameValuePair("deviceId", params[2]));
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-				// Execute HTTP Post Request
-				response = httpclient.execute(httppost);
-				Resp = response.toString();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return Resp;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
-		}
 	}
 
 	public static void trimCache(Context context) {
