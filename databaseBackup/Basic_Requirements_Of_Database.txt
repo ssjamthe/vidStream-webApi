@@ -1,0 +1,41 @@
+1)==============================================================
+(portal_user_role) Table Requirements:
+--------------------------------------------------------------
+id	name			
+--------------------------------------------------------------
+1	Admin		
+2	App_Creator		
+
+
+2)==============================================================
+(portal_user) Table Requirements:
+--------------------------------------------------------------
+user_name	password	role_id		user_image_id
+--------------------------------------------------------------
+ams		123		1		1
+
+
+3)==============================================================
+(property_table) Table Requirements:
+--------------------------------------------------------------
+property_name			property_value
+--------------------------------------------------------------
+recently_viewed_cat_image_id	2
+mostly_viewed_cat_image_id	3
+portal_background_image		500kb
+portal_other_image		50kb
+max_videos_for_user_app		20
+minIntervalInterstitial		50
+showInmobiAdWeightage		0.3
+showBanner			true
+showAdMovingInside		true
+
+
+4)==============================================================
+(video_attribute) Table Requirements:
+--------------------------------------------------------------
+id	name			description
+--------------------------------------------------------------
+1	views_count		Number of Views count
+2	published_date		Published Date of video
+

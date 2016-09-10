@@ -1,0 +1,4 @@
+PostgreSql (pgAdmin III)
+---------------------------
+Role Name: appify_database
+password: appifyvidstream

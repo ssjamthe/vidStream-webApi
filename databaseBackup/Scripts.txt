@@ -1,0 +1,263 @@
+CREATE TABLE portal_user_role
+(
+  id serial NOT NULL,
+  name character varying(100),
+  CONSTRAINT pk_portal_user_role_id PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE images
+(
+  id serial NOT NULL,
+  name character varying(100),
+  contents bytea,
+  CONSTRAINT pk_images_id PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE youtube_video
+(
+  id character varying(100) NOT NULL,
+  name character varying(100) NOT NULL,
+  date_added timestamp with time zone DEFAULT now(),
+  CONSTRAINT pk_youtube_video_id PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE property_table
+(
+  prop_name character varying(50) NOT NULL,
+  prop_value character varying(50),
+  CONSTRAINT pk_prop_name PRIMARY KEY (prop_name)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE video_attribute
+(
+  id serial NOT NULL,
+  name character varying(100),
+  description character varying(200),
+  CONSTRAINT video_attribute_id PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE feedback
+(
+  id serial NOT NULL,
+  app_id integer,
+  device_id character varying(50),
+  user_comment character varying(510),
+  comment_date timestamp without time zone DEFAULT now(),
+  CONSTRAINT feedback_id PRIMARY KEY (id),
+  CONSTRAINT fk_app_id FOREIGN KEY (app_id)
+      REFERENCES application (id) MATCH FULL
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE application
+(
+  id serial NOT NULL,
+  name character varying(100),
+  bg_image integer,
+  status character varying(20),
+  date_created timestamp without time zone DEFAULT now(),
+  date_modified timestamp without time zone DEFAULT now(),
+  CONSTRAINT pk_application_id PRIMARY KEY (id),
+  CONSTRAINT fk_app_bg_id FOREIGN KEY (bg_image)
+      REFERENCES images (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE auth_token
+(
+  id serial NOT NULL,
+  token character varying(500),
+  app_id integer,
+  description character varying(500),
+  CONSTRAINT pk_id PRIMARY KEY (id),
+  CONSTRAINT fk_app_id FOREIGN KEY (app_id)
+      REFERENCES application (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT unique_id UNIQUE (app_id, token)
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE categorization
+(
+  id serial NOT NULL,
+  app_id integer,
+  name character varying(100),
+  image integer,
+  date_created timestamp without time zone DEFAULT now(),
+  date_modified timestamp without time zone DEFAULT now(),
+  CONSTRAINT pk_categorization_id PRIMARY KEY (id),
+  CONSTRAINT fk_app_id FOREIGN KEY (app_id)
+      REFERENCES application (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_categorization_image FOREIGN KEY (image)
+      REFERENCES images (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE category
+(
+  id serial NOT NULL,
+  name character varying(100),
+  image integer,
+  categorization_id integer,
+  date_created timestamp without time zone DEFAULT now(),
+  date_modified timestamp without time zone DEFAULT now(),
+  CONSTRAINT pk_category_id PRIMARY KEY (id),
+  CONSTRAINT fk_categorization_id FOREIGN KEY (categorization_id)
+      REFERENCES categorization (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_category_image FOREIGN KEY (image)
+      REFERENCES images (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE parent_child_category_mappings
+(
+  id serial NOT NULL,
+  parent_category_id integer,
+  child_category_id integer,
+  CONSTRAINT pk_parent_child_category_mapping_id PRIMARY KEY (id),
+  CONSTRAINT fk_child_category_id FOREIGN KEY (child_category_id)
+      REFERENCES category (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_parent_category_id FOREIGN KEY (parent_category_id)
+      REFERENCES category (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE portal_user
+(
+  user_name character varying(100) NOT NULL,
+  password character varying(100),
+  role_id integer,
+  user_image_id integer,
+  CONSTRAINT pk_user_name PRIMARY KEY (user_name),
+  CONSTRAINT fk_role_id FOREIGN KEY (role_id)
+      REFERENCES portal_user_role (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_user_img_id FOREIGN KEY (user_image_id)
+      REFERENCES images (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE video_attribute_category_mappings
+(
+  id serial NOT NULL,
+  video_attribute_id integer,
+  category_id integer,
+  CONSTRAINT pk_video_attribute_category_mappings_id PRIMARY KEY (id),
+  CONSTRAINT fk_category_id FOREIGN KEY (category_id)
+      REFERENCES category (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_video_attribute_id FOREIGN KEY (video_attribute_id)
+      REFERENCES video_attribute (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE video_attribute_value
+(
+  id serial NOT NULL,
+  video_id character varying(50),
+  attribute_id integer,
+  value integer,
+  CONSTRAINT pk_video_attribute_value_id PRIMARY KEY (id),
+  CONSTRAINT fk_attribute_id FOREIGN KEY (attribute_id)
+      REFERENCES video_attribute (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_video_id FOREIGN KEY (video_id)
+      REFERENCES youtube_video (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE video_viewed_user
+(
+  device_id character varying(30) NOT NULL,
+  video_id character varying(50) NOT NULL,
+  app_id integer NOT NULL,
+  video_timestamp timestamp without time zone DEFAULT now(),
+  CONSTRAINT primarykeys PRIMARY KEY (device_id, video_id, app_id),
+  CONSTRAINT fk_app_id FOREIGN KEY (app_id)
+      REFERENCES application (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_youyube_video FOREIGN KEY (video_id)
+      REFERENCES youtube_video (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
+CREATE TABLE youtube_video_category_mapping
+(
+  id serial NOT NULL,
+  category_id integer NOT NULL,
+  video_id character varying(50) NOT NULL,
+  CONSTRAINT pk_youtube_video_category_mapping_id PRIMARY KEY (id),
+  CONSTRAINT fk_category_id FOREIGN KEY (category_id)
+      REFERENCES category (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_youtube_video_id FOREIGN KEY (video_id)
+      REFERENCES youtube_video (id) MATCH FULL
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+---------------------------------------
