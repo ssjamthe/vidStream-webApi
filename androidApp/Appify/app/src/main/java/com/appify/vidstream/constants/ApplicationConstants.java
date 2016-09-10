@@ -23,7 +23,7 @@ public interface ApplicationConstants {
     String APP_PACKAGE = "com.appify.vidstream.app_10";                     // This required for IMEI // Change APP_PACKAGE = com.appify.vidstream.app_10  // Also need to Change Pkg Name at line no. 4 From "app\manifests\AndroidManifest.xml\package="com.appify.vidstream.app"" and Also from Gradle Scripts\build.gradle(Module: app)\applicationId "com.appify.vidstream.app"
 
     //TODO:- IP ADDRESS
-    String URL_IP_ADDRESS = "https://192.168.1.108:8443/vidStreamWebApi/";   //"http://103.235.104.122:8080/Appify_Server/" Need to change IP Address if required. eg: https://appifyvids.com/Appify_Server/
+    String URL_IP_ADDRESS = "http://103.235.104.122:8080/vidStreamWebApi/";   //"http://103.235.104.122:8080/Appify_Server/" Need to change IP Address if required. eg: https://appifyvids.com/Appify_Server/
 
     //TODO:- For Ads
     String ADMOB_BANNER = "ca-app-pub-9457891612292134/4990221400";         // Change AdMob Banner Id "ca-app-pub-9457891612292134/4990221400" also need to change from "app\res\values\strings.xml\banner_admob_ad_unit_id".

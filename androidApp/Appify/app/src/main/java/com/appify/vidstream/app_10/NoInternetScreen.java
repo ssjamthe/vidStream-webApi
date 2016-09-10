@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -79,6 +80,16 @@ public class NoInternetScreen extends AppCompatActivity {
 		super.onConfigurationChanged(newConfig);
 		 if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {} 
 		 else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {}
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		try {
+			return super.dispatchTouchEvent(event);
+		}
+		catch (Exception ignored){
+			return true;
+		}
 	}
 
 	@Override

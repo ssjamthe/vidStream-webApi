@@ -61,6 +61,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -960,6 +961,16 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
         } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        try {
+            return super.dispatchTouchEvent(event);
+        }
+        catch (Exception ignored){
+            return true;
         }
     }
 

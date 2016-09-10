@@ -38,6 +38,7 @@ import android.content.res.Configuration;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -438,6 +439,16 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
                 inMobiAdContainer.setVisibility(View.GONE);
             }
         }catch (Exception e){e.printStackTrace();}
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		try {
+			return super.dispatchTouchEvent(event);
+		}
+		catch (Exception ignored){
+			return true;
+		}
 	}
 
 	public int getScreenOrientation()

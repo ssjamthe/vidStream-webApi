@@ -68,6 +68,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -794,6 +795,16 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
         } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        try {
+            return super.dispatchTouchEvent(event);
+        }
+        catch (Exception ignored){
+            return true;
         }
     }
 
