@@ -38,6 +38,17 @@ public class NoInternetScreen extends AppCompatActivity {
 			flag = false;
 		}
 
+		try{
+			CategorizationScreen categorizationScreen = new CategorizationScreen();
+			categorizationScreen.finish();
+			CategoryScreen categoryScreen = new CategoryScreen();
+			categoryScreen.finish();
+			FeedbackForm feedbackForm = new FeedbackForm();
+			feedbackForm.finish();
+			YoutubePlayer youtubePlayer = new YoutubePlayer();
+			youtubePlayer.finish();
+		}catch (Exception e){e.printStackTrace();}
+
         netImg = (ImageView) findViewById(R.id.netImage);
         netImg.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -57,6 +68,7 @@ public class NoInternetScreen extends AppCompatActivity {
 				try{
 					Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
 					intent.putExtra("flag",flag);
+					startActivity(intent);
 					NoInternetScreen.this.finish();
 				}catch (Exception e){e.printStackTrace();NoInternetScreen.this.finish();}
 			}

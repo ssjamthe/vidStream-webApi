@@ -149,7 +149,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             CATZ_preferences = getSharedPreferences(PREFS_CATZ_NAME, Context.MODE_PRIVATE);
             adManager = new AdManager(CategorizationScreen.this);
             SSLManager.handleSSLHandshake(); //For SSL Request
-        }catch (Exception e) {e.printStackTrace();noInternetPresent();}
+        }catch (Exception e) {e.printStackTrace();}
 
         //Initialize View
         categorization = (Spinner) findViewById(R.id.categorizationSpinner);
@@ -370,7 +370,6 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                 } catch (Exception e) {
                     e.printStackTrace();
                     hidePDialog();
-                    noInternetPresent();
                 }
                 catZationGridAdapter.notifyDataSetChanged();
             }
@@ -470,7 +469,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                         CATZ_editor.commit();
                         System.out.println("SELECTED_CATEGORIZATION_ID + 1 = " + PREVIOUS_SELECTED_CATEGORIZATION_ID);
 
-                }catch (Exception e) {e.printStackTrace();noInternetPresent();}
+                }catch (Exception e) {e.printStackTrace();}
             }
 
             @Override
@@ -518,7 +517,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     intentcat.putExtra("ActivityNo", ActivityNo);
                     startActivity(intentcat);
                     CategorizationScreen.this.finish();
-                }catch (Exception e) {e.printStackTrace();noInternetPresent();}
+                }catch (Exception e) {e.printStackTrace();}
             }
         });
 
@@ -786,6 +785,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
     private void noInternetPresent(){
         Intent intent = new Intent(CategorizationScreen.this,
                 NoInternetScreen.class);
+        intent.putExtra("flag",flag);
         startActivity(intent);
         CategorizationScreen.this.finish();
     }

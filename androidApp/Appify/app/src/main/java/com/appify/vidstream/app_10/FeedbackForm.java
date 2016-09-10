@@ -95,6 +95,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
         if (!isInternetPresent) {
             Intent intent = new Intent(FeedbackForm.this,
                     NoInternetScreen.class);
+            intent.putExtra("flag",flag);
             startActivity(intent);
             FeedbackForm.this.finish();
         }

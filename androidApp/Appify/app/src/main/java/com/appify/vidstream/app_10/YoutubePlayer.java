@@ -114,7 +114,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			//Sheared Preferences
 			preferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 			SSLManager.handleSSLHandshake(); //For SSL Request
-		}catch (Exception e){e.printStackTrace();noInternetPresent();}
+		}catch (Exception e){e.printStackTrace();}
 
 		//Initialize View
 		adMobAdView = (AdView) this.findViewById(R.id.adViewYoutube);
@@ -152,7 +152,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			flag = intentget.getExtras().getBoolean("flag");
 			ActivityNo = getIntent().getIntExtra("ActivityNo", 0);
 			Log.e("Get Categorization ActivityNo from Intent>>>", "And set ActivityNo = " + ActivityNo + ";");
-		}catch(Exception e){e.printStackTrace();noInternetPresent();}
+		}catch(Exception e){e.printStackTrace();}
 
 		cic = new CheckInternetConnection(getApplicationContext());
 		isInternetPresent = cic.isConnectingToInternet();
@@ -204,7 +204,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
                         intentHome.putExtra("minIntervalInterstitial", showMinIntervalInterstitial);
                         startActivity(intentHome);
                         YoutubePlayer.this.finish();
-                    }catch (Exception e){e.printStackTrace();noInternetPresent();}
+                    }catch (Exception e){e.printStackTrace();}
 				}
 			});
 
@@ -557,6 +557,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
     private void noInternetPresent(){
         Intent intent = new Intent(YoutubePlayer.this,
                 NoInternetScreen.class);
+		intent.putExtra("flag",flag);
         startActivity(intent);
         YoutubePlayer.this.finish();
     }
@@ -592,7 +593,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
             startActivity(intentplayer);
             YoutubePlayer.this.finish();
         } catch (Exception e) {
-            e.printStackTrace();noInternetPresent();
+            e.printStackTrace();
         }
     }
 }
