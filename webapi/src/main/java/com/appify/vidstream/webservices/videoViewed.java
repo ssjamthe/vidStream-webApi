@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Servlet implementation class videoViewed
  */
@@ -169,13 +172,25 @@ public class videoViewed extends HttpServlet implements ApiConstants{
 				rs_CheckPropName.close();
 			}
 			
-			// Sending data to RRLogs
-			String apiname = "videoViewed.java";
-			String requestparam = "{" + "appId=" + getAppID
-								+ ", videoId=" + getVideoID
-								+ ", deviceId=" + getDeviceID + "}";
-			String responseData = "{"+ allData +"}";
-			rrLogs.getVideoViewedData(apiname, requestparam, responseData);
+			try {
+				Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+				String VideoResponse = gson.toJson(allData);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write(VideoResponse);
+				
+				// Sending data to RRLogs
+				String apiname = "videoViewed.java";
+				String requestparam = "{" + "appId=" + getAppID
+									+ ", videoId=" + getVideoID
+									+ ", deviceId=" + getDeviceID + "}";
+				String responseData = "{"+ allData +"}";
+				rrLogs.getVideoViewedData(apiname, requestparam, responseData);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				VideoViewedLOGGER.error("request : " + "appId = " + getAppID + ", videoID = " + getVideoID + ", deviceID = " + getDeviceID + ", - VideoViewed error - " + e);
+			}
 			
 			conn.close();
 			
