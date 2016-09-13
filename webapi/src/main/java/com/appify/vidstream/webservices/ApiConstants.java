@@ -39,6 +39,8 @@ public interface ApiConstants {
 		public static final String uploadTimeID = "UploadTime";
 		public static final String mostViewedName = "Most Viewed";
 		public static final String mostViewedID = "MostViewed";
+		public static final String viewTimeName = "View Time";
+		public static final String viewTimeID = "ViewTime";
 		public static final String prop_name_for_video_count = "max_videos_for_user_app";
 		public static final String prop_value_for_video_count = "20";
 	

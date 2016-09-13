@@ -198,7 +198,7 @@ public class loadChildrenForCategories extends HttpServlet implements
 						pst_publish_date_sort.close();
 						rs_publish_date_sort.close();
 						
-					}else{// Sorting For Most Viewed
+					}else if(mostViewedID.equals(getOrderAttr)){// Sorting For Most Viewed
 						
 						String ViewCountSortQuery = "select video_id from video_attribute_value where attribute_id='"+ VIDEO_ATTRIBUTE_VIEW_COUNT_ID +"' order by value desc";
 						PreparedStatement pst_view_count_sort = conn.prepareStatement(ViewCountSortQuery);
@@ -251,11 +251,32 @@ public class loadChildrenForCategories extends HttpServlet implements
 						
 						pst_view_count_sort.close();
 						rs_view_count_sort.close();
+						
+					}else {
+						for (int i = 0; i < UnsortedVideoArray.size(); i++) {
+							String FinalVideoID = UnsortedVideoArray.get(i).toString();
+							String videoQuery = "select distinct name,id from youtube_video where id='"
+									+ FinalVideoID + "'";
+							pst_video = conn.prepareStatement(videoQuery);
+							rs_video = pst_video.executeQuery();
+							while (rs_video.next()) {
+								JSONObject jsonObject = new JSONObject();
+								String name = rs_video.getString(1);
+								String vidid = rs_video.getString(2);
+								jsonObject.put("name", name);
+								jsonObject.put("id", vidid);
+								// here is order concept
+								videosArray.add(jsonObject);
+							}
+							pst_video.close();
+							rs_video.close();
+						}
 					}
 					
 					videosObject.put("videos", videosArray);
 
 					JSONArray orderArray = new JSONArray();
+					orderArray.add(viewTimeName);
 					orderArray.add(mostViewedName);
 					orderArray.add(uploadTimeName);
 					videosObject.put("orderAttributes", orderArray);
