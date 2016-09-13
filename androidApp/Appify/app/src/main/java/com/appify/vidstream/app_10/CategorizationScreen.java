@@ -269,7 +269,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             long NewShowTime = new Date().getTime() / 1000;
             Log.e("AdShowTime = ", "" + NewShowTime);
             adManager.setNewTime(NewShowTime);
-            long GetShowTime = adManager.getNewTime(); //Get New Time From AdManager
+            //long GetShowTime = adManager.getNewTime(); //Get New Time From AdManager
             ActivityNo = 1;
             PrevActivityNo = 1;
             editor = preferences.edit();
