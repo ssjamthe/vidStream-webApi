@@ -90,20 +90,30 @@ public class loadApp extends HttpServlet implements ApiConstants {
 					arrList.add(rst_child.getInt(1));
 				}
 
+				JSONObject personalizedcatzatobj = new JSONObject();
 				String query = "select id,name from categorization where app_id='"
-						+ getapp_id + "'";
+						+ getapp_id + "' order by date_modified asc";
 				ps_categorization = conn.prepareStatement(query);
 				rs_categorization = ps_categorization.executeQuery();
-
+				
 				while (rs_categorization.next()) {
 					JSONObject catzatobj = new JSONObject();
 					int catzation_id = rs_categorization.getInt(1);
 					String catzation_name = rs_categorization.getString(2);
-					catzatobj.put("id", catzation_id);
-					catzatobj.put("name", catzation_name);
-					listOfcatzation.add(catzatobj);
+					if(catzation_name.equalsIgnoreCase(PERSONALIZED))
+					{
+						personalizedcatzatobj.put("id", catzation_id);
+						personalizedcatzatobj.put("name", catzation_name);
+					}
+					else{
+						catzatobj.put("id", catzation_id);
+						catzatobj.put("name", catzation_name);
+						listOfcatzation.add(catzatobj);
+					}
 				}
-
+				
+				listOfcatzation.add(personalizedcatzatobj);
+				System.out.println("categorization List >>>> "+listOfcatzation);
 				categorizationObj.put("categorizations", listOfcatzation);
 				
 				String showBannerQuery = "select prop_value from property_table where prop_name='"+SHOW_BANNER+"'";
@@ -180,7 +190,7 @@ public class loadApp extends HttpServlet implements ApiConstants {
 					selectedCategorizationObj.put("name", selcatname);
 					selectedCategorizationObj.put("id", selcatid);
 					String selectedCategoryQuery = "select id, name, image from category where categorization_id='"
-							+ selcatid + "'";
+							+ selcatid + "' order by name";
 					pst_selectedcategories = conn
 							.prepareStatement(selectedCategoryQuery);
 					rs_selectedcategories = pst_selectedcategories.executeQuery();

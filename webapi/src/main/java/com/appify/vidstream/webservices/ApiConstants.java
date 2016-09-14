@@ -33,6 +33,9 @@ public interface ApiConstants {
 		public static final String showBanner_value = "true";
 		public static final String SHOW_AD_MOVING_INSIDE = "showAdMovingInside";
 		public static final String showAdMovingInside_value = "true";
+		
+	//For Personalized Categorization
+		public static final String PERSONALIZED = "Personalized";
 	
 	//for loadChildrenForCategories.java
 		public static final String uploadTimeName = "Upload Time";
