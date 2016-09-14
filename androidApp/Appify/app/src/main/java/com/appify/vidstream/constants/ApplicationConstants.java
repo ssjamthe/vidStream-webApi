@@ -47,7 +47,8 @@ public interface ApplicationConstants {
     String URL_YOUTUBEVIDEO = "videoViewed";
     String URL_FEEDBACKFORM = "feedbackForm";
 
-    //TODO:- For Order By Section and msgs
+    //TODO:- Other String msgs
+    String PERSONALIZED = "Personalized";
     String LOWINTERNET = "Low internet speed!";                             // Make sure do not change never ever
     String RETRY = "Do you want to retry?";                                 // Make sure do not change never ever
     String CANTBEREACHED = "Can't be reached!";                             // Make sure do not change never ever

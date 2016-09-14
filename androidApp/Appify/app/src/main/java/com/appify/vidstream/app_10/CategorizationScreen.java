@@ -438,7 +438,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     TextView tvSpinId = (TextView) linearLayoutParent.getChildAt(1);
                     String NOW_SELECTED_CATEGORIZATION_ID = tvSpinId.getText().toString();
 
-                    if (NOW_SELECTED_CATEGORIZATION_NAME.equalsIgnoreCase("Personalized")){
+                    if (NOW_SELECTED_CATEGORIZATION_NAME.equalsIgnoreCase(PERSONALIZED)){
                         gridViewCategoriesText.setVisibility(View.GONE);
                         PersonalizeLayout.setVisibility(View.VISIBLE);
                     }
