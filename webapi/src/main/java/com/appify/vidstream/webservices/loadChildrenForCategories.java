@@ -804,8 +804,8 @@ public class loadChildrenForCategories extends HttpServlet implements
 
 						do {
 							int childcatid = rs_subcategory.getInt(1);
-							String selSubCatQuery = "select distinct id,name,image from category where id = '"
-									+ childcatid + "'";
+							String selSubCatQuery = "select distinct id, name, image from category where id = '"
+									+ childcatid + "' order by name asc";
 							pst_childcat = conn.prepareStatement(selSubCatQuery);
 							rs_childcat = pst_childcat.executeQuery();
 

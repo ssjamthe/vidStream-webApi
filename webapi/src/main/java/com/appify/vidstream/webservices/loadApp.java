@@ -91,8 +91,8 @@ public class loadApp extends HttpServlet implements ApiConstants {
 				}
 
 				JSONObject personalizedcatzatobj = new JSONObject();
-				String query = "select id,name from categorization where app_id='"
-						+ getapp_id + "' order by date_modified asc";
+				String query = "select id, name from categorization where app_id='"
+						+ getapp_id + "' order by name asc";
 				ps_categorization = conn.prepareStatement(query);
 				rs_categorization = ps_categorization.executeQuery();
 				
@@ -180,8 +180,9 @@ public class loadApp extends HttpServlet implements ApiConstants {
 				categorizationObj.put("appBgImageUrl", IMAGE_URL.toString()
 						+ bgimg_id);}
 
-				String selcatzquery = "select id,name from categorization where app_id='"
-						+ getapp_id + "'";
+				//for SelectedCategorization
+				String selcatzquery = "select id, name from categorization where app_id='"
+						+ getapp_id + "' order by name asc";
 				pst_selcatz = conn.prepareStatement(selcatzquery);
 				rs_selcatz = pst_selcatz.executeQuery();
 				while(rs_selcatz.next()){
@@ -190,7 +191,7 @@ public class loadApp extends HttpServlet implements ApiConstants {
 					selectedCategorizationObj.put("name", selcatname);
 					selectedCategorizationObj.put("id", selcatid);
 					String selectedCategoryQuery = "select id, name, image from category where categorization_id='"
-							+ selcatid + "' order by name";
+							+ selcatid + "' order by name asc";
 					pst_selectedcategories = conn
 							.prepareStatement(selectedCategoryQuery);
 					rs_selectedcategories = pst_selectedcategories.executeQuery();

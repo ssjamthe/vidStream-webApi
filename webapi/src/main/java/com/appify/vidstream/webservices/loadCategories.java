@@ -85,8 +85,8 @@ public class loadCategories extends HttpServlet implements ApiConstants{
 					arrList.add(rs_child.getInt(1));
 				}
 				
-				String query = "select id,name,image from category where categorization_id='"
-						+ get_categorizationId + "'";
+				String query = "select id, name, image from category where categorization_id='"
+						+ get_categorizationId + "' order by name asc";
 				ps = conn.prepareStatement(query);
 				rs = ps.executeQuery();
 				while (rs.next()) {
