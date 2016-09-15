@@ -130,7 +130,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_screen);
 
-        //For ActionBar Background and Visible BackArrow 124>129
+        //For ActionBar Background and Visible BackArrow
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_rect));
 
@@ -311,6 +311,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         }catch (Exception e) {
             e.printStackTrace();
         }
+
     }
     /**********
      * End OnCreate()
@@ -663,9 +664,6 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 @Override
                 public void onScroll(AbsListView view, int firstVisibleItem,
                                      int visibleItemCount, int totalItemCount) {
-                    // Now check if userScrolled is true and also check if
-                    // the item is end then update list view and set
-                    // userScrolled to false
                     if (userScrolled
                             && firstVisibleItem + visibleItemCount == totalItemCount) {
                         userScrolled = false;
@@ -679,10 +677,6 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
 
     // Method for repopulating recycler view
     private void updateListView() {
-        // Show Progress Layout
-        //bottomLayout.setVisibility(View.VISIBLE);
-        //progressDialogCall();
-        System.out.println("4 progressDialogCall");
         String Cat4PageNo = String.valueOf(PAGE_NO);
         final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(APP_ID) + "&catId=" + URLEncoder.encode(OrderAttributeCategoryValue) + "&orderAttr=" + URLEncoder.encode(SelectedOrderValue) + "&page_no=" + URLEncoder.encode(Cat4PageNo) + "&entries_per_page=" + URLEncoder.encode(EntriesPerPage_Position) + "&deviceId=" + URLEncoder.encode(getdeviceID);
         JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {

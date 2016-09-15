@@ -137,7 +137,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.categorization_screen);
 
-        //For ActionBar Background  137>136
+        //For ActionBar Background
         //getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_rect));
 
         //Fresco.initialize(this);
@@ -318,7 +318,6 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             public void onResponse(JSONObject response) {
                 // for categorization
                 try {
-
                     // for banner, mininterval, background.
                     showBanner = response.getString("showBanner");
                     Log.e("showBanner: ", showBanner);
@@ -520,7 +519,6 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                 }catch (Exception e) {e.printStackTrace();}
             }
         });
-
     }
 
     /*******************************
