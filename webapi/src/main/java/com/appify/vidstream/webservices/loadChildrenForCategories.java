@@ -605,25 +605,13 @@ public class loadChildrenForCategories extends HttpServlet implements
 					
 					String finalCatIDs = CategoryListBuffer.substring(0, CategoryListBuffer.length()-1);
 					System.out.println("Final String = "+finalCatIDs);
-					String getVidCatMapQuery = "select video_id from youtube_video_category_mapping where category_id IN ("+ finalCatIDs + ") LIMIT '"+entries_per_page+"' OFFSET '"+offset_value+"'";  
+					String getVidCatMapQuery = "select video_id from youtube_video_category_mapping where category_id IN ("+ finalCatIDs + ")";  
 					System.out.println("GetVidCatMapQuery = "+getVidCatMapQuery);
-					PreparedStatement pst_video_category_map = conn.prepareStatement(getVidCatMapQuery);
-					ResultSet rs_video_category_map = pst_video_category_map.executeQuery();
-					StringBuffer videosListBuffer = new StringBuffer();
-					while (rs_video_category_map.next()) {
-						String videoId = rs_video_category_map.getString(1);
-						videosListBuffer.append("'"+videoId+"'"+",");
-					}
-					
-					
-					String videoList = videosListBuffer.substring(0,videosListBuffer.length()-1);
-//					String newlyAddedVideosQuery = "select id from youtube_video where id IN ("+ videoList + ") AND date_added > (now()-10 * interval '1 day') order by date_added asc LIMIT '"
-//					+entries_per_page+"' OFFSET '"+offset_value+"'";    
 					
 					Calendar calendar = Calendar.getInstance();
                      Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 					
-					String newlyAddedVideosQuery = "select id from youtube_video where id IN ("+ videoList + ") AND DATE_PART('day','"+currentTimestamp+"'::timestamp - date_added) <= '"+newlyAddedVideoCount+"' order by date_added asc LIMIT '"
+					String newlyAddedVideosQuery = "select id from youtube_video where id IN ("+ getVidCatMapQuery + ") AND DATE_PART('day','"+currentTimestamp+"'::timestamp - date_added) <= '"+newlyAddedVideoCount+"' order by date_added asc LIMIT '"
 							+entries_per_page+"' OFFSET '"+offset_value+"'";  
 					
 					System.out.println("NewlyAddedVideosQuery: "+newlyAddedVideosQuery);
