@@ -54,6 +54,12 @@ public interface ApiConstants {
 		public static final String MOSTLY_VIEWED_ID = "-2";
 		public static final String mostly_viewed_cat_image_id = "mostly_viewed_cat_image_id";
 		public static final String recently_viewed_cat_image_id = "recently_viewed_cat_image_id";
+		
+	// For Dynamic Categorization
+		public static final String NEWLY_ADDED_VIDEOS = "Newly Added Videos";
+		public static final String NEWLY_ADDED_VIDEO_ID = "-3";
+		public static final String newly_added_video_cat_image_id = "newly_added_video_cat_image_id";
+		public static final String NEWLY_ADDED_VIDEOS_DISPLAY_COUNT = "newly_added_videos_display_count";
 	
 	//Video Attribute
 		public static final String VIDEO_ATTRIBUTE_VIEW_COUNT_NAME = "views_count";		//available in database & check database before use

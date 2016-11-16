@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -481,7 +483,57 @@ public class loadChildrenForCategories extends HttpServlet implements
 						rs_view_count_sort.close();
 					}
 					
+                   //For Dynamic Categorization Newly Added Videos
+					/*if(getCatId.contains(NEWLY_ADDED_VIDEOS)){
+						String categorizationId = getCatId.substring(getCatId.indexOf('_'),getCatId.length()-1);
+						String getCategoryFromCategorizationQuery = "select distinct id from category where categorization_id='"
+								+ categorizationId + "'order by id asc ";
+						PreparedStatement pst_cat_id = conn
+								.prepareStatement(getCategoryFromCategorizationQuery);
+						ResultSet rs_cat_id = pst_cat_id.executeQuery();
+						while (rs_cat_id.next()) {
+							int CatID = rs_cat_id.getInt(1);
+							CategoryListBuffer.append("'"+CatID+"'"+",");
+							System.out.println("CategoryListBuffer = "+CategoryListBuffer);
+						}
+						pst_cat_id.close();
+						rs_cat_id.close();
+						
+						//select video_id from youtube_video_category_mapping where category_id IN ('11','17','28') LIMIT '3' OFFSET '0'
+						
+						String finalCatIDs = CategoryListBuffer.substring(0, CategoryListBuffer.length()-1);
+						System.out.println("Final String = "+finalCatIDs);
+						String getVidCatMapQuery = "select video_id from youtube_video_category_mapping where category_id IN ("+ finalCatIDs + ") LIMIT '"+entries_per_page+"' OFFSET '"+offset_value+"'";  
+						System.out.println("GetVidCatMapQuery = "+getVidCatMapQuery);
+						PreparedStatement pst_video_category_map = conn.prepareStatement(getVidCatMapQuery);
+						ResultSet rs_video_category_map = pst_video_category_map.executeQuery();
+						StringBuffer videosListBuffer = new StringBuffer();
+						while (rs_video_category_map.next()) {
+							int videoId = rs_video_category_map.getInt(1);
+							videosListBuffer.append("'"+videoId+"'"+",");
+						}
+						pst_vid_cat_map.close();
+						rs_vid_cat_map.close();
+						
+						String videoList = videosListBuffer.substring(0,videosListBuffer.length()-1);
+						String newlyAddedVideosQuery = "select name,id from youtube_video where id IN ("+ videoList + ") AND date_added > (now()-10 * interval '1 day') order by date_added asc LIMIT '"+entries_per_page+"' OFFSET '"+offset_value+"'";  
+						pst_video = conn.prepareStatement(newlyAddedVideosQuery);
+						rs_video = pst_video.executeQuery();
+						while (rs_video.next()) {
+							JSONObject jsonObject = new JSONObject();
+							String name = rs_video.getString(1);
+							String vidid = rs_video.getString(2);
+							jsonObject.put("name", name);
+							jsonObject.put("id", vidid);
+							// here is order concept
+							videosArray.add(jsonObject);
+						}
+						pst_video.close();
+						rs_video.close();
 
+						
+					}*/
+					
 					videosObject.put("videos", videosArray);
 
 					JSONArray orderArray = new JSONArray();
@@ -521,6 +573,238 @@ public class loadChildrenForCategories extends HttpServlet implements
 
 					pst_catz_id.close();
 					rs_catz_id.close();
+
+				}
+				
+				// TODO for Dynamic Categorization - For Newly Added videos
+				else if (getCatId.contains(NEWLY_ADDED_VIDEO_ID)) {
+					JSONObject videosObject = new JSONObject();
+					String categorizationId = getCatId.substring(getCatId.indexOf('_')+1,getCatId.length());
+					
+					String newlyAddedVideosDisplayCountQuery = "select prop_value from property_table where prop_name='"+ NEWLY_ADDED_VIDEOS_DISPLAY_COUNT +"'";
+					PreparedStatement pst_new_videos_count = conn.prepareStatement(newlyAddedVideosDisplayCountQuery);
+					ResultSet rs_new_videos_count = pst_new_videos_count.executeQuery();
+					rs_new_videos_count.next();
+					String newlyAddedVideoCount = rs_new_videos_count.getString(1);
+					System.out.println("Newly Added Videos Display Count = "+newlyAddedVideoCount);
+					
+					String getCategoryFromCategorizationQuery = "select distinct id from category where categorization_id='"
+							+ categorizationId + "'order by id asc ";
+					PreparedStatement pst_cat_id = conn
+							.prepareStatement(getCategoryFromCategorizationQuery);
+					ResultSet rs_cat_id = pst_cat_id.executeQuery();
+					while (rs_cat_id.next()) {
+						int CatID = rs_cat_id.getInt(1);
+						CategoryListBuffer.append("'"+CatID+"'"+",");
+						System.out.println("CategoryListBuffer = "+CategoryListBuffer);
+					}
+					pst_cat_id.close();
+					rs_cat_id.close();
+					
+					//select video_id from youtube_video_category_mapping where category_id IN ('11','17','28') LIMIT '3' OFFSET '0'
+					
+					String finalCatIDs = CategoryListBuffer.substring(0, CategoryListBuffer.length()-1);
+					System.out.println("Final String = "+finalCatIDs);
+					String getVidCatMapQuery = "select video_id from youtube_video_category_mapping where category_id IN ("+ finalCatIDs + ") LIMIT '"+entries_per_page+"' OFFSET '"+offset_value+"'";  
+					System.out.println("GetVidCatMapQuery = "+getVidCatMapQuery);
+					PreparedStatement pst_video_category_map = conn.prepareStatement(getVidCatMapQuery);
+					ResultSet rs_video_category_map = pst_video_category_map.executeQuery();
+					StringBuffer videosListBuffer = new StringBuffer();
+					while (rs_video_category_map.next()) {
+						String videoId = rs_video_category_map.getString(1);
+						videosListBuffer.append("'"+videoId+"'"+",");
+					}
+					
+					
+					String videoList = videosListBuffer.substring(0,videosListBuffer.length()-1);
+//					String newlyAddedVideosQuery = "select id from youtube_video where id IN ("+ videoList + ") AND date_added > (now()-10 * interval '1 day') order by date_added asc LIMIT '"
+//					+entries_per_page+"' OFFSET '"+offset_value+"'";    
+					
+					Calendar calendar = Calendar.getInstance();
+                     Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
+					
+					String newlyAddedVideosQuery = "select id from youtube_video where id IN ("+ videoList + ") AND DATE_PART('day','"+currentTimestamp+"'::timestamp - date_added) <= '"+newlyAddedVideoCount+"' order by date_added asc LIMIT '"
+							+entries_per_page+"' OFFSET '"+offset_value+"'";  
+					
+					System.out.println("NewlyAddedVideosQuery: "+newlyAddedVideosQuery);
+					pst_video = conn.prepareStatement(newlyAddedVideosQuery);
+					rs_video = pst_video.executeQuery();
+					while (rs_video.next()) {
+						String newVidId = rs_video.getString(1).toString();
+						if (newVidId.equals(PrevVidID)) {
+							System.out.println("Previous and New Video ID is Equal.");
+						} else {
+							vidList.add(newVidId);
+							PrevVidID = newVidId;
+						}
+						
+					}
+					pst_video.close();
+					rs_video.close();
+					
+					
+
+					System.out.println("vidAttrList = " + vidAttrList);
+					System.out.println("vidList = " + vidList);
+
+					for (int i = 0; i < vidAttrList.size(); i++) {
+						for (int j = 0; j < vidList.size(); j++) {
+							if (vidAttrList.get(i).equals(vidList.get(j))) {
+								String videoID = vidList.get(j).toString();
+								UnsortedVideoArray.add(videoID);
+							}
+						}
+					}
+					
+					if(uploadTimeID.equals(getOrderAttr)){ // Sorting For Upload Time
+						
+						String publishDateSortQuery = "select video_id from video_attribute_value where attribute_id='"+ VIDEO_ATTRIBUTE_PUBLISH_DATE_ID +"' order by value desc";
+						PreparedStatement pst_publish_date_sort = conn.prepareStatement(publishDateSortQuery);
+						ResultSet rs_publish_date_sort = pst_publish_date_sort.executeQuery();
+						while (rs_publish_date_sort.next()) {
+							String rsPublishDate = rs_publish_date_sort.getString(1);
+							PublishDateSortArray.add(rsPublishDate);
+						}
+						
+											
+						System.out.println("PublishDateSortArray = "+PublishDateSortArray);
+						System.out.println("UnsortedVideoArray = "+UnsortedVideoArray);
+						
+						String PREV = null;
+						String NEW = null;
+						
+						for (int i = 0; i < PublishDateSortArray.size(); i++) {
+							PREV = PublishDateSortArray.get(i).toString();
+							for (int j = 0; j < UnsortedVideoArray.size(); j++) {
+								NEW = UnsortedVideoArray.get(j).toString();
+								if(PREV.equals(NEW)){
+									if(!NEW.equals(FinalSortedVideos)){
+										FinalSortedVideos.add(NEW);
+										NEW = PREV;
+									}
+								}
+							}
+						}
+						
+						System.out.println("FinalSortedVideos = "+FinalSortedVideos);
+						
+						for (int i = 0; i < FinalSortedVideos.size(); i++) {
+							String FinalVideoID = FinalSortedVideos.get(i).toString();
+							String videoQuery = "select distinct name,id from youtube_video where id='"
+									+ FinalVideoID + "'";
+							pst_video = conn.prepareStatement(videoQuery);
+							rs_video = pst_video.executeQuery();
+							while (rs_video.next()) {
+								JSONObject jsonObject = new JSONObject();
+								String name = rs_video.getString(1);
+								String vidid = rs_video.getString(2);
+								jsonObject.put("name", name);
+								jsonObject.put("id", vidid);
+								// here is order concept
+								videosArray.add(jsonObject);
+							}
+							pst_video.close();
+							rs_video.close();
+						}
+						
+						pst_publish_date_sort.close();
+						rs_publish_date_sort.close();
+						
+					}else{// Sorting For Most Viewed
+						
+						String ViewCountSortQuery = "select video_id from video_attribute_value where attribute_id='"+ VIDEO_ATTRIBUTE_VIEW_COUNT_ID +"' order by value desc";
+						PreparedStatement pst_view_count_sort = conn.prepareStatement(ViewCountSortQuery);
+						ResultSet rs_view_count_sort = pst_view_count_sort.executeQuery();
+						
+						while (rs_view_count_sort.next()) {
+							String RsViewCount = rs_view_count_sort.getString(1);
+							ViewCountSortArray.add(RsViewCount);
+						}
+						
+											
+						System.out.println("ViewCountSortArray = "+ViewCountSortArray);
+						System.out.println("UnsortedVideoArray = "+UnsortedVideoArray);
+						
+						String PREV = null;
+						String NEW = null;
+						
+						for (int i = 0; i < ViewCountSortArray.size(); i++) {
+							PREV = ViewCountSortArray.get(i).toString();
+							for (int j = 0; j < UnsortedVideoArray.size(); j++) {
+								NEW = UnsortedVideoArray.get(j).toString();
+								if(PREV.equals(NEW)){
+									if(!NEW.equals(FinalSortedVideos)){
+										FinalSortedVideos.add(NEW);
+										NEW = PREV;
+									}
+								}
+							}
+						}
+						
+						System.out.println("FinalSortedVideos = "+FinalSortedVideos);
+						
+						for (int i = 0; i < FinalSortedVideos.size(); i++) {
+							String FinalVideoID = FinalSortedVideos.get(i).toString();
+							String videoQuery = "select distinct name,id from youtube_video where id='"
+									+ FinalVideoID + "'";
+							pst_video = conn.prepareStatement(videoQuery);
+							rs_video = pst_video.executeQuery();
+							while (rs_video.next()) {
+								JSONObject jsonObject = new JSONObject();
+								String name = rs_video.getString(1);
+								String vidid = rs_video.getString(2);
+								jsonObject.put("name", name);
+								jsonObject.put("id", vidid);
+								// here is order concept
+								videosArray.add(jsonObject);
+							}
+							pst_video.close();
+							rs_video.close();
+						}
+						
+						pst_view_count_sort.close();
+						rs_view_count_sort.close();
+					}
+					
+                   
+					
+					videosObject.put("videos", videosArray);
+
+					JSONArray orderArray = new JSONArray();
+					orderArray.add(mostViewedName);
+					orderArray.add(uploadTimeName);
+					videosObject.put("orderAttributes", orderArray);
+
+					System.out.println("VIDEO JSON RESPONSE");
+					System.out.println("----------------------------");
+					System.out.println(videosObject);
+					System.out.println("deviceId=" + getdeviceId);
+					System.out.println("---------------------------");
+
+					try {
+						String authenticationError = "Authentication Success";
+						String videoGson = new Gson().toJson(videosObject);
+						response.setContentType("application/json");
+						response.setCharacterEncoding("UTF-8");
+						response.getWriter().write(videoGson);
+						
+						// Sending data to RRLogs
+						String apiname = "loadChildrenForCategories.java";
+						String requestparam = "{" + "appId=" + getAppId + ", catId="
+								+ getCatId + ", orderAttr=" + getOrderAttr
+								+ ", deviceId=" + getdeviceId + "}";
+						long EndTime = System.currentTimeMillis();
+						System.out.println("EndTime : "+ EndTime);
+						long duration = EndTime-StartTime;
+						String responseTime = duration + " msec.";
+						rrLogs.getLoadCategoriesData(apiname, requestparam,
+								videosObject, responseTime, authenticationError);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						loadChildrenForCategoriesLOGGER.error("response : " + "appId = " + getAppId + ", catId = " + getCatId + ", deviceID = " + getdeviceId + ", videos = " + videosObject + ", - loadChildrenForCategories error - " + e);
+					}
+
 
 				}
 				//TODO For OTHER
