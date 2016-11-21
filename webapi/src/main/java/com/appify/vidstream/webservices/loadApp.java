@@ -221,6 +221,23 @@ public class loadApp extends HttpServlet implements ApiConstants {
 					rs_selectedcategories.close();
 				}
 				
+				// For Dynamic Categorization
+				String newlyAddedVideosImgPropValuesQuery = "select prop_value from property_table where prop_name='"+ newly_added_video_cat_image_id +"'";
+				PreparedStatement pst_newly_added_videos_prop_value = conn.prepareStatement(newlyAddedVideosImgPropValuesQuery);
+				ResultSet rs_newly_added_videos_prop_value = pst_newly_added_videos_prop_value.executeQuery();
+				rs_newly_added_videos_prop_value.next();
+				String newlyAddedVideosImgID = rs_newly_added_videos_prop_value.getString(1);
+				System.out.println("Newly Added Videos ImgID = "+newlyAddedVideosImgID);
+				
+				JSONObject newlyAddedVideosObject = new JSONObject();
+				newlyAddedVideosObject.put("id", NEWLY_ADDED_VIDEO_ID+"_"+selectedCategorizationObj.get("id"));
+				newlyAddedVideosObject.put("name", NEWLY_ADDED_VIDEOS);
+				newlyAddedVideosObject.put("image", IMAGE_URL.toString() + newlyAddedVideosImgID);
+				categories.add(newlyAddedVideosObject);
+				
+				pst_newly_added_videos_prop_value.close();
+				rs_newly_added_videos_prop_value.close();
+				
 				//For Recently Viewed 
 				String RecentViewedVideo = "select device_id from video_viewed_user where device_id='"+ getdeviceId +"' and app_id='"+ getapp_id +"'";
 				PreparedStatement pst_recent_video = conn.prepareStatement(RecentViewedVideo);
