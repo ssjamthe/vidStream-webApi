@@ -5,5 +5,5 @@ package com.appify.vidstream.newWebApiTest.data;
  */
 public enum EntityType {
 
-    TAB, CATEGORIZATION, CATEGORY;
+    TAB, CATEGORIZATION, CATEGORY,ORDERED_VIDEOS,VIDEO;
 }

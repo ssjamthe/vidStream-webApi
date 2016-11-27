@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class AppInfo {
 
-    private List<Tab> tabs;
+    private List<Categorization> categorizations;
     private String appId;
     private boolean showBanner;
     private boolean showAdMovingInside;
@@ -18,14 +18,14 @@ public class AppInfo {
     private String noChildrenMsg;
 
 
-    public List<Tab> getTabs() {
+    public List<Categorization> getCategorizations() {
 
-        return tabs;
+        return categorizations;
     }
 
-    public void setTabs(List<Tab> tabs) {
+    public void setCategorizations(List<Categorization> categorizations) {
 
-        this.tabs = tabs;
+        this.categorizations = categorizations;
     }
 
     public boolean isShowBanner() {

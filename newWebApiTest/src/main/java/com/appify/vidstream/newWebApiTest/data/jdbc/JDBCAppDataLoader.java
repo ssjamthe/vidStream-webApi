@@ -24,13 +24,15 @@ public class JDBCAppDataLoader implements AppDataLoader {
 
     private DataSource dataSource;
     private PropertyHelper propertyHelper;
+    private JDBCCategorizationDataLoader categorizationDataLoader;
 
 
     @Inject
-    public JDBCAppDataLoader(DataSource dataSource, PropertyHelper propertyHelper) {
+    public JDBCAppDataLoader(DataSource dataSource, PropertyHelper propertyHelper, JDBCCategorizationDataLoader categorizationDataLoader) {
 
         this.dataSource = dataSource;
         this.propertyHelper = propertyHelper;
+        this.categorizationDataLoader = categorizationDataLoader;
     }
 
 
@@ -68,8 +70,7 @@ public class JDBCAppDataLoader implements AppDataLoader {
                 appInfo.setVideosPerCall(
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
-
-
+                appInfo.setCategorizations(categorizationDataLoader.getCategorizationsForApp(appId));
             }
 
             return appsData;
