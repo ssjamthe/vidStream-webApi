@@ -5,21 +5,38 @@ import com.appify.vidstream.newWebApiTest.PropertyNames;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.appify.vidstream.newWebApiTest.Constants.DATE_ADDED_VIDEOS_ATTRIBUTE_NAME;
 
 /**
- * Created by swapnil on 27/11/16.
+ * TODO : Inject scheduler service too.
  */
-public class NewlyAddedTabDataLoader extends TabDataLoader {
+public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
 
     private static final int DEFAULT_DAYS_TO_CONSIDER = 10;
     private volatile Map<String, List<OrderedVideos>> newlyAddedVideos = new HashMap<>();
 
     private PropertyHelper propertyHelper;
     private AppDataLoader appDataLoader;
+    private ScheduledExecutorService es;
+
+    @Override
+    public void startLoading() {
+        loadData();
+        ScheduledExecutorService es = Executors.newScheduledThreadPool(1);
+        this.es = es;
+        es.schedule(this, 10, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public void stopLoading() {
+        es.shutdown();
+    }
 
     @Inject
     public NewlyAddedTabDataLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader) {
@@ -53,6 +70,8 @@ public class NewlyAddedTabDataLoader extends TabDataLoader {
 
             newMap.put(appId, getOrderedVideosForApp(appInfo));
         }
+
+        newlyAddedVideos = newMap;
 
     }
 
@@ -116,5 +135,11 @@ public class NewlyAddedTabDataLoader extends TabDataLoader {
     }
 
 
+    @Override
+    public void run() {
+
+        loadData();
+
+    }
 }
 

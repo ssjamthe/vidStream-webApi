@@ -5,6 +5,10 @@ package com.appify.vidstream.newWebApiTest.data;
  */
 public abstract class TabDataLoader {
 
+    public abstract void startLoading();
+
+    public abstract void stopLoading();
+
     public abstract Tab getTab(String appId);
 
     public String createTabId(String appId, String tabName) {
