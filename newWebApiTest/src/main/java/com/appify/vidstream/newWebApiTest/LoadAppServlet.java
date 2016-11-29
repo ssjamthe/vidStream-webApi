@@ -1,7 +1,6 @@
 package com.appify.vidstream.newWebApiTest;
 
-import com.appify.vidstream.newWebApiTest.data.AppDataLoader;
-import com.appify.vidstream.newWebApiTest.data.AppInfo;
+import com.appify.vidstream.newWebApiTest.data.*;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
 
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,12 +21,15 @@ import java.util.Map;
 public class LoadAppServlet extends HttpServlet {
 
     private AppDataLoader appDataLoader;
+    private List<Tab> tabs;
+    private List<TabDataLoader> tabDataLoaderList;
     private Provider<Map<String, String[]>> paramsProvider;
 
 
     @Inject
     public LoadAppServlet(AppDataLoader appDataLoader,
-                          @RequestParameters Provider<Map<String, String[]>> paramsProvider) {
+                          @RequestParameters Provider<Map<String, String[]>> paramsProvider,
+                          @Annotations.TabDataLoaders List<TabDataLoader> tabDataLoaderList) {
         this.appDataLoader = appDataLoader;
         this.paramsProvider = paramsProvider;
     }
@@ -47,6 +50,7 @@ public class LoadAppServlet extends HttpServlet {
 
         LoadAppResponse response = new LoadAppResponse();
 
+        // Needs to add HomeTabDataLoader ,  NewlyAdded TabDataLoader in Tabs json object
     }
 
 

@@ -8,4 +8,8 @@ import java.util.Map;
 public interface AppDataLoader {
 
     Map<String, AppInfo> getAppsData();
+
+    public abstract void startLoading();
+
+    public abstract void stopLoading();
 }
