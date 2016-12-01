@@ -11,7 +11,7 @@ public class AppInfo {
     private String appId;
     private boolean showBanner;
     private boolean showAdMovingInside;
-    private double inmobiAdWeightage;
+    private float inmobiAdWeightage;
     private int minIntervalInterstitial;
     private String appBgImageId;
     private int videosPerCall;
@@ -48,12 +48,12 @@ public class AppInfo {
         this.showAdMovingInside = showAdMovingInside;
     }
 
-    public double getInmobiAdWeightage() {
+    public float getInmobiAdWeightage() {
 
         return inmobiAdWeightage;
     }
 
-    public void setInmobiAdWeightage(double inmobiAdWeightage) {
+    public void setInmobiAdWeightage(float inmobiAdWeightage) {
 
         this.inmobiAdWeightage = inmobiAdWeightage;
     }

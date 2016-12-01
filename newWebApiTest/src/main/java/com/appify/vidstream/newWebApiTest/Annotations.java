@@ -12,4 +12,10 @@ public class Annotations {
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier
     @interface TabDataLoaders {};
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Qualifier
+    public @interface PropertyFilePath {};
+
+
 }

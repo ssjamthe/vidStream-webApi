@@ -26,7 +26,7 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     private static final Integer DEFAULT_MIN_INTERVAL_INTERSTITIAL = 50; //seconds
     private static final String DEFAULT_NO_CHILDREN_MESSAGE = "No Content";
     private static final Boolean DEFAULT_SHOW_AD_MOVING_INSIDE = true;
-    private static final Double DEFAULT_INMOBI_AD_WEIGHTAGE = 0.3;
+    private static final Float DEFAULT_INMOBI_AD_WEIGHTAGE = 0.3f;
     private static final Integer DEFAULT_VIDEOS_PER_CALL = 10;
 
     private DataSource dataSource;
@@ -90,7 +90,7 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                         PropertyNames.NO_CHILDREN_MESSAGE, DEFAULT_NO_CHILDREN_MESSAGE));
                 appInfo.setShowAdMovingInside(propertyHelper.getBooleanProperty(
                         PropertyNames.SHOW_AD_MOVING_INSIDE, DEFAULT_SHOW_AD_MOVING_INSIDE));
-                appInfo.setInmobiAdWeightage(propertyHelper.getDoubleProperty(
+                appInfo.setInmobiAdWeightage(propertyHelper.getFloatProperty(
                         PropertyNames.INMOBI_AD_WEIGHTAGE, DEFAULT_INMOBI_AD_WEIGHTAGE));
                 appInfo.setVideosPerCall(
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));

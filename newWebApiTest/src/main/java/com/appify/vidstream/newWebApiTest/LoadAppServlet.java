@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest;
 
 import com.appify.vidstream.newWebApiTest.data.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
 
@@ -32,6 +33,7 @@ public class LoadAppServlet extends HttpServlet {
                           @Annotations.TabDataLoaders List<TabDataLoader> tabDataLoaderList) {
         this.appDataLoader = appDataLoader;
         this.paramsProvider = paramsProvider;
+        this.tabDataLoaderList = tabDataLoaderList;
     }
 
 
@@ -49,6 +51,39 @@ public class LoadAppServlet extends HttpServlet {
         AppInfo appInfo = appsInfoMap.get(appId);
 
         LoadAppResponse response = new LoadAppResponse();
+
+        String jsonResponse = "";
+
+        if (!tabDataLoaderList.isEmpty()) {
+            Tab tab = new Tab();
+            TabResp tabResp = new TabResp();
+            TabToTabRespConverter tabToTabRespConverter = new TabToTabRespConverter();
+            TabResp[] tabResps = new TabResp[tabDataLoaderList.size()];
+
+            for (int i = 0; i < tabDataLoaderList.size(); i++) {
+                tab = tabDataLoaderList.get(i).getTab(appId);
+                tabResp = tabToTabRespConverter.getTabRespFromTabWithoutChild(tab);
+                tabResps[i] = tabResp;
+            }
+
+            TabDataLoader selectedTabLoader = tabDataLoaderList.get(0);
+
+            response.setSelectedTab(tabToTabRespConverter.getTabRespFromTab(selectedTabLoader.getTab(appId)));
+            response.setTabs(tabResps);
+            response.setShowAdMovingInside(appInfo.isShowAdMovingInside());
+            response.setShowBanner(appInfo.isShowBanner());
+            response.setShowInmobiAdWeightage(appInfo.getInmobiAdWeightage());
+            response.setAppBgImage(appInfo.getAppBgImageId());
+            response.setMinIntervalInterstitial(appInfo.getMinIntervalInterstitial());
+            response.setNoChildrenMsg(appInfo.getNoChildrenMsg());
+            response.setVideosPerCall(appInfo.getVideosPerCall());
+
+            ObjectMapper mapper = new ObjectMapper();
+            jsonResponse = mapper.writeValueAsString(response);
+
+        } else {
+            // can we add error msg in logs that no tab in the list?
+        }
 
         // Needs to add HomeTabDataLoader ,  NewlyAdded TabDataLoader in Tabs json object
     }

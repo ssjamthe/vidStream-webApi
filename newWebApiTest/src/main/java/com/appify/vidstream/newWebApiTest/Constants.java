@@ -6,4 +6,5 @@ package com.appify.vidstream.newWebApiTest;
 public class Constants {
 
     public static final String DATE_ADDED_VIDEOS_ATTRIBUTE_NAME = "date_added";
+    public static final String PROPERTY_FILE_PATH = "/appify/conf/vidStreamPortal/conf.properties";
 }

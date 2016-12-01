@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -47,11 +48,10 @@ public class JDBCPropertyDataLoader implements PropertyDataLoader, Runnable {
 
                 props.put(propName, propValue);
             }
-            this.props = props;
+            this.props = Collections.unmodifiableMap(props);
         } catch (SQLException exp) {
-            props = null;
+            throw new RuntimeException("Unable to load properties from DB.");
         }
-
 
     }
 

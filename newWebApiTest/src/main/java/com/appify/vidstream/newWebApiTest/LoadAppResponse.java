@@ -1,14 +1,12 @@
 package com.appify.vidstream.newWebApiTest;
 
-import com.appify.vidstream.newWebApiTest.data.Tab;
-
 /**
  * Created by swapnil on 29/11/16.
  */
 public class LoadAppResponse {
 
     private TabResp[] tabs;
-    private Tab selectedTab;
+    private TabResp selectedTab;
     private boolean showBanner;
     private boolean showAdMovingInside;
     private float showInmobiAdWeightage;
@@ -18,19 +16,19 @@ public class LoadAppResponse {
     private String noChildrenMsg;
 
 
-    public TabResp[] getTabs() {
+    public com.appify.vidstream.newWebApiTest.TabResp[] getTabs() {
         return tabs;
     }
 
-    public void setTabs(TabResp[] tabs) {
+    public void setTabs(com.appify.vidstream.newWebApiTest.TabResp[] tabs) {
         this.tabs = tabs;
     }
 
-    public Tab getSelectedTab() {
+    public TabResp getSelectedTab() {
         return selectedTab;
     }
 
-    public void setSelectedTab(Tab selectedTab) {
+    public void setSelectedTab(TabResp selectedTab) {
         this.selectedTab = selectedTab;
     }
 

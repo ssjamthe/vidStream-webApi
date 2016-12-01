@@ -45,4 +45,9 @@ public class PropertyHelper {
         return propVal != null ? Double.parseDouble(propVal) : defaultVal;
     }
 
+    public Float getFloatProperty(String propName, Float defaultVal) {
+        String propVal = props.get(propName);
+        return propVal != null ? Float.parseFloat(propVal) : defaultVal;
+    }
+
 }

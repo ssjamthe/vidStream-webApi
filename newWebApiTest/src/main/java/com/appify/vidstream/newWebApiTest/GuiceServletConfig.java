@@ -2,14 +2,23 @@ package com.appify.vidstream.newWebApiTest;
 
 import com.appify.vidstream.newWebApiTest.data.*;
 import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCAppDataLoader;
+import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCPropertyDataLoader;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Provides;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import org.apache.commons.dbcp2.BasicDataSource;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletContextEvent;
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import static com.appify.vidstream.newWebApiTest.PropertyNames.*;
 
 /**
  * Created by swapnil on 28/11/16.
@@ -24,12 +33,16 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
             @Override
             protected void configureServlets() {
-                //serve("*.html").with(MyServlet.class);
+                serve("*loadApp").with(LoadAppServlet.class);
 
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
+                bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
+                bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
+                        toInstance(Constants.PROPERTY_FILE_PATH);
 
             }
 
+            @Provides
             @Annotations.TabDataLoaders
             List<TabDataLoader> provideTabs(HomeTabDataLoader homeTabDataLoader,
                                             NewlyAddedTabDataLoader newlyAddedTabDataLoader) {
@@ -40,7 +53,32 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 return loaders;
             }
 
+            @Provides
+            @Singleton
+            DataSource provideDataSource(FilePropertyDataLoader filePropertyDataLoader) {
+                BasicDataSource ds = new BasicDataSource();
+                Map<String, String> props = filePropertyDataLoader.getProps();
+
+                ds.setUrl(props.get(DB_URL));
+                ds.setDriverClassName(props.get(DB_DRIVER_CLASS_NAME));
+                ds.setUsername(props.get(DB_USER_NAME));
+                ds.setPassword(props.get(DB_PASSWORD));
+                ds.setMaxTotal(Integer.parseInt(props.get(DB_MAX_CONNECTIONS)));
+                ds.setMaxIdle(Integer.parseInt(props.get(DB_MAX_CONNECTIONS)));
+
+                return ds;
+            }
+
         });
+
+        FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
+        filePropertyDataLoader.startLoading();
+
+        JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
+        jdbcPropertyDataLoader.startLoading();
+
+        CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader.class);
+        combinedPropertyDataLoader.startLoading();
 
         AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
         appDataLoader.startLoading();
@@ -65,8 +103,14 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
         appDataLoader.stopLoading();
 
-        PropertyDataLoader propertyDataLoader = injector.getInstance(PropertyDataLoader.class);
-        propertyDataLoader.stopLoading();
+        FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
+        filePropertyDataLoader.startLoading();
+
+        JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
+        jdbcPropertyDataLoader.startLoading();
+
+        CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader.class);
+        combinedPropertyDataLoader.startLoading();
 
         HomeTabDataLoader homeTabDataLoader = injector.getInstance(HomeTabDataLoader.class);
         homeTabDataLoader.stopLoading();
