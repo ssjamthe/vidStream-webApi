@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by swapnil on 01/12/16.
  */
-public class CategorizationToCategorizationRespConverter {
+public class CategorizationToRespConverter {
 
     public CategorizationResp[] getCategorizationRespArray(List<Categorization> categorizationList){
 
@@ -49,6 +49,26 @@ public class CategorizationToCategorizationRespConverter {
                 //Logger msg
             }
 
+            categorizationResps[i] = categorizationResp;
+        }
+
+        return categorizationResps;
+    }
+
+    public CategorizationResp[] getCategorizationRespArrayWithoutChildren(List<Categorization> categorizationList){
+
+        CategorizationResp[] categorizationResps = new CategorizationResp[categorizationList.size()];
+        Categorization categorization = new Categorization();
+        CategoryToCategoryRespConverter categoryToCategoryRespConverter = new CategoryToCategoryRespConverter();
+        VideoToVideoRespConverter videoToVideoRespConverter = new VideoToVideoRespConverter();
+
+        for(int i=0; i<categorizationList.size();i++) {
+
+            CategorizationResp categorizationResp = new CategorizationResp();
+            categorization = categorizationList.get(i);
+            categorizationResp.setId(categorization.getId());
+            categorizationResp.setName(categorization.getName());
+            categorizationResp.setImg(categorization.getImageId());
             categorizationResps[i] = categorizationResp;
         }
 

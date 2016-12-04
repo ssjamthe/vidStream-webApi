@@ -2,17 +2,14 @@ package com.appify.vidstream.newWebApiTest.data.jdbc;
 
 import com.appify.vidstream.newWebApiTest.PropertyHelper;
 import com.appify.vidstream.newWebApiTest.PropertyNames;
-import com.appify.vidstream.newWebApiTest.data.AppDataLoader;
-import com.appify.vidstream.newWebApiTest.data.AppInfo;
+import com.appify.vidstream.newWebApiTest.data.*;
 import com.google.inject.Provider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,12 +31,14 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     private JDBCCategorizationDataLoader categorizationDataLoader;
     private volatile Map<String, AppInfo> appsData;
     private ScheduledExecutorService es;
+    private JDBCCategoryDataLoader categoryDataLoader;
 
     @Inject
-    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader) {
+    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader, JDBCCategoryDataLoader jdbcCategoryDataLoader) {
 
         this.dataSource = dataSource;
         this.propertyHelperProvider = propertyHelperProvider;
+        this.categorizationDataLoader = categorizationDataLoader;
         this.categorizationDataLoader = categorizationDataLoader;
     }
 
@@ -95,8 +94,9 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                 appInfo.setVideosPerCall(
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
-                appInfo.setCategorizations(categorizationDataLoader.getCategorizationsForApp(appId));
+                List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
 
+                setChildrenMaps(appInfo, categorizations);
                 appsData.put(appId, appInfo);
             }
 
@@ -104,6 +104,37 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
         } catch (SQLException ex) {
             throw new RuntimeException("Problem getting appd data.", ex);
         }
+    }
+
+    private static void setChildrenMaps(AppInfo appInfo, List<Categorization> categorizations) {
+        Map<String, Categorization> categorizationMap = new HashMap<>();
+        Map<String, Category> categoryMap = new HashMap<>();
+
+        Queue<Category> categories = new LinkedList<>();
+
+        for (Categorization categorization : categorizations) {
+            categorizationMap.put(categorization.getId(), categorization);
+
+            //Categorization have only categories as children while storage.
+            List<Entity> childCategories = categorization.getChildren();
+            for (Entity childCategory : childCategories) {
+                categories.offer((Category) childCategory);
+            }
+        }
+
+        while (!categories.isEmpty()) {
+            Category category = categories.poll();
+            categoryMap.put(category.getId(), category);
+
+            if (category.getChildType() == EntityType.CATEGORY) {
+                for (Entity childCategory : category.getChildren())
+                    categories.offer((Category) childCategory);
+            }
+
+        }
+
+        appInfo.setCategorizationMap(categorizationMap);
+        appInfo.setCategoryMap(categoryMap);
     }
 
 

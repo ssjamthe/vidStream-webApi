@@ -54,4 +54,22 @@ public class CategoryToCategoryRespConverter {
 
         return categoryResps;
     }
+
+    public CategoryResp[] getCategoryRespArrayWithoutChildren(List<Category> categoryList){
+
+        CategoryResp[] categoryResps = new CategoryResp[categoryList.size()];
+        Category category = new Category();
+
+
+        for(int i=0;i<categoryList.size();i++) {
+            CategoryResp categoryResp = new CategoryResp();
+            category = categoryList.get(i);
+            categoryResp.setId(category.getId());
+            categoryResp.setImg(category.getImageId());
+            categoryResp.setName(category.getName());
+            categoryResps[i] = categoryResp;
+        }
+
+        return categoryResps;
+    }
 }

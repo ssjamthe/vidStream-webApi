@@ -8,10 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +52,40 @@ public class JDBCCategoryDataLoader {
             }
 
             return categories;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Problem getting categories data.", ex);
+        }
+
+    }
+
+    public Map<String,Category> getCategoriesMapForCategorization(String categorizationId) {
+
+        try (Connection con = dataSource.getConnection();) {
+            List<Category> categories = new ArrayList<Category>();
+            Map<String,Category> categoryMap = new HashMap<String,Category>();
+
+            //Getting top level categories.
+            String sql = "select id,name,image from category where categorization_id='"
+                    + categorizationId + "' and id not in (select child_category_id from parent_child_category_mappings)";
+
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                String id = rs.getString("id");
+                String name = rs.getString("name");
+                String image = rs.getString("image");
+
+                Category category = new Category();
+                category.setId(id);
+                category.setName(name);
+                category.setImageId(image);
+                setChildren(category);
+
+                categoryMap.put(id,category);
+
+            }
+
+            return categoryMap;
         } catch (SQLException ex) {
             throw new RuntimeException("Problem getting categories data.", ex);
         }

@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest.data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swapnil on 23/11/16.
@@ -16,6 +17,24 @@ public class AppInfo {
     private String appBgImageId;
     private int videosPerCall;
     private String noChildrenMsg;
+    private Map<String,Categorization> categorizationMap;
+    private Map<String,Category> categoryMap;
+
+    public Map<String, Categorization> getCategorizationMap() {
+        return categorizationMap;
+    }
+
+    public void setCategorizationMap(Map<String, Categorization> categorizationMap) {
+        this.categorizationMap = categorizationMap;
+    }
+
+    public Map<String, Category> getCategoryMap() {
+        return categoryMap;
+    }
+
+    public void setCategoryMap(Map<String, Category> categoryMap) {
+        this.categoryMap = categoryMap;
+    }
 
 
     public List<Categorization> getCategorizations() {

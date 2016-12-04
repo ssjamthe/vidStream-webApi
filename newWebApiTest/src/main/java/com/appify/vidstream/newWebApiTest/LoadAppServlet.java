@@ -81,6 +81,10 @@ public class LoadAppServlet extends HttpServlet {
             ObjectMapper mapper = new ObjectMapper();
             jsonResponse = mapper.writeValueAsString(response);
 
+            resp.setContentType("application/json");
+            resp.getWriter().write(jsonResponse.toString());
+
+
         } else {
             // can we add error msg in logs that no tab in the list?
         }
