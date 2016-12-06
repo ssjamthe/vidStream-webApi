@@ -32,14 +32,17 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     private volatile Map<String, AppInfo> appsData;
     private ScheduledExecutorService es;
     private JDBCCategoryDataLoader categoryDataLoader;
+    private JDBCTokenDataLoader jdbcTokenDataLoader;
 
     @Inject
-    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader, JDBCCategoryDataLoader jdbcCategoryDataLoader) {
+    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader
+            , JDBCCategoryDataLoader jdbcCategoryDataLoader, JDBCTokenDataLoader jdbcTokenDataLoader) {
 
         this.dataSource = dataSource;
         this.propertyHelperProvider = propertyHelperProvider;
         this.categorizationDataLoader = categorizationDataLoader;
         this.categorizationDataLoader = categorizationDataLoader;
+        this.jdbcTokenDataLoader = jdbcTokenDataLoader;
     }
 
     @Override
@@ -95,6 +98,9 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
                 List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
+
+                List<String> tokens = jdbcTokenDataLoader.getTokensForApp(appId);
+                appInfo.setTokens(tokens);
 
                 setChildrenMaps(appInfo, categorizations);
                 appsData.put(appId, appInfo);

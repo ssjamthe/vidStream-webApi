@@ -5,12 +5,14 @@ import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCAppDataLoader;
 import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCPropertyDataLoader;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.inject.Singleton;
+import javax.servlet.Filter;
 import javax.servlet.ServletContextEvent;
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
                 bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
                         toInstance(Constants.PROPERTY_FILE_PATH);
+                filter("/*").through(ValidationFilter.class);
 
             }
 

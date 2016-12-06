@@ -19,6 +19,7 @@ public class AppInfo {
     private String noChildrenMsg;
     private Map<String,Categorization> categorizationMap;
     private Map<String,Category> categoryMap;
+    private List<String> tokens;
 
     public Map<String, Categorization> getCategorizationMap() {
         return categorizationMap;
@@ -123,5 +124,13 @@ public class AppInfo {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public List<String> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<String> tokens) {
+        this.tokens = tokens;
     }
 }
