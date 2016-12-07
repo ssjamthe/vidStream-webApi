@@ -35,6 +35,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
             @Override
             protected void configureServlets() {
+                System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
 
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);

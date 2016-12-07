@@ -42,6 +42,7 @@ public class LoadAppServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        System.out.print("Inside DoGet Of LoadAppServlet");
         Map<String, AppInfo> appsInfoMap = appDataLoader.getAppsData();
 
         Map<String, String[]> params = paramsProvider.get();
