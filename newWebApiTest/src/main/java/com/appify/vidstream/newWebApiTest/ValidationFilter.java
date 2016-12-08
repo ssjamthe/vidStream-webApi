@@ -2,6 +2,7 @@ package com.appify.vidstream.newWebApiTest;
 
 import com.appify.vidstream.newWebApiTest.data.AppDataLoader;
 import com.appify.vidstream.newWebApiTest.data.AppInfo;
+import com.google.inject.Singleton;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -14,6 +15,7 @@ import java.util.Map;
 /**
  * Created by swapnil on 04/12/16.
  */
+@Singleton
 public class ValidationFilter implements Filter
 {
     private AppDataLoader appDataLoader;

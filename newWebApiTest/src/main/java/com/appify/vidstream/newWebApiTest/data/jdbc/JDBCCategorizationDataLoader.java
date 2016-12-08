@@ -4,6 +4,7 @@ import com.appify.vidstream.newWebApiTest.data.Categorization;
 import com.appify.vidstream.newWebApiTest.data.Category;
 import com.appify.vidstream.newWebApiTest.data.Entity;
 import com.appify.vidstream.newWebApiTest.data.EntityType;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -44,13 +45,13 @@ public class JDBCCategorizationDataLoader {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String image = rs.getString("image");
-
+                
                 Categorization categorization = new Categorization();
                 categorization.setId(Integer.toString(id));
                 categorization.setName(name);
                 categorization.setImageId(image);
                 categorization.setChildType(EntityType.CATEGORY);
-
+  
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
                 categorization.setChildren(categories.stream().map(c -> (Entity) c).collect(Collectors.toList()));
 

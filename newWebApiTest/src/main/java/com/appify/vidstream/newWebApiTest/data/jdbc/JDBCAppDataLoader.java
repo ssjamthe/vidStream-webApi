@@ -98,7 +98,8 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
                 List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
-
+                appInfo.setCategorizations(categorizations);
+                
                 List<String> tokens = jdbcTokenDataLoader.getTokensForApp(appId);
                 appInfo.setTokens(tokens);
 

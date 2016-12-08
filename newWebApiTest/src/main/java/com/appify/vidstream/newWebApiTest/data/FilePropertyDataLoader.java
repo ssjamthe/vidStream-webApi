@@ -2,7 +2,7 @@ package com.appify.vidstream.newWebApiTest.data;
 
 import com.appify.vidstream.newWebApiTest.Annotations;
 import com.appify.vidstream.newWebApiTest.Constants;
-import com.oracle.webservices.internal.api.message.PropertySet;
+
 
 import javax.imageio.IIOException;
 import javax.inject.Inject;
@@ -47,7 +47,7 @@ public class FilePropertyDataLoader implements PropertyDataLoader, Runnable {
 
     @Override
     public void startLoading() {
-
+    	loadData();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FilePropertyDataLoader implements PropertyDataLoader, Runnable {
 
     @Override
     public Map<String, String> getProps() {
-        return null;
+        return props;
     }
 
     @Override

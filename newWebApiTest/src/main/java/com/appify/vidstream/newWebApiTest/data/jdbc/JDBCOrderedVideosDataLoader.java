@@ -40,21 +40,23 @@ public class JDBCOrderedVideosDataLoader {
             List<Video> videos = new ArrayList<>();
             String sql = "Select yv.id as id,yv.name as name,yv.date_added as date_added," +
                     "vav.attribute_id as attribute_id,va.name as attribute_name,vav.value as attribute_value from youtube_video yv" +
-                    " inner join video_attribute_value vav on yv.id = va.video_id inner join video_attribute va on vav.attribute_id=va.id where yv.id " +
+                    " inner join video_attribute_value vav on yv.id = vav.video_id inner join video_attribute va on vav.attribute_id=va.id where yv.id " +
                     "in (select video_id from youtube_video_category_mapping " +
                     "where category_id=" + categoryId + ")";
 
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                int id = rs.getInt("id");
+                //int id = rs.getInt("id");
+                String id  = rs.getString("id");
                 Video video = videoMap.get(id);
                 if (video == null) {
                     video = new Video();
                     String name = rs.getString("name");
                     Timestamp dateAdded = rs.getTimestamp("date_added");
 
-                    video.setId(Integer.toString(id));
+//                    video.setId(Integer.toString(id));
+                    video.setId(id);
                     video.setName(name);
                     video.setDateAdded(dateAdded);
                     Map<String, Integer> attributeValues = new HashMap<String, Integer>();

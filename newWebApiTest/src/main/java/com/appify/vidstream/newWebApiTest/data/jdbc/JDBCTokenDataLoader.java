@@ -37,7 +37,7 @@ public class JDBCTokenDataLoader {
 
             return tokens;
         } catch (SQLException ex) {
-            throw new RuntimeException("Problem getting categorization data.", ex);
+            throw new RuntimeException("Problem getting token data.", ex);
         }
 
     }

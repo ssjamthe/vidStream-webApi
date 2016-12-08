@@ -75,6 +75,8 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
         });
 
+       
+        
         FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
         filePropertyDataLoader.startLoading();
 
@@ -108,19 +110,22 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         appDataLoader.stopLoading();
 
         FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
-        filePropertyDataLoader.startLoading();
+        //filePropertyDataLoader.startLoading();
+        filePropertyDataLoader.stopLoading();
 
         JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
-        jdbcPropertyDataLoader.startLoading();
+        //jdbcPropertyDataLoader.startLoading();
+        jdbcPropertyDataLoader.stopLoading();
 
         CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader.class);
-        combinedPropertyDataLoader.startLoading();
+        //combinedPropertyDataLoader.startLoading();
+        combinedPropertyDataLoader.stopLoading();
 
         HomeTabDataLoader homeTabDataLoader = injector.getInstance(HomeTabDataLoader.class);
         homeTabDataLoader.stopLoading();
 
         NewlyAddedTabDataLoader newlyAddedTabDataLoader = injector.getInstance(NewlyAddedTabDataLoader.class);
-        newlyAddedTabDataLoader.stopLoading();
+        //newlyAddedTabDataLoader.stopLoading(); 
 
 
     }
