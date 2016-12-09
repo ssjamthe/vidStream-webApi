@@ -8,12 +8,13 @@ public class OrderedVideos extends Entity {
 
     @Override
     public String getImageId() {
-        throw new UnsupportedOperationException();
+        return null;
+       //throw new UnsupportedOperationException();
     }
 
     @Override
     public void setImageId(String imageId) {
-        throw new UnsupportedOperationException();
+    	//throw new UnsupportedOperationException();
     }
 
 
