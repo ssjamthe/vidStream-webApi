@@ -2,6 +2,8 @@ package com.appify.vidstream.newWebApiTest.data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Created by swapnil on 23/11/16.
  */
@@ -60,4 +62,6 @@ public abstract class Entity {
     public void setChildType(EntityType childType) {
         this.childType = childType;
     }
+
+    
 }

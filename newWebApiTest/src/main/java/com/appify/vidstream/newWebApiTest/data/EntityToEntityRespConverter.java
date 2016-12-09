@@ -15,9 +15,16 @@ public class EntityToEntityRespConverter {
         EntityResp entityResp = new EntityResp();
         entityResp.setChildType(entity.getChildType());
         List<Entity> entityList = entity.getChildren();
-        entityResp.setChildren((Entity[]) entityList.toArray());
+//      entityResp.setChildren((Entity[]) entityList.toArray());
+        Entity [] entities = new Entity[entityList.size()];
+        
+        for(int i=0;i<entityList.size();i++){
+        	Entity entityOfList = entityList.get(i);
+        	entities[i] = entityOfList;
+        }
+        
+        entityResp.setChildren(entities);
         return entityResp;
     }
-
 
 }

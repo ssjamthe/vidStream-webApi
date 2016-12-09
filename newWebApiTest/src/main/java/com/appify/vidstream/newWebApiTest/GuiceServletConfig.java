@@ -37,7 +37,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
             protected void configureServlets() {
                 System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
-
+                serve("*loadChildren").with(LoadChildrenServlet.class);
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
                 bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
@@ -125,6 +125,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         homeTabDataLoader.stopLoading();
 
         NewlyAddedTabDataLoader newlyAddedTabDataLoader = injector.getInstance(NewlyAddedTabDataLoader.class);
+        //Need to uncommit below code after getting the error cause
         //newlyAddedTabDataLoader.stopLoading(); 
 
 

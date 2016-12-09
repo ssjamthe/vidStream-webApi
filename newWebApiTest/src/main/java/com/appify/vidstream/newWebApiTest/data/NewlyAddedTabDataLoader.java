@@ -49,8 +49,10 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
         tab.setName("Newly Added");
         tab.setId(createTabId(appId, "NewlyAdded"));
         tab.setImageId(propertyHelper.getStringProperty(PropertyNames.HOME_TAB_IMAGE_ID, null));
+        if(!newlyAddedVideos.isEmpty()){
         tab.setChildren(newlyAddedVideos.get(appId).
                 stream().map(c -> (Entity) c).collect(Collectors.toList()));
+        }
         tab.setChildType(EntityType.ORDERED_VIDEOS);
 
         return tab;

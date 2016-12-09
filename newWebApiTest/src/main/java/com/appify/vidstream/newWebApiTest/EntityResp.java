@@ -2,6 +2,7 @@ package com.appify.vidstream.newWebApiTest;
 
 import com.appify.vidstream.newWebApiTest.data.Entity;
 import com.appify.vidstream.newWebApiTest.data.EntityType;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Created by swapnil on 04/12/16.
