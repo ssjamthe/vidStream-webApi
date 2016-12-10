@@ -1,26 +1,29 @@
 package com.appify.vidstream.newWebApiTest;
 
-import com.appify.vidstream.newWebApiTest.data.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Singleton;
+import javax.servlet.ServletContextEvent;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import com.appify.vidstream.newWebApiTest.data.AppDataLoader;
+import com.appify.vidstream.newWebApiTest.data.CombinedPropertyDataLoader;
+import com.appify.vidstream.newWebApiTest.data.FilePropertyDataLoader;
+import com.appify.vidstream.newWebApiTest.data.HomeTabDataLoader;
+import com.appify.vidstream.newWebApiTest.data.NewlyAddedTabDataLoader;
+import com.appify.vidstream.newWebApiTest.data.PropertyDataLoader;
+import com.appify.vidstream.newWebApiTest.data.TabDataLoader;
 import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCAppDataLoader;
 import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCPropertyDataLoader;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import org.apache.commons.dbcp2.BasicDataSource;
-
-import javax.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.ServletContextEvent;
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import static com.appify.vidstream.newWebApiTest.PropertyNames.*;
 
 /**
  * Created by swapnil on 28/11/16.
@@ -63,12 +66,12 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 BasicDataSource ds = new BasicDataSource();
                 Map<String, String> props = filePropertyDataLoader.getProps();
 
-                ds.setUrl(props.get(DB_URL));
-                ds.setDriverClassName(props.get(DB_DRIVER_CLASS_NAME));
-                ds.setUsername(props.get(DB_USER_NAME));
-                ds.setPassword(props.get(DB_PASSWORD));
-                ds.setMaxTotal(Integer.parseInt(props.get(DB_MAX_CONNECTIONS)));
-                ds.setMaxIdle(Integer.parseInt(props.get(DB_MAX_CONNECTIONS)));
+                ds.setUrl(props.get(Constants.DB_URL));
+                ds.setDriverClassName(props.get(Constants.DB_DRIVER_CLASS_NAME));
+                ds.setUsername(props.get(Constants.DB_USER_NAME));
+                ds.setPassword(props.get(Constants.DB_PASSWORD));
+                ds.setMaxTotal(Integer.parseInt(props.get(Constants.DB_MAX_CONNECTIONS)));
+                ds.setMaxIdle(Integer.parseInt(props.get(Constants.DB_MAX_CONNECTIONS)));
 
                 return ds;
             }
