@@ -109,6 +109,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
+    	if(injector!=null){
         AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
         appDataLoader.stopLoading();
 
@@ -128,6 +129,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         homeTabDataLoader.stopLoading();
 
         NewlyAddedTabDataLoader newlyAddedTabDataLoader = injector.getInstance(NewlyAddedTabDataLoader.class);
+    	}
         //Need to uncommit below code after getting the error cause
         //newlyAddedTabDataLoader.stopLoading(); 
 
