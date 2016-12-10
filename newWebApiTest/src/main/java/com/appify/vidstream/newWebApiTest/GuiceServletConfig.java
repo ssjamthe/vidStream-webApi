@@ -41,6 +41,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
                 serve("*loadChildren").with(LoadChildrenServlet.class);
+                serve("*getImage").with(GetImageServlet.class);
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
                 bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
@@ -66,12 +67,12 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 BasicDataSource ds = new BasicDataSource();
                 Map<String, String> props = filePropertyDataLoader.getProps();
 
-                ds.setUrl(props.get(Constants.DB_URL));
-                ds.setDriverClassName(props.get(Constants.DB_DRIVER_CLASS_NAME));
-                ds.setUsername(props.get(Constants.DB_USER_NAME));
-                ds.setPassword(props.get(Constants.DB_PASSWORD));
-                ds.setMaxTotal(Integer.parseInt(props.get(Constants.DB_MAX_CONNECTIONS)));
-                ds.setMaxIdle(Integer.parseInt(props.get(Constants.DB_MAX_CONNECTIONS)));
+                ds.setUrl(props.get(PropertyNames.DB_URL));
+                ds.setDriverClassName(props.get(PropertyNames.DB_DRIVER_CLASS_NAME));
+                ds.setUsername(props.get(PropertyNames.DB_USER_NAME));
+                ds.setPassword(props.get(PropertyNames.DB_PASSWORD));
+                ds.setMaxTotal(Integer.parseInt(props.get(PropertyNames.DB_MAX_CONNECTIONS)));
+                ds.setMaxIdle(Integer.parseInt(props.get(PropertyNames.DB_MAX_CONNECTIONS)));
 
                 return ds;
             }
