@@ -41,7 +41,9 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
                 serve("*loadChildren").with(LoadChildrenServlet.class);
-                serve("*getImage").with(GetImageServlet.class);
+                serve("*imageServlet").with(GetImageServlet.class);
+                serve("*videoViewed").with(VideoViewServlet.class);
+                serve("*feedbackForm").with(FeedbackFormServlet.class);
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
                 bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
@@ -76,6 +78,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
                 return ds;
             }
+            
 
         });
 

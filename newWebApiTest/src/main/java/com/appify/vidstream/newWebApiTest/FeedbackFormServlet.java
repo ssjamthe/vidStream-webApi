@@ -1,7 +1,10 @@
 package com.appify.vidstream.newWebApiTest;
 
 import com.appify.vidstream.newWebApiTest.data.*;
+import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCFeedbackSaver;
 import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCImageDataLoader;
+import com.appify.vidstream.newWebApiTest.data.jdbc.JDBCVideoViewer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
 
@@ -18,21 +21,18 @@ import java.util.Map;
  * Created by ankit on 28/11/16.
  */
 @Singleton
-public class GetImageServlet extends HttpServlet {
+public class FeedbackFormServlet extends HttpServlet {
 
-	//this can be used to load all images and cache it.
-    private AppDataLoader appDataLoader;
     private Provider<Map<String, String[]>> paramsProvider;
-    private JDBCImageDataLoader jdbcImageDataLoader;
+    private JDBCFeedbackSaver jdbcFeedbackSaver;
 
 
     @Inject
-    public GetImageServlet(AppDataLoader appDataLoader,
-    		JDBCImageDataLoader jdbcImageDataLoader,
+    public FeedbackFormServlet(AppDataLoader appDataLoader,
+    		JDBCFeedbackSaver jdbcFeedbackSaver,
                           @RequestParameters Provider<Map<String, String[]>> paramsProvider) {
-        this.appDataLoader = appDataLoader;
         this.paramsProvider = paramsProvider;
-        this.jdbcImageDataLoader = jdbcImageDataLoader;
+        this.jdbcFeedbackSaver = jdbcFeedbackSaver;
     }
 
 
@@ -41,17 +41,22 @@ public class GetImageServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.print("Inside DoGet Of GetImageServlet");
+        System.out.print("Inside DoGet Of FeedbackFormServlet");
 
         Map<String, String[]> params = paramsProvider.get();
 
-        String imageId = params.get("imageId")[0];
+        String appId = params.get("appId")[0];
+        String deviceId = params.get("deviceId")[0];
+        String userComment = params.get("userComment")[0];
 
-        byte[] image=jdbcImageDataLoader.getImageByImageId(imageId);
+        String allData=jdbcFeedbackSaver.saveFeedback(appId, deviceId, userComment);
         
-        response.setContentType("image/jpg");
-        response.getOutputStream().flush();
-		response.getOutputStream().write(image, 0, image.length);
-		response.getOutputStream().close();
-    }    
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResponse = mapper.writeValueAsString(allData);
+
+        response.setContentType("application/json");
+        response.getWriter().write(jsonResponse.toString());
+    
+    }
+
 }
