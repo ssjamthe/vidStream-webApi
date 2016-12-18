@@ -7,7 +7,7 @@ public class CategoryResp {
 
     private String id;
     private String name;
-    private String img;
+    private String imgURL;
     private CategoryResp[] categories;
     private VideoResp[] videos;
 
@@ -27,14 +27,6 @@ public class CategoryResp {
         this.name = name;
     }
 
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
-    }
-
     public CategoryResp[] getCategories() {
         return categories;
     }
@@ -50,4 +42,18 @@ public class CategoryResp {
     public void setVideos(VideoResp[] videos) {
         this.videos = videos;
     }
+
+	/**
+	 * @return the imgURL
+	 */
+	public String getImgURL() {
+		return imgURL;
+	}
+
+	/**
+	 * @param imgURL the imgURL to set
+	 */
+	public void setImgURL(String imgURL) {
+		this.imgURL = imgURL;
+	}
 }

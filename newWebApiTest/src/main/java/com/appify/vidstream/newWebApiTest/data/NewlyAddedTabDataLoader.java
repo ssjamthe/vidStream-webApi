@@ -2,6 +2,7 @@ package com.appify.vidstream.newWebApiTest.data;
 
 import com.appify.vidstream.newWebApiTest.PropertyHelper;
 import com.appify.vidstream.newWebApiTest.PropertyNames;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -23,6 +24,7 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
     private PropertyHelper propertyHelper;
     private AppDataLoader appDataLoader;
     private ScheduledExecutorService es;
+    private WebAPIUtil webAPIUtil;
 
     @Override
     public void startLoading() {
@@ -38,9 +40,10 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
     }
 
     @Inject
-    public NewlyAddedTabDataLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader) {
+    public NewlyAddedTabDataLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader,WebAPIUtil webAPIUtil) {
         this.propertyHelper = propertyHelper;
         this.appDataLoader = appDataLoader;
+        this.webAPIUtil=webAPIUtil;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
         Tab tab = new Tab();
         tab.setName("Newly Added");
         tab.setId(createTabId(appId, "NewlyAdded"));
-        tab.setImageId(propertyHelper.getStringProperty(PropertyNames.HOME_TAB_IMAGE_ID, null));
+        tab.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.HOME_TAB_IMAGE_ID, null)));
         if(!newlyAddedVideos.isEmpty()){
         tab.setChildren(newlyAddedVideos.get(appId).
                 stream().map(c -> (Entity) c).collect(Collectors.toList()));

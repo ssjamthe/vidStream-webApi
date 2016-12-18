@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest.data;
 
 import com.appify.vidstream.newWebApiTest.CategorizationResp;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by swapnil on 01/12/16.
  */
 public class CategorizationToRespConverter {
-
+	
     public CategorizationResp[] getCategorizationRespArray(List<Categorization> categorizationList){
 
         CategorizationResp[] categorizationResps = new CategorizationResp[categorizationList.size()];
@@ -23,7 +24,7 @@ public class CategorizationToRespConverter {
             categorization = categorizationList.get(i);
             categorizationResp.setId(categorization.getId());
             categorizationResp.setName(categorization.getName());
-            categorizationResp.setImg(categorization.getImageId());
+            categorizationResp.setImgURL(categorization.getImageURL());
 
             List<Entity> entityList = categorization.getChildren();
             if (!entityList.isEmpty()) {
@@ -68,7 +69,7 @@ public class CategorizationToRespConverter {
             categorization = categorizationList.get(i);
             categorizationResp.setId(categorization.getId());
             categorizationResp.setName(categorization.getName());
-            categorizationResp.setImg(categorization.getImageId());
+            categorizationResp.setImgURL(categorization.getImageURL());
             categorizationResps[i] = categorizationResp;
         }
 

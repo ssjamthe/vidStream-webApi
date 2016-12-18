@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest.data.jdbc;
 
 import com.appify.vidstream.newWebApiTest.data.*;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -18,12 +19,14 @@ public class JDBCCategoryDataLoader {
 
     private DataSource dataSource;
     private JDBCOrderedVideosDataLoader videoDataLoader;
+    private WebAPIUtil  webAPIUtil;
 
     @Inject
-    JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader) {
+    JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader,WebAPIUtil webAPIUtil) {
 
         this.dataSource = dataSource;
         this.videoDataLoader = videoDataLoader;
+        this.webAPIUtil=webAPIUtil;
     }
 
     public List<Category> getCategoriesForCategorization(String categorizationId) {
@@ -45,7 +48,7 @@ public class JDBCCategoryDataLoader {
                 Category category = new Category();
                 category.setId(id);
                 category.setName(name);
-                category.setImageId(image);
+                category.setImageURL(webAPIUtil.getImageURL(image));
                 setChildren(category);
 
                 categories.add(category);
@@ -61,7 +64,6 @@ public class JDBCCategoryDataLoader {
     public Map<String,Category> getCategoriesMapForCategorization(String categorizationId) {
 
         try (Connection con = dataSource.getConnection();) {
-            List<Category> categories = new ArrayList<Category>();
             Map<String,Category> categoryMap = new HashMap<String,Category>();
 
             //Getting top level categories.
@@ -78,7 +80,7 @@ public class JDBCCategoryDataLoader {
                 Category category = new Category();
                 category.setId(id);
                 category.setName(name);
-                category.setImageId(image);
+                category.setImageURL(webAPIUtil.getImageURL(image));
                 setChildren(category);
 
                 categoryMap.put(id,category);
@@ -118,7 +120,7 @@ public class JDBCCategoryDataLoader {
                     Category category = new Category();
                     category.setId(Integer.toString(id));
                     category.setName(name);
-                    category.setImageId(image);
+                    category.setImageURL(webAPIUtil.getImageURL(image));
 
                     childCategories.add(category);
 

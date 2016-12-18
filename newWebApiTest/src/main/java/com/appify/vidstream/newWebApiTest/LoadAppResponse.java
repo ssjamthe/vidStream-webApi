@@ -11,7 +11,7 @@ public class LoadAppResponse {
     private boolean showAdMovingInside;
     private float showInmobiAdWeightage;
     private int minIntervalInterstitial;
-    private String appBgImage;
+    private String appBgImageURL;
     private int videosPerCall;
     private String noChildrenMsg;
 
@@ -64,14 +64,6 @@ public class LoadAppResponse {
         this.minIntervalInterstitial = minIntervalInterstitial;
     }
 
-    public String getAppBgImage() {
-        return appBgImage;
-    }
-
-    public void setAppBgImage(String appBgImage) {
-        this.appBgImage = appBgImage;
-    }
-
     public int getVideosPerCall() {
         return videosPerCall;
     }
@@ -87,4 +79,18 @@ public class LoadAppResponse {
     public void setNoChildrenMsg(String noChildrenMsg) {
         this.noChildrenMsg = noChildrenMsg;
     }
+
+	/**
+	 * @return the appBgImageURL
+	 */
+	public String getAppBgImageURL() {
+		return appBgImageURL;
+	}
+
+	/**
+	 * @param appBgImageURL the appBgImageURL to set
+	 */
+	public void setAppBgImageURL(String appBgImageURL) {
+		this.appBgImageURL = appBgImageURL;
+	}
 }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
+
 /**
  * Created by swapnil on 23/11/16.
  * TODO Make collections immutable
@@ -15,12 +17,12 @@ public class Video extends Entity {
     private Timestamp dateAdded;
 
     @Override
-    public String getImageId() {
+    public String getImageURL() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setImageId(String imageId) {
+    public void setImageURL(String imageURL) {
         throw new UnsupportedOperationException();
     }
 

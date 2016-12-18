@@ -3,6 +3,7 @@ package com.appify.vidstream.newWebApiTest.data.jdbc;
 import com.appify.vidstream.newWebApiTest.PropertyHelper;
 import com.appify.vidstream.newWebApiTest.PropertyNames;
 import com.appify.vidstream.newWebApiTest.data.*;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 import com.google.inject.Provider;
 
 import javax.inject.Inject;
@@ -33,16 +34,18 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     private ScheduledExecutorService es;
     private JDBCCategoryDataLoader categoryDataLoader;
     private JDBCTokenDataLoader jdbcTokenDataLoader;
+    private WebAPIUtil  webAPIUtil;
 
     @Inject
     public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader
-            , JDBCCategoryDataLoader jdbcCategoryDataLoader, JDBCTokenDataLoader jdbcTokenDataLoader) {
+            , JDBCCategoryDataLoader jdbcCategoryDataLoader, JDBCTokenDataLoader jdbcTokenDataLoader,WebAPIUtil  webAPIUtil) {
 
         this.dataSource = dataSource;
         this.propertyHelperProvider = propertyHelperProvider;
         this.categorizationDataLoader = categorizationDataLoader;
         this.categorizationDataLoader = categorizationDataLoader;
         this.jdbcTokenDataLoader = jdbcTokenDataLoader;
+        this.webAPIUtil=webAPIUtil;
     }
 
     @Override
@@ -85,7 +88,7 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                 PropertyHelper propertyHelper = propertyHelperProvider.get();
                 AppInfo appInfo = new AppInfo();
                 appInfo.setAppId(appId);
-                appInfo.setAppBgImageId(bgImage);
+                appInfo.setAppBgImageURL(webAPIUtil.getImageURL(bgImage));
                 appInfo.setMinIntervalInterstitial(propertyHelper.getIntProperty(
                         PropertyNames.MIN_INTERVAL_INTERSTITIAL, DEFAULT_MIN_INTERVAL_INTERSTITIAL));
                 appInfo.setNoChildrenMsg(propertyHelper.getStringProperty(

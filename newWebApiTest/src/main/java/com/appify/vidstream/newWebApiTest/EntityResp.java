@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class EntityResp {
     private String id;
     private String name;
-    private String imageId;
+    private String imageURL;
     private Entity[] children;
     private EntityType childType;
 
@@ -30,14 +30,6 @@ public class EntityResp {
         this.name = name;
     }
 
-    public String getImageId() {
-        return imageId;
-    }
-
-    public void setImageId(String imageId) {
-        this.imageId = imageId;
-    }
-
     public Entity[] getChildren() {
         return children;
     }
@@ -53,5 +45,19 @@ public class EntityResp {
     public void setChildType(EntityType childType) {
         this.childType = childType;
     }
+
+	/**
+	 * @return the imageURL
+	 */
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	/**
+	 * @param imageURL the imageURL to set
+	 */
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
 
 }

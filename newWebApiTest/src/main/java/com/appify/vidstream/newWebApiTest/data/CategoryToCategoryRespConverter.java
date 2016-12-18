@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest.data;
 
 import com.appify.vidstream.newWebApiTest.CategoryResp;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by swapnil on 01/12/16.
  */
 public class CategoryToCategoryRespConverter {
-
+	
     public CategoryResp[] getCategoryRespArray(List<Category> categoryList){
 
         CategoryResp[] categoryResps = new CategoryResp[categoryList.size()];
@@ -45,7 +46,7 @@ public class CategoryToCategoryRespConverter {
                 //logger
             }
             categoryResp.setId(category.getId());
-            categoryResp.setImg(category.getImageId());
+            categoryResp.setImgURL(category.getImageURL());
             categoryResp.setName(category.getName());
 
 
@@ -65,7 +66,7 @@ public class CategoryToCategoryRespConverter {
             CategoryResp categoryResp = new CategoryResp();
             category = categoryList.get(i);
             categoryResp.setId(category.getId());
-            categoryResp.setImg(category.getImageId());
+            categoryResp.setImgURL(category.getImageURL());
             categoryResp.setName(category.getName());
             categoryResps[i] = categoryResp;
         }

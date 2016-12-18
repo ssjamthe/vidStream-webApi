@@ -9,7 +9,7 @@ public class TabResp {
 
     private String id;
     private String name;
-    private String img;
+    private String imgURL;
     private CategorizationResp[] categorizations;
     private CategoryResp[] categories;
     private VideoResp[] videos;
@@ -28,14 +28,6 @@ public class TabResp {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
     }
 
     public CategorizationResp[] getCategorizations() {
@@ -61,4 +53,18 @@ public class TabResp {
     public void setVideos(VideoResp[] videos) {
         this.videos = videos;
     }
+
+	/**
+	 * @return the imgURL
+	 */
+	public String getImgURL() {
+		return imgURL;
+	}
+
+	/**
+	 * @param imgURL the imgURL to set
+	 */
+	public void setImgURL(String imgURL) {
+		this.imgURL = imgURL;
+	}
 }

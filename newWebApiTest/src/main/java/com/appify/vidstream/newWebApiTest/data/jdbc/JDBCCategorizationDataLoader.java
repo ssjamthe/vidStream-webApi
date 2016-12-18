@@ -4,6 +4,7 @@ import com.appify.vidstream.newWebApiTest.data.Categorization;
 import com.appify.vidstream.newWebApiTest.data.Category;
 import com.appify.vidstream.newWebApiTest.data.Entity;
 import com.appify.vidstream.newWebApiTest.data.EntityType;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import javax.inject.Inject;
@@ -25,11 +26,13 @@ public class JDBCCategorizationDataLoader {
 
     private DataSource dataSource;
     private JDBCCategoryDataLoader categoryDataLoader;
+    private WebAPIUtil  webAPIUtil;
 
     @Inject
-    JDBCCategorizationDataLoader(DataSource dataSource, JDBCCategoryDataLoader categoryDataLoader) {
+    JDBCCategorizationDataLoader(DataSource dataSource, JDBCCategoryDataLoader categoryDataLoader,WebAPIUtil  webAPIUtil) {
         this.dataSource = dataSource;
         this.categoryDataLoader = categoryDataLoader;
+        this.webAPIUtil=webAPIUtil;
     }
 
 
@@ -49,7 +52,7 @@ public class JDBCCategorizationDataLoader {
                 Categorization categorization = new Categorization();
                 categorization.setId(Integer.toString(id));
                 categorization.setName(name);
-                categorization.setImageId(image);
+                categorization.setImageURL(webAPIUtil.getImageURL(image));
                 categorization.setChildType(EntityType.CATEGORY);
   
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
@@ -80,7 +83,7 @@ public class JDBCCategorizationDataLoader {
                 Categorization categorization = new Categorization();
                 categorization.setId(Integer.toString(id));
                 categorization.setName(name);
-                categorization.setImageId(image);
+                categorization.setImageURL(webAPIUtil.getImageURL(image));
                 categorization.setChildType(EntityType.CATEGORY);
 
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));

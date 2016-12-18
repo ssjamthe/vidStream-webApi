@@ -11,7 +11,7 @@ public abstract class Entity {
 
     private String id;
     private String name;
-    private String imageId;
+    private String imageURL;
     private List<Entity> children;
     private EntityType childType;
 
@@ -35,15 +35,6 @@ public abstract class Entity {
         this.name = name;
     }
 
-    public String getImageId() {
-
-        return imageId;
-    }
-
-    public void setImageId(String imageId) {
-
-        this.imageId = imageId;
-    }
 
     public List<Entity> getChildren() {
 
@@ -62,6 +53,20 @@ public abstract class Entity {
     public void setChildType(EntityType childType) {
         this.childType = childType;
     }
+
+	/**
+	 * @return the imageURL
+	 */
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	/**
+	 * @param imageURL the imageURL to set
+	 */
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
 
     
 }

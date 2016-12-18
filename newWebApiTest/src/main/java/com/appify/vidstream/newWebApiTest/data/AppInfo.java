@@ -14,7 +14,7 @@ public class AppInfo {
     private boolean showAdMovingInside;
     private float inmobiAdWeightage;
     private int minIntervalInterstitial;
-    private String appBgImageId;
+    private String appBgImageURL;
     private int videosPerCall;
     private String noChildrenMsg;
     private Map<String,Categorization> categorizationMap;
@@ -88,15 +88,6 @@ public class AppInfo {
         this.minIntervalInterstitial = minIntervalInterstitial;
     }
 
-    public String getAppBgImageId() {
-
-        return appBgImageId;
-    }
-
-    public void setAppBgImageId(String appBgImageId) {
-
-        this.appBgImageId = appBgImageId;
-    }
 
     public int getVideosPerCall() {
 
@@ -133,4 +124,18 @@ public class AppInfo {
     public void setTokens(List<String> tokens) {
         this.tokens = tokens;
     }
+
+	/**
+	 * @return the appBgImageURL
+	 */
+	public String getAppBgImageURL() {
+		return appBgImageURL;
+	}
+
+	/**
+	 * @param appBgImageURL the appBgImageURL to set
+	 */
+	public void setAppBgImageURL(String appBgImageURL) {
+		this.appBgImageURL = appBgImageURL;
+	}
 }

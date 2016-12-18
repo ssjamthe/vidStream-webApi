@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApiTest.data;
 
 import com.appify.vidstream.newWebApiTest.TabResp;
+import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +10,12 @@ import java.util.List;
  * Created by swapnil on 30/11/16.
  */
 public class TabToTabRespConverter {
+	
     public TabResp getTabRespFromTabWithoutChild(Tab tab){
         TabResp tabResp = new TabResp();
         tabResp.setId(tab.getId());
         tabResp.setName(tab.getName());
-        tabResp.setImg(tab.getImageId());
+        tabResp.setImgURL(tab.getImageURL());
         return tabResp;
     }
 
@@ -54,7 +56,7 @@ public class TabToTabRespConverter {
 
         tabResp.setId(tab.getId());
         tabResp.setName(tab.getName());
-        tabResp.setImg(tab.getImageId());
+        tabResp.setImgURL(tab.getImageURL());
 
         return tabResp;
     }
@@ -96,7 +98,7 @@ public class TabToTabRespConverter {
 
         tabResp.setId(tab.getId());
         tabResp.setName(tab.getName());
-        tabResp.setImg(tab.getImageId());
+        tabResp.setImgURL(tab.getImageURL());
 
         return tabResp;
     }

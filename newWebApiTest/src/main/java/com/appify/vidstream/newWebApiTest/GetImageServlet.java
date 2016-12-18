@@ -41,12 +41,11 @@ public class GetImageServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.print("Inside DoGet Of GetImageServlet");
+        System.out.println("Inside DoGet Of GetImageServlet");
 
         Map<String, String[]> params = paramsProvider.get();
 
         String imageId = params.get("imageId")[0];
-
         byte[] image=jdbcImageDataLoader.getImageByImageId(imageId);
         
         response.setContentType("image/jpg");

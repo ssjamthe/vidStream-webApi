@@ -7,7 +7,7 @@ public class CategorizationResp {
 
     private String id;
     private String name;
-    private String img;
+    private String imgURL;
     private CategoryResp[] categories;
     private VideoResp[] videos;
 
@@ -28,15 +28,15 @@ public class CategorizationResp {
         this.name = name;
     }
 
-    public String getImg() {
-        return img;
-    }
+    public String getImgURL() {
+		return imgURL;
+	}
 
-    public void setImg(String img) {
-        this.img = img;
-    }
+	public void setImgURL(String imgURL) {
+		this.imgURL = imgURL;
+	}
 
-    public CategoryResp[] getCategories() {
+	public CategoryResp[] getCategories() {
         return categories;
     }
 

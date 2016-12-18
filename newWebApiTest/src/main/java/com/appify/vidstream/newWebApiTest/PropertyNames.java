@@ -10,6 +10,7 @@ public interface PropertyNames {
     String DB_USER_NAME = "username";
     String DB_PASSWORD = "password";
     String DB_MAX_CONNECTIONS = "maxConnections";
+    String IMAGE_IP_ADDRESS="Image_IP_Address";
 
     String MIN_INTERVAL_INTERSTITIAL = "minIntervalInterstitial";
     String NO_CHILDREN_MESSAGE = "noChildrenMessage";
