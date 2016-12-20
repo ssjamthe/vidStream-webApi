@@ -16,26 +16,6 @@ public class Video extends Entity {
     private Map<String, Integer> attributeValues;
     private Timestamp dateAdded;
 
-    @Override
-    public String getImageURL() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setImageURL(String imageURL) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Entity> getChildren() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setChildren(List<Entity> children) {
-        throw new UnsupportedOperationException();
-    }
-
     public Map<String, Integer> getAttributeValues() {
         return attributeValues;
     }

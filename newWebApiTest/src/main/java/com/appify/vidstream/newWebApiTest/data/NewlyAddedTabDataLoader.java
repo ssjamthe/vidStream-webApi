@@ -3,6 +3,7 @@ package com.appify.vidstream.newWebApiTest.data;
 import com.appify.vidstream.newWebApiTest.PropertyHelper;
 import com.appify.vidstream.newWebApiTest.PropertyNames;
 import com.appify.vidstream.newWebApiTest.util.WebAPIUtil;
+import com.google.inject.Singleton;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -16,6 +17,7 @@ import static com.appify.vidstream.newWebApiTest.Constants.DATE_ADDED_VIDEOS_ATT
 /**
  * TODO : Inject scheduler service too.
  */
+@Singleton
 public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
 
     private static final int DEFAULT_DAYS_TO_CONSIDER = 10;
@@ -103,7 +105,7 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
                     List<Entity> children = entity.getChildren();
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
                     List<Video> currNewVideos = children.stream().filter(child -> child.getName().
-                            equals(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME)).map(child -> child.getChildren()).
+                            equals(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME)).flatMap(child -> child.getChildren().stream()).
                             map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <= daysToConsider)
                             .collect(Collectors.toList());
                     newVideos.addAll(currNewVideos);
@@ -120,13 +122,15 @@ public class NewlyAddedTabDataLoader extends TabDataLoader implements Runnable {
             VideoAttributeReverseComparator comparator = new VideoAttributeReverseComparator(attribute);
             List<Entity> sortedList = new ArrayList<>();
             sortedList.addAll(newVideos);
-            Collections.sort(newVideos, comparator);
+            Collections.sort(sortedList, comparator);
 
             OrderedVideos orderedVideos = new OrderedVideos();
             orderedVideos.setId(attribute);
             orderedVideos.setName(attribute);
             orderedVideos.setChildren(sortedList);
             orderedVideos.setChildType(EntityType.VIDEO);
+            
+            orderedVideosList.add(orderedVideos);
         }
 
         return orderedVideosList;

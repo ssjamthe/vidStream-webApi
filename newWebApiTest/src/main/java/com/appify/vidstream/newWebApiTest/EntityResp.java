@@ -11,8 +11,9 @@ public class EntityResp {
     private String id;
     private String name;
     private String imageURL;
-    private Entity[] children;
+    private EntityResp[] children;
     private EntityType childType;
+    private OrderAttributeResp[] orderAttributes;
 
     public String getId() {
         return id;
@@ -30,11 +31,11 @@ public class EntityResp {
         this.name = name;
     }
 
-    public Entity[] getChildren() {
+    public EntityResp[] getChildren() {
         return children;
     }
 
-    public void setChildren(Entity[] children) {
+    public void setChildren(EntityResp[] children) {
         this.children = children;
     }
 
@@ -58,6 +59,14 @@ public class EntityResp {
 	 */
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
+	}
+
+	public OrderAttributeResp[] getOrderAttributes() {
+		return orderAttributes;
+	}
+
+	public void setOrderAttributes(OrderAttributeResp[] orderAttributes) {
+		this.orderAttributes = orderAttributes;
 	}
 
 }

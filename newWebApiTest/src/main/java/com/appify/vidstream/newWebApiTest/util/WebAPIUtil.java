@@ -5,22 +5,23 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.appify.vidstream.newWebApiTest.PropertyHelper;
 import com.appify.vidstream.newWebApiTest.PropertyNames;
 import com.appify.vidstream.newWebApiTest.data.FilePropertyDataLoader;
 
 @Singleton
 public class WebAPIUtil {
 
-	 private FilePropertyDataLoader  filePropertyDataLoader;
+	 private PropertyHelper  propertyHelper;
 	 
 	 @Inject
-	 WebAPIUtil(FilePropertyDataLoader  filePropertyDataLoader) {
-	        this.filePropertyDataLoader = filePropertyDataLoader;
+	 WebAPIUtil(PropertyHelper  propertyHelper) {
+	        this.propertyHelper = propertyHelper;
 	    }
 	 
 	 public String getImageURL(String imageId){
-		 Map<String, String> props = filePropertyDataLoader.getProps();
-         String imageIPURL=props.get(PropertyNames.IMAGE_IP_ADDRESS);
+		 
+         String imageIPURL=propertyHelper.getStringProperty(PropertyNames.IMAGE_IP_ADDRESS,null);
          String imageURL=imageIPURL+"imageServlet?imageId="+imageId;
          return imageURL;
 	 }

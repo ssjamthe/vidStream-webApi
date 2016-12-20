@@ -61,6 +61,7 @@ public class JDBCOrderedVideosDataLoader {
                     video.setDateAdded(dateAdded);
                     Map<String, Integer> attributeValues = new HashMap<String, Integer>();
                     attributeValues.put(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME, (int) dateAdded.getTime() / (1000 * 60 * 60));
+                    attributeNames.add(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME);
                     video.setAttributeValues(attributeValues);
 
                 }
@@ -71,6 +72,8 @@ public class JDBCOrderedVideosDataLoader {
                 attributeNames.add(attributeName);
 
                 video.getAttributeValues().put(attributeName, attributeValue);
+                
+                videos.add(video);
 
             }
 

@@ -33,28 +33,16 @@ public class LoadChildrenServlet extends HttpServlet{
     private AppDataLoader appDataLoader;
     private Provider<Map<String, String[]>> paramsProvider;
     private List<TabDataLoader> tabDataLoaderList;
-    private JDBCCategoryDataLoader jdbcCategoryDataLoader;
-    private JDBCCategorizationDataLoader jdbcCategorizationDataLoader;
-    private JDBCVideoDataLoader jdbcVideoDataLoader;
-    private JDBCOrderedVideosDataLoader jdbcOrderedVideosDataLoader;
     private Entity entity;
     private EntityResp entityResp;
 
     @Inject
     public  LoadChildrenServlet(AppDataLoader appDataLoader,
-                                JDBCCategoryDataLoader jdbcCategoryDataLoader,
-                                JDBCCategorizationDataLoader jdbcCategorizationDataLoader,
-                                JDBCVideoDataLoader jdbcVideoDataLoader,
-                                JDBCOrderedVideosDataLoader jdbcOrderedVideosDataLoader,
                                 @RequestParameters Provider<Map<String, String[]>> paramsProvider,
                                 @Annotations.TabDataLoaders List<TabDataLoader> tabDataLoaderList){
         this.paramsProvider = paramsProvider;
         this.appDataLoader = appDataLoader;
         this.tabDataLoaderList = tabDataLoaderList;
-        this.jdbcCategorizationDataLoader = jdbcCategorizationDataLoader;
-        this.jdbcCategoryDataLoader = jdbcCategoryDataLoader;
-        this.jdbcVideoDataLoader = jdbcVideoDataLoader;
-        this.jdbcOrderedVideosDataLoader = jdbcOrderedVideosDataLoader;
     }
 
     @Override
@@ -64,7 +52,6 @@ public class LoadChildrenServlet extends HttpServlet{
         Map<String, AppInfo> appsInfoMap = appDataLoader.getAppsData();
         Map<String, String[]> params = paramsProvider.get();
 
-        SubEntityToEntityConverter subEntityToEntityConverter = new SubEntityToEntityConverter();
         EntityToEntityRespConverter entityToEntityRespConverter = new EntityToEntityRespConverter();
         String jsonResponse = "";
 
@@ -73,6 +60,9 @@ public class LoadChildrenServlet extends HttpServlet{
         String tabId = params.get("tabId")[0];
         String categorizationId = null;
         String categoryId = null ;
+        String orderAttribute = null;
+        int pageNo = 1;
+       
         
         if(params.containsKey("categorizationId")){
          categorizationId = params.get("categorizationId")[0];
@@ -81,11 +71,12 @@ public class LoadChildrenServlet extends HttpServlet{
          categoryId = params.get("categoryId")[0];
         }
         if(params.containsKey("orderAttribute")){
-        String orderAttribute = params.get("orderAttribute")[0];
+         orderAttribute = params.get("orderAttribute")[0];
         }
         if(params.containsKey("pageNo")){
-        String pageNo = params.get("pageNo")[0];
+         pageNo = Integer.parseInt(params.get("pageNo")[0]);
         }
+        
 
         AppInfo appInfo = appsInfoMap.get(appId);
 
@@ -96,60 +87,20 @@ public class LoadChildrenServlet extends HttpServlet{
 
         if(categoryId != null){
             Map<String,Category> categoryMap = appInfo.getCategoryMap();
-            Category category = categoryMap.get(categoryId);
-            entity = new Category();
-
-            if(category.getChildType() == EntityType.VIDEO) {
-                List<Video> videos = new ArrayList<Video>();
-                videos = jdbcVideoDataLoader.getVideosForCategories(categoryId);
-                entity.setChildType(category.getChildType());
-                entity.setChildren(subEntityToEntityConverter.getEntityList(videos));
-            }
-            else if(category.getChildType() == EntityType.ORDERED_VIDEOS){
-                List<OrderedVideos> orderedVideos = new ArrayList<OrderedVideos>();
-                orderedVideos = jdbcOrderedVideosDataLoader.getOrderedVideosForCategory(categoryId);
-                entity.setChildType(category.getChildType());
-                entity.setChildren(subEntityToEntityConverter.getEntityList(orderedVideos));
-            }
+            entity = categoryMap.get(categoryId);
         }
 
         else if(categorizationId != null){
             Map<String,Categorization> categorizationMap = appInfo.getCategorizationMap();
-            Categorization categorization = categorizationMap.get(categorizationId);
-            entity = new Categorization();
-
-            if(categorization.getChildType() == EntityType.CATEGORY){
-                List<Category> categories = new ArrayList<Category>();
-                categories = jdbcCategoryDataLoader.getCategoriesForCategorization(categorizationId);
-                entity.setChildType(categorization.getChildType());
-                entity.setChildren(subEntityToEntityConverter.getEntityList(categories));
-            }
-
-            else if(categoryId != null){
-                if(categorization.getChildType() == EntityType.VIDEO){
-                    List<Video> videos = new ArrayList<Video>();
-                    videos = jdbcVideoDataLoader.getVideosForCategories(categoryId);
-                    entity.setChildType(categorization.getChildType());
-                    entity.setChildren(subEntityToEntityConverter.getEntityList(videos));
-
-                }
-                else if(categorization.getChildType() == EntityType.ORDERED_VIDEOS){
-                    List<OrderedVideos> orderedVideos = new ArrayList<OrderedVideos>();
-                    orderedVideos = jdbcOrderedVideosDataLoader.getOrderedVideosForCategory(categoryId);
-                    entity.setChildType(categorization.getChildType());
-                    entity.setChildren(subEntityToEntityConverter.getEntityList(orderedVideos));
-                }
-            }
+            entity = categorizationMap.get(categorizationId);
         }
         else {
             if (!tabDataLoaderList.isEmpty()) {
                 Tab tab = new Tab();
-                entity = new Tab();
                 for (TabDataLoader tabDataLoader : tabDataLoaderList) {
-                    tab = tabDataLoader.getTab(appId);
-                    if (tab.getId().equals(tabId)) {
-                        entity.setChildType(tab.getChildType());
-                        entity.setChildren(tab.getChildren());
+                   tab = tabDataLoader.getTab(appId);
+                     if (tab.getId().equals(tabId)) {
+                    	 entity = tabDataLoader.getTab(appId);
                     }
                 }
             }
@@ -157,7 +108,7 @@ public class LoadChildrenServlet extends HttpServlet{
                 System.out.println("tabDataLoaderList is empty..");
             }
         }
-        entityResp = entityToEntityRespConverter.getEntityResp(entity);
+        entityResp = entityToEntityRespConverter.getEntityResp(entity,orderAttribute,pageNo,videosPerCall);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);

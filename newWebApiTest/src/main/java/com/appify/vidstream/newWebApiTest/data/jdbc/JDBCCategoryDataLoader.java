@@ -128,7 +128,7 @@ public class JDBCCategoryDataLoader {
                 }
 
                 if (childCategories.isEmpty()) {
-                    List<OrderedVideos> videos = videoDataLoader.getOrderedVideosForCategory(parentCategory.getId());
+                    List<OrderedVideos> videos = videoDataLoader.getOrderedVideosForCategory(currParent.getId());
                     currParent.setChildType(EntityType.ORDERED_VIDEOS);
                     currParent.setChildren(videos.stream().map(v -> (Entity) v).collect(Collectors.toList()));
 
