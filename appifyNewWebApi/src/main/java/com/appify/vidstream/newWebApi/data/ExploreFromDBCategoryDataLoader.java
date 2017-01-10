@@ -21,6 +21,8 @@ import com.appify.vidstream.newWebApi.PropertyNames;
 
 public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implements Runnable {
 
+    private static final String ID = "explore";
+
     private AppDataLoader appDataLoader;
     private PropertyHelper propertyHelper;
     private WebAPIUtil webAPIUtil;
@@ -90,27 +92,31 @@ public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implemen
     @Override
     public Category getTopLevelCategory() {
         Category category = new Category();
-        category.setId(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_ID, null)));
-        category.setName(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_NAME, null)));
+        category.setId(ID);
+        category.setName(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_NAME, null));
         category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_IMAGE_ID, null)));
         return category;
     }
 
-
     @Override
-    public List<Entity> getFirstLevelChildren(String appId) {
-        return data.firstLevelChildrenMap.get(appId);
+    public EntityCollection getChildren(String appId, String categoryId) {
+        EntityCollection entityCollection = new EntityCollection();
+        if (ID.equals(categoryId)) {
+            entityCollection.setEntityType(EntityType.CATEGORY);
+            entityCollection.setEntities(appDataLoader.getAppsData().get(appId).getCategorizationsAsCategories());
+        } else {
+            Category category = appDataLoader.getAppsData().get(appId).getCategoryMap().get(categoryId);
+            if (category != null) {
+                entityCollection.setEntityType(category.getChildType());
+                entityCollection.setEntities(category.getChildren());
+            }
+        }
+
+        return entityCollection;
     }
 
     @Override
-    public List<Entity> getChildren(String appId, String categoryId) {
-        Category category = data.appInfoMap.get(appId).getCategoryMap().get(categoryId);
-        if (category == null) {
-            return new ArrayList<>();
-            //TODO : Log warning
-        } else {
-            return category.getChildren();
-        }
-
+    public String getId() {
+        return ID;
     }
 }

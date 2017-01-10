@@ -101,7 +101,7 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
                 List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
-                appInfo.setCategorizations(categorizations);
+                appInfo.setCategorizations(Collections.unmodifiableList(categorizations));
 
                 List<String> tokens = jdbcTokenDataLoader.getTokensForApp(appId);
                 appInfo.setTokens(tokens);
@@ -147,9 +147,9 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
 
         }
 
-        appInfo.setCategorizationsAsCategories(categorizationAsCategories);
-        appInfo.setCategorizationMap(categorizationMap);
-        appInfo.setCategoryMap(categoryMap);
+        appInfo.setCategorizationsAsCategories(Collections.unmodifiableList(categorizationAsCategories));
+        appInfo.setCategorizationMap(Collections.unmodifiableMap(categorizationMap));
+        appInfo.setCategoryMap(Collections.unmodifiableMap(categoryMap));
     }
 
 

@@ -11,5 +11,5 @@ public class Constants {
     public static final String PROPERTY_VALUE_FOR_VIDEO_COUNT = "20";
     public static final String DEFAULT_ENTRIES_PER_PAGE = "10";
     public static final String DEFAULT_PAGE_NUMBER = "1" ;
-    
+
 }

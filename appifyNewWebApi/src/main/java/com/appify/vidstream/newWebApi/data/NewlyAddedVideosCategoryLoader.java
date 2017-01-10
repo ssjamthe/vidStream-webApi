@@ -32,6 +32,7 @@ import com.appify.vidstream.newWebApi.data.Video;
 
 public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implements Runnable {
 
+    private static final String ID = "newlyAdded";
     private static final int DEFAULT_DAYS_TO_CONSIDER = 10;
     private volatile Map<String, List<Entity>> newlyAddedVideos = new HashMap<>();
 
@@ -68,11 +69,6 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
         category.setName(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_NAME, null)));
         category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_IMAGE_ID, null)));
         return category;
-    }
-
-    @Override
-    public List<Entity> getFirstLevelChildren(String appId) {
-        return newlyAddedVideos.get(appId);
     }
 
     private void loadData() {
@@ -161,8 +157,20 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
     }
 
     @Override
-    public List<Entity> getChildren(String appId, String categoryId) {
-        throw new UnsupportedOperationException("Chidren cannot be exist for videos.");
+    public EntityCollection getChildren(String appId, String categoryId) {
+        if (ID.equals(categoryId)) {
+            EntityCollection entityCollection = new EntityCollection();
+            entityCollection.setEntityType(EntityType.ORDERED_VIDEOS);
+            entityCollection.setEntities(newlyAddedVideos.get(appId));
+            return entityCollection;
+        } else {
+            throw new IllegalArgumentException("Only category supported is " + ID);
+        }
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
 }

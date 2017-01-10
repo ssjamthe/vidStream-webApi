@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * Created by swapnil on 23/11/16.
+ * TODO: Make this class immutable.
  */
 public class AppInfo {
 
