@@ -1,5 +1,8 @@
 package com.appify.vidstream.newWebApi.data;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +12,7 @@ import java.util.Map;
  */
 public class AppInfo {
 
-    private List<Categorization> categorizations;
+    private ImmutableList<Categorization> categorizations;
     private String appId;
     private boolean showBanner;
     private boolean showAdMovingInside;
@@ -18,34 +21,34 @@ public class AppInfo {
     private String appBgImageURL;
     private int videosPerCall;
     private String noChildrenMsg;
-    private Map<String, Categorization> categorizationMap;
-    private Map<String, Category> categoryMap;
-    private List<String> tokens;
-    private List<Category> categorizationsAsCategories;
+    private ImmutableMap<String, Categorization> categorizationMap;
+    private ImmutableMap<String, Category> categoryMap;
+    private ImmutableList<String> tokens;
+    private ImmutableList<Category> categorizationsAsCategories;
 
-    public Map<String, Categorization> getCategorizationMap() {
+    public ImmutableMap<String, Categorization> getCategorizationMap() {
         return categorizationMap;
     }
 
-    public void setCategorizationMap(Map<String, Categorization> categorizationMap) {
+    public void setCategorizationMap(ImmutableMap<String, Categorization> categorizationMap) {
         this.categorizationMap = categorizationMap;
     }
 
-    public Map<String, Category> getCategoryMap() {
+    public ImmutableMap<String, Category> getCategoryMap() {
         return categoryMap;
     }
 
-    public void setCategoryMap(Map<String, Category> categoryMap) {
+    public void setCategoryMap(ImmutableMap<String, Category> categoryMap) {
         this.categoryMap = categoryMap;
     }
 
 
-    public List<Categorization> getCategorizations() {
+    public ImmutableList<Categorization> getCategorizations() {
 
         return categorizations;
     }
 
-    public void setCategorizations(List<Categorization> categorizations) {
+    public void setCategorizations(ImmutableList<Categorization> categorizations) {
 
         this.categorizations = categorizations;
     }
@@ -107,11 +110,11 @@ public class AppInfo {
     }
 
 
-    public List<Category> getCategorizationsAsCategories() {
+    public ImmutableList<Category> getCategorizationsAsCategories() {
         return categorizationsAsCategories;
     }
 
-    public void setCategorizationsAsCategories(List<Category> categorizationsAsCategories) {
+    public void setCategorizationsAsCategories(ImmutableList<Category> categorizationsAsCategories) {
         this.categorizationsAsCategories = categorizationsAsCategories;
     }
 
@@ -132,7 +135,7 @@ public class AppInfo {
         return tokens;
     }
 
-    public void setTokens(List<String> tokens) {
+    public void setTokens(ImmutableList<String> tokens) {
         this.tokens = tokens;
     }
 

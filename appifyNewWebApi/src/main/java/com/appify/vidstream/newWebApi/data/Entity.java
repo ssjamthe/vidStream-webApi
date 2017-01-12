@@ -3,6 +3,7 @@ package com.appify.vidstream.newWebApi.data;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Created by swapnil on 23/11/16.
@@ -12,7 +13,7 @@ public abstract class Entity {
     private String id;
     private String name;
     private String imageURL;
-    private List<Entity> children;
+    private ImmutableList<Entity> children;
     private EntityType childType;
 
     public String getId() {
@@ -36,12 +37,12 @@ public abstract class Entity {
     }
 
 
-    public List<Entity> getChildren() {
+    public ImmutableList<Entity> getChildren() {
 
         return children;
     }
 
-    public void setChildren(List<Entity> children) {
+    public void setChildren(ImmutableList<Entity> children) {
 
         this.children = children;
     }
@@ -68,5 +69,5 @@ public abstract class Entity {
 		this.imageURL = imageURL;
 	}
 
-    
+
 }

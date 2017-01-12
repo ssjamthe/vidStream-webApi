@@ -29,12 +29,15 @@ import com.appify.vidstream.newWebApi.data.Entity;
 import com.appify.vidstream.newWebApi.data.EntityType;
 import com.appify.vidstream.newWebApi.data.OrderedVideos;
 import com.appify.vidstream.newWebApi.data.Video;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMultimap;
 
 public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implements Runnable {
 
     private static final String ID = "newlyAdded";
     private static final int DEFAULT_DAYS_TO_CONSIDER = 10;
-    private volatile Map<String, List<Entity>> newlyAddedVideos = new HashMap<>();
+    private volatile ImmutableListMultimap<String, Entity> newlyAddedVideos;
 
     private PropertyHelper propertyHelper;
     private AppDataLoader appDataLoader;
@@ -55,7 +58,8 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
     }
 
     @Inject
-    public NewlyAddedVideosCategoryLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader, WebAPIUtil webAPIUtil) {
+    public NewlyAddedVideosCategoryLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader, WebAPIUtil
+            webAPIUtil) {
         this.propertyHelper = propertyHelper;
         this.appDataLoader = appDataLoader;
         this.webAPIUtil = webAPIUtil;
@@ -65,31 +69,33 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
     public Category getTopLevelCategory() {
 
         Category category = new Category();
-        category.setId(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_ID, null)));
-        category.setName(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_NAME, null)));
-        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_IMAGE_ID, null)));
+        category.setId(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.NEWLY_ADDED_CATEGORY_ID,
+                null)));
+        category.setName(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
+                .NEWLY_ADDED_CATEGORY_NAME, null)));
+        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
+                .NEWLY_ADDED_CATEGORY_IMAGE_ID, null)));
         return category;
     }
 
     private void loadData() {
         Map<String, AppInfo> allAppsData = appDataLoader.getAppsData();
 
-        Map<String, List<Entity>> newMap = new HashMap<>();
-
+        ImmutableListMultimap.Builder<String, Entity> mapBuilder = ImmutableListMultimap.builder();
 
         Set<Map.Entry<String, AppInfo>> entrySet = allAppsData.entrySet();
         for (Map.Entry<String, AppInfo> entry : entrySet) {
             String appId = entry.getKey();
             AppInfo appInfo = entry.getValue();
 
-            newMap.put(appId, getOrderedVideosForApp(appInfo));
+            mapBuilder.putAll(appId, getOrderedVideosForApp(appInfo));
         }
 
-        newlyAddedVideos = newMap;
+        newlyAddedVideos = mapBuilder.build();
 
     }
 
-    private List<Entity> getOrderedVideosForApp(AppInfo appInfo) {
+    private ImmutableList<Entity> getOrderedVideosForApp(AppInfo appInfo) {
         List<Entity> orderedVideosList = new ArrayList<>();
 
         List<Video> newVideos = new ArrayList<>();
@@ -98,7 +104,8 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
 
         List<Categorization> categorizations = appInfo.getCategorizations();
 
-        int daysToConsider = propertyHelper.getIntProperty(PropertyNames.NEWLY_ADDED_VIDEOS_DAYS, DEFAULT_DAYS_TO_CONSIDER);
+        int daysToConsider = propertyHelper.getIntProperty(PropertyNames.NEWLY_ADDED_VIDEOS_DAYS,
+                DEFAULT_DAYS_TO_CONSIDER);
 
         for (Categorization categorization : categorizations) {
 
@@ -114,7 +121,8 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
                     List<Video> currNewVideos = children.stream().filter(child -> child.getName().
                             equals(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME)).flatMap(child -> child.getChildren().stream()).
-                            map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <= daysToConsider)
+                            map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <=
+                            daysToConsider)
                             .collect(Collectors.toList());
                     newVideos.addAll(currNewVideos);
                 } else if (childrenType != null) {
@@ -135,13 +143,13 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader implement
             OrderedVideos orderedVideos = new OrderedVideos();
             orderedVideos.setId(attribute);
             orderedVideos.setName(attribute);
-            orderedVideos.setChildren(sortedList);
+            orderedVideos.setChildren(ImmutableList.copyOf(sortedList));
             orderedVideos.setChildType(EntityType.VIDEO);
 
             orderedVideosList.add(orderedVideos);
         }
 
-        return orderedVideosList;
+        return ImmutableList.copyOf(orderedVideosList);
     }
 
     private static int getDaysBeforeVideoAdded(Video video) {

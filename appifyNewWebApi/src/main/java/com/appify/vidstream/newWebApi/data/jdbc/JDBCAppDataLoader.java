@@ -4,6 +4,8 @@ import com.appify.vidstream.newWebApi.PropertyHelper;
 import com.appify.vidstream.newWebApi.PropertyNames;
 import com.appify.vidstream.newWebApi.data.*;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Provider;
 
 import javax.inject.Inject;
@@ -101,10 +103,10 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
 
                 List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
-                appInfo.setCategorizations(Collections.unmodifiableList(categorizations));
+                appInfo.setCategorizations(ImmutableList.copyOf(categorizations));
 
                 List<String> tokens = jdbcTokenDataLoader.getTokensForApp(appId);
-                appInfo.setTokens(tokens);
+                appInfo.setTokens(ImmutableList.copyOf(tokens));
 
                 setDerivedFields(appInfo, categorizations);
                 appsData.put(appId, appInfo);
@@ -147,9 +149,9 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
 
         }
 
-        appInfo.setCategorizationsAsCategories(Collections.unmodifiableList(categorizationAsCategories));
-        appInfo.setCategorizationMap(Collections.unmodifiableMap(categorizationMap));
-        appInfo.setCategoryMap(Collections.unmodifiableMap(categoryMap));
+        appInfo.setCategorizationsAsCategories(ImmutableList.copyOf(categorizationAsCategories));
+        appInfo.setCategorizationMap(ImmutableMap.copyOf(categorizationMap));
+        appInfo.setCategoryMap(ImmutableMap.copyOf(categoryMap));
     }
 
 

@@ -19,7 +19,7 @@ import com.appify.vidstream.newWebApi.PropertyHelper;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
 import com.appify.vidstream.newWebApi.PropertyNames;
 
-public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implements Runnable {
+public class ExploreCategoryDataLoader extends CategoryDataLoader implements Runnable {
 
     private static final String ID = "explore";
 
@@ -27,17 +27,9 @@ public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implemen
     private PropertyHelper propertyHelper;
     private WebAPIUtil webAPIUtil;
 
-    private volatile Data data;
-    private ScheduledExecutorService es;
-
-
-    private static class Data {
-        Map<String, List<Entity>> firstLevelChildrenMap;
-        Map<String, AppInfo> appInfoMap;
-    }
-
     @Inject
-    public ExploreFromDBCategoryDataLoader(PropertyHelper propertyHelper, AppDataLoader appdataLoader, WebAPIUtil webAPIUtil) {
+    public ExploreCategoryDataLoader(PropertyHelper propertyHelper, AppDataLoader appdataLoader, WebAPIUtil
+            webAPIUtil) {
         this.appDataLoader = appdataLoader;
         this.propertyHelper = propertyHelper;
         this.webAPIUtil = webAPIUtil;
@@ -47,45 +39,15 @@ public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implemen
     @Override
     public void startLoading() {
 
-        loadData();
-        ScheduledExecutorService es = Executors.newScheduledThreadPool(1);
-        this.es = es;
-        es.schedule(this, 10, TimeUnit.MINUTES);
-
     }
 
     @Override
     public void stopLoading() {
-        es.shutdown();
     }
 
 
     @Override
     public void run() {
-        loadData();
-    }
-
-    private void loadData() {
-
-        Data data = new Data();
-        Map<String, List<Entity>> firstLevelChildrenMap = new HashMap<>();
-
-        Map<String, AppInfo> appInfoMap = appDataLoader.getAppsData();
-
-        Set<Map.Entry<String, AppInfo>> appInfoEntrySet = appInfoMap.entrySet();
-        for (Map.Entry<String, AppInfo> entry : appInfoEntrySet) {
-            String appId = entry.getKey();
-            AppInfo appInfo = entry.getValue();
-
-            List<Entity> topLevelCategories = appInfo.getCategorizationsAsCategories().stream().map(category -> (Entity) category).collect(Collectors.toList());
-            firstLevelChildrenMap.put(appId, topLevelCategories);
-
-        }
-
-        data.appInfoMap = appInfoMap;
-        data.firstLevelChildrenMap = firstLevelChildrenMap;
-
-        this.data = data;
     }
 
 
@@ -94,7 +56,8 @@ public class ExploreFromDBCategoryDataLoader extends CategoryDataLoader implemen
         Category category = new Category();
         category.setId(ID);
         category.setName(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_NAME, null));
-        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames.EXPLORE_CATEGORY_IMAGE_ID, null)));
+        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
+                .EXPLORE_CATEGORY_IMAGE_ID, null)));
         return category;
     }
 

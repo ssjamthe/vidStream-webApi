@@ -1,5 +1,7 @@
 package com.appify.vidstream.newWebApi.data;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
 public class EntityCollection {
 
     private EntityType entityType;
-    private List<? extends Entity> entities;
+    private ImmutableList<? extends Entity> entities;
 
     public EntityType getEntityType() {
         return entityType;
@@ -18,11 +20,11 @@ public class EntityCollection {
         this.entityType = entityType;
     }
 
-    public List<? extends Entity> getEntities() {
+    public ImmutableList<? extends Entity> getEntities() {
         return entities;
     }
 
-    public void setEntities(List<? extends Entity> entities) {
+    public void setEntities(ImmutableList<? extends Entity> entities) {
         this.entities = entities;
     }
 }
