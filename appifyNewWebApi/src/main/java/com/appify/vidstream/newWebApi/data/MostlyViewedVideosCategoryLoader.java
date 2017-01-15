@@ -1,54 +1,44 @@
 package com.appify.vidstream.newWebApi.data;
 
-
+import com.appify.vidstream.newWebApi.Constants;
 import com.appify.vidstream.newWebApi.PropertyHelper;
 import com.appify.vidstream.newWebApi.PropertyNames;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.MinMaxPriorityQueue;
+import com.google.common.util.concurrent.AbstractScheduledService;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * Created by swapnil on 13/01/17.
+ */
 @Singleton
-public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
+public class MostlyViewedVideosCategoryLoader extends CategoryDataLoader {
 
-    private static final String ID = "newlyAdded";
-    private static final String DEFAULT_NEWLY_ADDED_CATEGORY_NAME = "Newly Added";
-    private static final int DEFAULT_DAYS_TO_CONSIDER = 10;
-    private volatile ImmutableListMultimap<String, Entity> newlyAddedVideos;
+    private static final String ID = "mostlyViewed";
+    private static final String DEFAULT_MOSTLY_VIEWED_CATEGORY_NAME = "Mostly Viewed";
+    private static final int DEFAULT_MOSTLY_VIEWED_VIDEOS_COUNT = 50;
+    private volatile ImmutableListMultimap<String, Entity> mostlyViewedVideos;
 
     private PropertyHelper propertyHelper;
     private AppDataLoader appDataLoader;
+    private ScheduledExecutorService es;
     private WebAPIUtil webAPIUtil;
 
-
-    @Inject
-    public NewlyAddedVideosCategoryLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader, WebAPIUtil
-            webAPIUtil) {
-        this.propertyHelper = propertyHelper;
-        this.appDataLoader = appDataLoader;
-        this.webAPIUtil = webAPIUtil;
-    }
-
     @Override
-    public Category getTopLevelCategory() {
-
-        Category category = new Category();
-        category.setId(ID);
-        category.setName(propertyHelper.getStringProperty(PropertyNames
-                .NEWLY_ADDED_CATEGORY_NAME, DEFAULT_NEWLY_ADDED_CATEGORY_NAME));
-        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
-                .NEWLY_ADDED_CATEGORY_IMAGE_ID, null)));
-        return category;
+    public void startUp() {
+        loadData();
     }
 
     private void loadData() {
         Map<String, AppInfo> allAppsData = appDataLoader.getAppsData();
-
         ImmutableListMultimap.Builder<String, Entity> mapBuilder = ImmutableListMultimap.builder();
 
         Set<Map.Entry<String, AppInfo>> entrySet = allAppsData.entrySet();
@@ -59,21 +49,22 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
             mapBuilder.putAll(appId, getOrderedVideosForApp(appInfo));
         }
 
-        newlyAddedVideos = mapBuilder.build();
-
+        mostlyViewedVideos = mapBuilder.build();
     }
 
     private ImmutableList<Entity> getOrderedVideosForApp(AppInfo appInfo) {
+
         List<Entity> orderedVideosList = new ArrayList<>();
-
-        List<Video> newVideos = new ArrayList<>();
-
+        List<Video> consideredVideos = new ArrayList<>();
         Set<String> attributes = new HashSet<>();
 
         List<Categorization> categorizations = appInfo.getCategorizations();
 
-        int daysToConsider = propertyHelper.getIntProperty(PropertyNames.NEWLY_ADDED_VIDEOS_DAYS,
-                DEFAULT_DAYS_TO_CONSIDER);
+        int videoCount = propertyHelper.getIntProperty(PropertyNames.MOSTLY_VIEWED_VIDEOS_COUNT,
+                DEFAULT_MOSTLY_VIEWED_VIDEOS_COUNT);
+
+        MinMaxPriorityQueue<Entity> topVideosQueue = MinMaxPriorityQueue.orderedBy(new VideoAttributeReverseComparator
+                (VideoAttribute.MOSTLY_VIEWED.getDataName())).maximumSize(videoCount).create();
 
         for (Categorization categorization : categorizations) {
 
@@ -87,32 +78,29 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
                 if (childrenType == EntityType.ORDERED_VIDEOS) {
                     List<Entity> children = entity.getChildren();
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
-                    List<Video> currNewVideos = children.stream().filter(child -> child.getName().
-                            equals(VideoAttribute.TIME_ADDED.getDataName())).flatMap(child -> child.getChildren().stream()).
-                            map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <=
-                            daysToConsider)
-                            .collect(Collectors.toList());
-                    newVideos.addAll(currNewVideos);
-                } else if (childrenType != null) {
-                    for (Entity child : entity.getChildren()) {
-                        queue.offer(child);
-                    }
-                }
 
+                    List<Video> currConsideredVideos = children.stream().filter(child -> child.getName().
+                            equals(VideoAttribute.MOSTLY_VIEWED.getDataName())).flatMap(child -> child.getChildren().stream()).
+                            map(video -> (Video) video).collect(Collectors.toList());
+
+                    topVideosQueue.addAll(currConsideredVideos);
+                }
             }
         }
-        return OrderedVideosListHelper.createOrderedVideosList(attributes, newVideos);
-    }
 
-    private static int getDaysBeforeVideoAdded(Video video) {
+        return ImmutableList.copyOf(consideredVideos);
 
-        return (int) (TimeUnit.DAYS.convert(new Date().getTime() - video.getDateAdded()
-                .getTime(), TimeUnit.MILLISECONDS));
     }
 
     @Override
-    public void startUp() {
-        loadData();
+    public Category getTopLevelCategory() {
+        Category category = new Category();
+        category.setId(ID);
+        category.setName(propertyHelper.getStringProperty(PropertyNames
+                .MOSTLY_VIEWED_CATEGORY_NAME, DEFAULT_MOSTLY_VIEWED_CATEGORY_NAME));
+        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
+                .MOSTLY_VIEWED_CATEGORY_IMAGE_ID, null)));
+        return category;
     }
 
     @Override
@@ -120,7 +108,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
         if (ID.equals(categoryId)) {
             EntityCollection entityCollection = new EntityCollection();
             entityCollection.setEntityType(EntityType.ORDERED_VIDEOS);
-            entityCollection.setEntities(newlyAddedVideos.get(appId));
+            entityCollection.setEntities(mostlyViewedVideos.get(appId));
             return entityCollection;
         } else {
             throw new IllegalArgumentException("Only category supported is " + ID);
@@ -133,7 +121,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
     }
 
     @Override
-    protected void work(){
+    protected void work() {
         loadData();
     }
 

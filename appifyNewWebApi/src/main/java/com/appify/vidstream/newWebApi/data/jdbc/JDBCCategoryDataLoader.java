@@ -2,6 +2,7 @@ package com.appify.vidstream.newWebApi.data.jdbc;
 
 import com.appify.vidstream.newWebApi.data.*;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
+import com.google.common.collect.ImmutableList;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -19,14 +20,14 @@ public class JDBCCategoryDataLoader {
 
     private DataSource dataSource;
     private JDBCOrderedVideosDataLoader videoDataLoader;
-    private WebAPIUtil  webAPIUtil;
+    private WebAPIUtil webAPIUtil;
 
     @Inject
-    JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader,WebAPIUtil webAPIUtil) {
+    JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader, WebAPIUtil webAPIUtil) {
 
         this.dataSource = dataSource;
         this.videoDataLoader = videoDataLoader;
-        this.webAPIUtil=webAPIUtil;
+        this.webAPIUtil = webAPIUtil;
     }
 
     public List<Category> getCategoriesForCategorization(String categorizationId) {
@@ -36,7 +37,8 @@ public class JDBCCategoryDataLoader {
 
             //Getting top level categories.
             String sql = "select id,name,image from category where categorization_id='"
-                    + categorizationId + "' and id not in (select child_category_id from parent_child_category_mappings)";
+                    + categorizationId + "' and id not in (select child_category_id from " +
+                    "parent_child_category_mappings)";
 
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -61,14 +63,15 @@ public class JDBCCategoryDataLoader {
 
     }
 
-    public Map<String,Category> getCategoriesMapForCategorization(String categorizationId) {
+    public Map<String, Category> getCategoriesMapForCategorization(String categorizationId) {
 
         try (Connection con = dataSource.getConnection();) {
-            Map<String,Category> categoryMap = new HashMap<String,Category>();
+            Map<String, Category> categoryMap = new HashMap<String, Category>();
 
             //Getting top level categories.
             String sql = "select id,name,image from category where categorization_id='"
-                    + categorizationId + "' and id not in (select child_category_id from parent_child_category_mappings)";
+                    + categorizationId + "' and id not in (select child_category_id from " +
+                    "parent_child_category_mappings)";
 
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -83,7 +86,7 @@ public class JDBCCategoryDataLoader {
                 category.setImageURL(webAPIUtil.getImageURL(image));
                 setChildren(category);
 
-                categoryMap.put(id,category);
+                categoryMap.put(id, category);
 
             }
 
@@ -110,7 +113,7 @@ public class JDBCCategoryDataLoader {
                 Statement stmt = con.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
 
-                List<Entity> childCategories = new ArrayList<>();
+                ImmutableList.Builder<Entity> childCategoriesBuilder = ImmutableList.builder();
 
                 while (rs.next()) {
                     int id = rs.getInt("id");
@@ -122,15 +125,18 @@ public class JDBCCategoryDataLoader {
                     category.setName(name);
                     category.setImageURL(webAPIUtil.getImageURL(image));
 
-                    childCategories.add(category);
+                    childCategoriesBuilder.add(category);
 
                     parentQueue.offer(category);
                 }
 
+                ImmutableList<Entity> childCategories = childCategoriesBuilder.build();
+
                 if (childCategories.isEmpty()) {
                     List<OrderedVideos> videos = videoDataLoader.getOrderedVideosForCategory(currParent.getId());
                     currParent.setChildType(EntityType.ORDERED_VIDEOS);
-                    currParent.setChildren(videos.stream().map(v -> (Entity) v).collect(Collectors.toList()));
+                    currParent.setChildren(ImmutableList.copyOf(videos.stream().map(v -> (Entity) v).collect
+                            (Collectors.toList())));
 
                 } else {
                     currParent.setChildType(EntityType.CATEGORY);

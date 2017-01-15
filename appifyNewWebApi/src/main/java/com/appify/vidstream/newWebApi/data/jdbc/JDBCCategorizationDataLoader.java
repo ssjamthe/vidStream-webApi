@@ -5,7 +5,7 @@ import com.appify.vidstream.newWebApi.data.Category;
 import com.appify.vidstream.newWebApi.data.Entity;
 import com.appify.vidstream.newWebApi.data.EntityType;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.google.common.collect.ImmutableList;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -16,8 +16,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by swapnil on 23/11/16.
@@ -26,13 +26,14 @@ public class JDBCCategorizationDataLoader {
 
     private DataSource dataSource;
     private JDBCCategoryDataLoader categoryDataLoader;
-    private WebAPIUtil  webAPIUtil;
+    private WebAPIUtil webAPIUtil;
 
     @Inject
-    JDBCCategorizationDataLoader(DataSource dataSource, JDBCCategoryDataLoader categoryDataLoader,WebAPIUtil  webAPIUtil) {
+    JDBCCategorizationDataLoader(DataSource dataSource, JDBCCategoryDataLoader categoryDataLoader, WebAPIUtil
+            webAPIUtil) {
         this.dataSource = dataSource;
         this.categoryDataLoader = categoryDataLoader;
-        this.webAPIUtil=webAPIUtil;
+        this.webAPIUtil = webAPIUtil;
     }
 
 
@@ -48,15 +49,15 @@ public class JDBCCategorizationDataLoader {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String image = rs.getString("image");
-                
+
                 Categorization categorization = new Categorization();
                 categorization.setId(Integer.toString(id));
                 categorization.setName(name);
                 categorization.setImageURL(webAPIUtil.getImageURL(image));
                 categorization.setChildType(EntityType.CATEGORY);
-  
+
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
-                categorization.setChildren(categories.stream().map(c -> (Entity) c).collect(Collectors.toList()));
+                categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect(Collectors.toList())));
 
                 categorizations.add(categorization);
             }
@@ -67,10 +68,10 @@ public class JDBCCategorizationDataLoader {
         }
     }
 
-    public Map<String,Categorization> getCategorizationsMapForApp(String appId) {
+    public Map<String, Categorization> getCategorizationsMapForApp(String appId) {
 
         try (Connection con = dataSource.getConnection();) {
-            Map<String,Categorization> categorizationMap = new HashMap<String,Categorization>();
+            Map<String, Categorization> categorizationMap = new HashMap<String, Categorization>();
             String sql = "select id,name,image from categorization where app_id='" + appId + "'";
 
             Statement stmt = con.createStatement();
@@ -87,9 +88,10 @@ public class JDBCCategorizationDataLoader {
                 categorization.setChildType(EntityType.CATEGORY);
 
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
-                categorization.setChildren(categories.stream().map(c -> (Entity) c).collect(Collectors.toList()));
+                categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect
+                        (Collectors.toList())));
 
-                categorizationMap.put(categorization.getId(),categorization);
+                categorizationMap.put(categorization.getId(), categorization);
 
             }
 

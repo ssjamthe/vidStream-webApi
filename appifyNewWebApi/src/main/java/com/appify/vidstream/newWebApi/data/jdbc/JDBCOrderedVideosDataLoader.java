@@ -1,18 +1,12 @@
 package com.appify.vidstream.newWebApi.data.jdbc;
 
-import com.appify.vidstream.newWebApi.data.EntityType;
-import com.appify.vidstream.newWebApi.data.OrderedVideos;
-import com.appify.vidstream.newWebApi.data.Video;
-import com.appify.vidstream.newWebApi.data.VideoAttributeReverseComparator;
+import com.appify.vidstream.newWebApi.data.*;
+import com.google.common.collect.ImmutableList;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import static com.appify.vidstream.newWebApi.Constants.DATE_ADDED_VIDEOS_ATTRIBUTE_NAME;
 
 /**
  * Created by swapnil on 25/11/16.
@@ -39,8 +33,10 @@ public class JDBCOrderedVideosDataLoader {
             Set<String> attributeNames = new HashSet<>();
             List<Video> videos = new ArrayList<>();
             String sql = "Select yv.id as id,yv.name as name,yv.date_added as date_added," +
-                    "vav.attribute_id as attribute_id,va.name as attribute_name,vav.value as attribute_value from youtube_video yv" +
-                    " inner join video_attribute_value vav on yv.id = vav.video_id inner join video_attribute va on vav.attribute_id=va.id where yv.id " +
+                    "vav.attribute_id as attribute_id,va.name as attribute_name,vav.value as attribute_value from " +
+                    "youtube_video yv" +
+                    " inner join video_attribute_value vav on yv.id = vav.video_id inner join video_attribute va on " +
+                    "vav.attribute_id=va.id where yv.id " +
                     "in (select video_id from youtube_video_category_mapping " +
                     "where category_id=" + categoryId + ")";
 
@@ -48,7 +44,7 @@ public class JDBCOrderedVideosDataLoader {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 //int id = rs.getInt("id");
-                String id  = rs.getString("id");
+                String id = rs.getString("id");
                 Video video = videoMap.get(id);
                 if (video == null) {
                     video = new Video();
@@ -60,8 +56,8 @@ public class JDBCOrderedVideosDataLoader {
                     video.setName(name);
                     video.setDateAdded(dateAdded);
                     Map<String, Integer> attributeValues = new HashMap<String, Integer>();
-                    attributeValues.put(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME, (int) dateAdded.getTime() / (1000 * 60 * 60));
-                    attributeNames.add(DATE_ADDED_VIDEOS_ATTRIBUTE_NAME);
+                    attributeValues.put(VideoAttribute.TIME_ADDED.getDataName(), (int) dateAdded.getTime() / (1000 * 60 * 60));
+                    attributeNames.add(VideoAttribute.TIME_ADDED.getDataName());
                     video.setAttributeValues(attributeValues);
 
                 }
@@ -72,7 +68,7 @@ public class JDBCOrderedVideosDataLoader {
                 attributeNames.add(attributeName);
 
                 video.getAttributeValues().put(attributeName, attributeValue);
-                
+
                 videos.add(video);
 
             }
@@ -87,7 +83,7 @@ public class JDBCOrderedVideosDataLoader {
                 orderedVideos.setId(categoryId + "_" + attributeName);
                 orderedVideos.setName(attributeName);
                 orderedVideos.setChildType(EntityType.VIDEO);
-                orderedVideos.setChildren(orderedList.stream().collect(Collectors.toList()));
+                orderedVideos.setChildren(ImmutableList.copyOf(orderedList));
 
                 orderedVideosList.add(orderedVideos);
             }

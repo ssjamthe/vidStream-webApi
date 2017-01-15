@@ -6,6 +6,7 @@ import com.appify.vidstream.newWebApi.data.*;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Provider;
 
 import javax.inject.Inject;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * TODO Remove hardcoded values outside. Inject ScheduledExecutorService.
  */
 @Singleton
-public class JDBCAppDataLoader implements AppDataLoader, Runnable {
+public class JDBCAppDataLoader extends AppDataLoader {
 
     private static final Integer DEFAULT_MIN_INTERVAL_INTERSTITIAL = 50; //seconds
     private static final String DEFAULT_NO_CHILDREN_MESSAGE = "No Content";
@@ -33,36 +34,25 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     private Provider<PropertyHelper> propertyHelperProvider;
     private JDBCCategorizationDataLoader categorizationDataLoader;
     private volatile Map<String, AppInfo> appsData;
-    private ScheduledExecutorService es;
-    private JDBCCategoryDataLoader categoryDataLoader;
     private JDBCTokenDataLoader jdbcTokenDataLoader;
     private WebAPIUtil webAPIUtil;
 
     @Inject
-    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider, JDBCCategorizationDataLoader categorizationDataLoader
-            , JDBCCategoryDataLoader jdbcCategoryDataLoader, JDBCTokenDataLoader jdbcTokenDataLoader, WebAPIUtil webAPIUtil) {
-
+    public JDBCAppDataLoader(DataSource dataSource, Provider<PropertyHelper> propertyHelperProvider,
+                             JDBCCategorizationDataLoader categorizationDataLoader
+            , JDBCTokenDataLoader jdbcTokenDataLoader, WebAPIUtil
+                                     webAPIUtil) {
         this.dataSource = dataSource;
         this.propertyHelperProvider = propertyHelperProvider;
-        this.categorizationDataLoader = categorizationDataLoader;
         this.categorizationDataLoader = categorizationDataLoader;
         this.jdbcTokenDataLoader = jdbcTokenDataLoader;
         this.webAPIUtil = webAPIUtil;
     }
 
     @Override
-    public void startLoading() {
+    public void startUp() {
         loadData();
-        ScheduledExecutorService es = Executors.newScheduledThreadPool(1);
-        this.es = es;
-        es.schedule(this, 10, TimeUnit.MINUTES);
     }
-
-    @Override
-    public void stopLoading() {
-        es.shutdown();
-    }
-
 
     public Map<String, AppInfo> getAppsData() {
         return appsData;
@@ -119,17 +109,19 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
     }
 
     private static void setDerivedFields(AppInfo appInfo, List<Categorization> categorizations) {
-        Map<String, Categorization> categorizationMap = new HashMap<>();
-        Map<String, Category> categoryMap = new HashMap<>();
+        ImmutableMap.Builder<String, Categorization> categorizationMapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Category> categoryMapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Video> videoMapBuilder = ImmutableMap.builder();
+
 
         Queue<Category> categories = new LinkedList<>();
         List<Category> categorizationAsCategories = new ArrayList<>();
 
         for (Categorization categorization : categorizations) {
-            categorizationMap.put(categorization.getId(), categorization);
+            categorizationMapBuilder.put(categorization.getId(), categorization);
             Category categorizationAsCategory = CategorizationToCategoryConverter.convert(categorization);
             categorizationAsCategories.add(categorizationAsCategory);
-            categoryMap.put(categorizationAsCategory.getId(), categorizationAsCategory);
+            categoryMapBuilder.put(categorizationAsCategory.getId(), categorizationAsCategory);
 
             //Categorization have only categories as children while storage.
             List<Entity> childCategories = categorization.getChildren();
@@ -140,23 +132,33 @@ public class JDBCAppDataLoader implements AppDataLoader, Runnable {
 
         while (!categories.isEmpty()) {
             Category category = categories.poll();
-            categoryMap.put(category.getId(), category);
+            categoryMapBuilder.put(category.getId(), category);
 
             if (category.getChildType() == EntityType.CATEGORY) {
                 for (Entity childCategory : category.getChildren())
                     categories.offer((Category) childCategory);
+            } else if (category.getChildType() == EntityType.ORDERED_VIDEOS) {
+                List<Entity> videoList = category.getChildren().get(0).getChildren();
+                for (Entity video : videoList) {
+                    videoMapBuilder.put(video.getId(), (Video) video);
+                }
             }
 
         }
 
         appInfo.setCategorizationsAsCategories(ImmutableList.copyOf(categorizationAsCategories));
-        appInfo.setCategorizationMap(ImmutableMap.copyOf(categorizationMap));
-        appInfo.setCategoryMap(ImmutableMap.copyOf(categoryMap));
+        appInfo.setCategorizationMap(ImmutableMap.copyOf(categorizationMapBuilder.build()));
+        appInfo.setCategoryMap(ImmutableMap.copyOf(categoryMapBuilder.build()));
+        appInfo.setVideoMap(videoMapBuilder.build());
     }
 
+    @Override
+    protected void work() {
+        loadData();
+    }
 
     @Override
-    public void run() {
-        loadData();
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
     }
 }

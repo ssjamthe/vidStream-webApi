@@ -23,6 +23,7 @@ public class AppInfo {
     private String noChildrenMsg;
     private ImmutableMap<String, Categorization> categorizationMap;
     private ImmutableMap<String, Category> categoryMap;
+    private ImmutableMap<String, Video> videoMap;
     private ImmutableList<String> tokens;
     private ImmutableList<Category> categorizationsAsCategories;
 
@@ -93,7 +94,6 @@ public class AppInfo {
         this.minIntervalInterstitial = minIntervalInterstitial;
     }
 
-
     public int getVideosPerCall() {
 
         return videosPerCall;
@@ -108,7 +108,6 @@ public class AppInfo {
 
         return noChildrenMsg;
     }
-
 
     public ImmutableList<Category> getCategorizationsAsCategories() {
         return categorizationsAsCategories;
@@ -137,6 +136,14 @@ public class AppInfo {
 
     public void setTokens(ImmutableList<String> tokens) {
         this.tokens = tokens;
+    }
+
+    public ImmutableMap<String, Video> getVideoMap() {
+        return videoMap;
+    }
+
+    public void setVideoMap(ImmutableMap<String, Video> videoMap) {
+        this.videoMap = videoMap;
     }
 
     /**

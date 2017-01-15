@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.appify.vidstream.newWebApi.Constants.DATE_ADDED_VIDEOS_ATTRIBUTE_NAME;
-
 /**
  * Created by swapnil on 04/12/16.
  */

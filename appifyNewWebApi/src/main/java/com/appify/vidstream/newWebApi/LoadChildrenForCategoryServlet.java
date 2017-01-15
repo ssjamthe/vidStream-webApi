@@ -71,14 +71,19 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
             }
             response.setCategories(categoryResps);
         } else if (entityCollection.getEntityType() == EntityType.ORDERED_VIDEOS) {
-            String[] orderAttributes = new String[entityCollection.getEntities().size()];
+            String orderAttrData = null;
+            if (orderAttr != null) {
+                orderAttrData = VideoAttribute.getAttributeByApiName(orderAttr).getDataName();
+            }
+            String[] orderAttributesApi = new String[entityCollection.getEntities().size()];
             Entity selectedOrderedVideos = entityCollection.getEntities().get(0);
             ImmutableList<? extends Entity> currOrderedVideosList = entityCollection.getEntities();
             for (int i = 0; i < currOrderedVideosList.size(); i++) {
                 Entity currOrderedVideos = currOrderedVideosList.get(i);
-                if (currOrderedVideos.getName().equals(orderAttr)) {
+                if (currOrderedVideos.getName().equals(orderAttrData)) {
                     selectedOrderedVideos = currOrderedVideos;
                 }
+                orderAttributesApi[i] = VideoAttribute.getAttributeByDataName(currOrderedVideos.getName()).getApiName();
             }
 
             int pageNo = Integer.parseInt(pageNoParam);
@@ -96,7 +101,7 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
                     videoResps[i - startIndex] = converter.getVideoRespFromVideo((Video) videos.get(i));
                 }
             }
-            response.setOrderAttributes(orderAttributes);
+            response.setOrderAttributes(orderAttributesApi);
             response.setVideos(videoResps);
         }
 

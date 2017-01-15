@@ -2,8 +2,6 @@ package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.*;
 import com.appify.vidstream.newWebApi.data.jdbc.JDBCFeedbackSaver;
-import com.appify.vidstream.newWebApi.data.jdbc.JDBCImageDataLoader;
-import com.appify.vidstream.newWebApi.data.jdbc.JDBCVideoViewer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;

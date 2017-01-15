@@ -1,25 +1,15 @@
 package com.appify.vidstream.newWebApi.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import com.appify.vidstream.newWebApi.PropertyHelper;
+import com.appify.vidstream.newWebApi.PropertyNames;
+import com.appify.vidstream.newWebApi.util.WebAPIUtil;
 
 import javax.inject.Inject;
-import javax.xml.crypto.Data;
+import javax.inject.Singleton;
+import java.util.concurrent.TimeUnit;
 
-import com.appify.vidstream.newWebApi.data.AppDataLoader;
-import com.appify.vidstream.newWebApi.data.AppInfo;
-import com.appify.vidstream.newWebApi.PropertyHelper;
-import com.appify.vidstream.newWebApi.util.WebAPIUtil;
-import com.appify.vidstream.newWebApi.PropertyNames;
-
-public class ExploreCategoryDataLoader extends CategoryDataLoader implements Runnable {
+@Singleton
+public class ExploreCategoryDataLoader extends CategoryDataLoader {
 
     private static final String ID = "explore";
 
@@ -33,21 +23,6 @@ public class ExploreCategoryDataLoader extends CategoryDataLoader implements Run
         this.appDataLoader = appdataLoader;
         this.propertyHelper = propertyHelper;
         this.webAPIUtil = webAPIUtil;
-    }
-
-
-    @Override
-    public void startLoading() {
-
-    }
-
-    @Override
-    public void stopLoading() {
-    }
-
-
-    @Override
-    public void run() {
     }
 
 
@@ -81,5 +56,15 @@ public class ExploreCategoryDataLoader extends CategoryDataLoader implements Run
     @Override
     public String getId() {
         return ID;
+    }
+
+    @Override
+    protected void work() {
+        // No scheduled task.
+    }
+
+    @Override
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
     }
 }
