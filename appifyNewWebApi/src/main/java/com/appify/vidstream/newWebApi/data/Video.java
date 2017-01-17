@@ -16,6 +16,16 @@ public class Video extends Entity {
     private Map<String, Integer> attributeValues;
     private Timestamp dateAdded;
 
+    public Video() {
+
+    }
+
+    public Video(Video other) {
+        super(other);
+        this.attributeValues = other.attributeValues;
+        this.dateAdded = other.dateAdded;
+    }
+
     public Map<String, Integer> getAttributeValues() {
         return attributeValues;
     }

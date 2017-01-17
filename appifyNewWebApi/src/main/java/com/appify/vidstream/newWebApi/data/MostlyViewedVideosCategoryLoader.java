@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.MinMaxPriorityQueue;
 import com.google.common.util.concurrent.AbstractScheduledService;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -29,8 +30,15 @@ public class MostlyViewedVideosCategoryLoader extends CategoryDataLoader {
 
     private PropertyHelper propertyHelper;
     private AppDataLoader appDataLoader;
-    private ScheduledExecutorService es;
     private WebAPIUtil webAPIUtil;
+
+    @Inject
+    public MostlyViewedVideosCategoryLoader(PropertyHelper propertyHelper, AppDataLoader appDataLoader, WebAPIUtil
+            webAPIUtil) {
+        this.propertyHelper = propertyHelper;
+        this.appDataLoader = appDataLoader;
+        this.webAPIUtil = webAPIUtil;
+    }
 
     @Override
     public void startUp() {
@@ -80,7 +88,8 @@ public class MostlyViewedVideosCategoryLoader extends CategoryDataLoader {
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
 
                     List<Video> currConsideredVideos = children.stream().filter(child -> child.getName().
-                            equals(VideoAttribute.MOSTLY_VIEWED.getDataName())).flatMap(child -> child.getChildren().stream()).
+                            equals(VideoAttribute.MOSTLY_VIEWED.getDataName())).flatMap(child -> child.getChildren()
+                            .stream()).
                             map(video -> (Video) video).collect(Collectors.toList());
 
                     topVideosQueue.addAll(currConsideredVideos);
@@ -104,7 +113,7 @@ public class MostlyViewedVideosCategoryLoader extends CategoryDataLoader {
     }
 
     @Override
-    public EntityCollection getChildren(String appId, String categoryId) {
+    public EntityCollection getChildren(String appId, String categoryId, String deviceId) {
         if (ID.equals(categoryId)) {
             EntityCollection entityCollection = new EntityCollection();
             entityCollection.setEntityType(EntityType.ORDERED_VIDEOS);

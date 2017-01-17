@@ -16,6 +16,19 @@ public abstract class Entity {
     private ImmutableList<Entity> children;
     private EntityType childType;
 
+
+    Entity() {
+
+    }
+
+    Entity(Entity other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.imageURL = other.imageURL;
+        this.children = other.children;
+        this.childType = other.childType;
+    }
+
     public String getId() {
 
         return id;
@@ -55,19 +68,19 @@ public abstract class Entity {
         this.childType = childType;
     }
 
-	/**
-	 * @return the imageURL
-	 */
-	public String getImageURL() {
-		return imageURL;
-	}
+    /**
+     * @return the imageURL
+     */
+    public String getImageURL() {
+        return imageURL;
+    }
 
-	/**
-	 * @param imageURL the imageURL to set
-	 */
-	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
-	}
+    /**
+     * @param imageURL the imageURL to set
+     */
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 
 
 }

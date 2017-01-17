@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class OrderedVideosListHelper {
 
-    public static ImmutableList<Entity> createOrderedVideosList(Set<String> attributes, List<Video> videos) {
+    public static ImmutableList<Entity> createOrderedVideosList(List<Video> videos, Set<String> attributes) {
         ImmutableList.Builder<Entity> orderedVideosListBuilder = ImmutableList.builder();
         for (String attribute : attributes) {
             VideoAttributeReverseComparator comparator = new VideoAttributeReverseComparator(attribute);

@@ -88,7 +88,8 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
                     List<Entity> children = entity.getChildren();
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
                     List<Video> currNewVideos = children.stream().filter(child -> child.getName().
-                            equals(VideoAttribute.TIME_ADDED.getDataName())).flatMap(child -> child.getChildren().stream()).
+                            equals(VideoAttribute.TIME_ADDED.getDataName())).flatMap(child -> child.getChildren()
+                            .stream()).
                             map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <=
                             daysToConsider)
                             .collect(Collectors.toList());
@@ -116,7 +117,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
     }
 
     @Override
-    public EntityCollection getChildren(String appId, String categoryId) {
+    public EntityCollection getChildren(String appId, String categoryId, String deviceId) {
         if (ID.equals(categoryId)) {
             EntityCollection entityCollection = new EntityCollection();
             entityCollection.setEntityType(EntityType.ORDERED_VIDEOS);
@@ -133,7 +134,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
     }
 
     @Override
-    protected void work(){
+    protected void work() {
         loadData();
     }
 

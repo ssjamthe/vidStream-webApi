@@ -10,7 +10,7 @@ public abstract class CategoryDataLoader extends AbstractScheduledServiceRobust{
 
     public abstract Category getTopLevelCategory();
 
-    public abstract EntityCollection getChildren(String appId, String categoryId);
+    public abstract EntityCollection getChildren(String appId, String categoryId,String deviceId);
 
     /**
      * No special characters in id allowed.
