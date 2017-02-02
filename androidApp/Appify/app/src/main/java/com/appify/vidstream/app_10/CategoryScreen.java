@@ -36,6 +36,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.crash.FirebaseCrash;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiBanner;
 import com.inmobi.ads.InMobiInterstitial;
@@ -107,7 +108,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
     private int PAGE_NO, ActivityNo, PrevActivityNo;
     private ArrayAdapter<String> EntriesAdapter;
     private ArrayList HierarchyList = new ArrayList();
-    private String Category_ID, LAST_CAT_VALUE;
+    private ArrayList Category_Name = new ArrayList();
+    private String Category_ID, LAST_CAT_VALUE, NEWCATNAME;
     private CheckInternetConnection cic;
     private Boolean isInternetPresent = false;
     private boolean userScrolled = false;
@@ -144,7 +146,10 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             preferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             adManager = new AdManager(CategoryScreen.this);
             SSLManager.handleSSLHandshake(); //For SSL Request
-        }catch (Exception e) {e.printStackTrace();}
+        }catch (Exception e) {
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in SSLManager.handleSSLHandshake():CategoryScreen.java >"+e);
+        }
 
         //Initialize Views
         orderByRelativeLayout = (RelativeLayout) findViewById(R.id.orderByRelativeLayout);
@@ -158,11 +163,14 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         relative_category_background = (RelativeLayout) findViewById(R.id.relative_category);
         videoGridList.setVisibility(View.GONE);
         orderByRelativeLayout.setVisibility(View.GONE);
+        PAGE_NO = 1;
+        EntriesPerPage_Position = FIRST;
 
         //Intent values from CategorizationScreen or YoutubeScreen.
         try {
             Intent adIntent = getIntent();
             HierarchyList = adIntent.getStringArrayListExtra("categoryID");
+            Category_Name = adIntent.getStringArrayListExtra("CategoryName");
             getshowBanner = adIntent.getStringExtra("showBanner");
             getshowInmobiAdWeightage = adIntent.getStringExtra("showInmobiAdWeightage");
             getminIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial", 0);
@@ -173,7 +181,18 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             ActivityNo = getIntent().getIntExtra("ActivityNo", 0);
             System.out.println("Get Categorization ActivityNo from Intent>>> And set ActivityNo = " + ActivityNo + ";");
             PrevActivityNo = preferences.getInt(PREFS_KEY, 0);
-        }catch (Exception e){e.printStackTrace();onBackPressed();}
+            if(Category_Name.isEmpty()){
+                getSupportActionBar().setTitle(APP_NAME);
+            }else{
+                Object getArrayLastValue = Category_Name.get(Category_Name.size() - 1);  //Get Last Value
+                NEWCATNAME = String.valueOf(getArrayLastValue.toString());
+                getSupportActionBar().setTitle(NEWCATNAME);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            onBackPressed();
+            FirebaseCrash.log("Exception occure during getIntent:CategoryScreen.java >"+e);
+        }
 
         cic = new CheckInternetConnection(getApplicationContext());
         isInternetPresent = cic.isConnectingToInternet();
@@ -181,6 +200,15 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             noInternetPresent();
         }
 
+        //Call loadContents
+        loadContents();
+
+    }
+    /**********
+     * End OnCreate()
+     *****************/
+
+    private void loadContents(){
         //for Showing Ads
         try
         {
@@ -240,7 +268,20 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 adManager.createInMobiInterstitial(); //Request for creating Ad.
             }
 
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in Request for creating Ad:CategoryScreen.java >"+e);
+            try{
+                if (!interstitial.isLoaded()) {
+                    adManager.createAdMobAds(); //Request for creating Ad.
+                }
+                if (!mInterstitialAd.isReady()) {
+                    adManager.createInMobiInterstitial(); //Request for creating Ad.
+                }
+            }catch (Exception e1){
+                e1.printStackTrace();
+            }
+        }
 
         try {
             //For Banner
@@ -254,12 +295,13 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     showAdmobBanner();
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in banner section:CategoryScreen.java >"+e);
+        }
 
         try {
-            PAGE_NO = 1;
-            EntriesPerPage_Position = FIRST;
-            System.out.println("HierarchyList = " + HierarchyList);
+            System.out.println("HierarchyList = " + HierarchyList + "HierarchyList size = " + HierarchyList.size());
             Object getArrayLastValue = HierarchyList.get(HierarchyList.size() - 1);  //Get Last Value
             LAST_CAT_VALUE = String.valueOf(getArrayLastValue.toString());
             System.out.println("Last Value = " + LAST_CAT_VALUE);
@@ -274,7 +316,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 videoGridList.setNumColumns(1);
                 flag = true;
             }
-        }catch (Exception e) {e.printStackTrace();}
+        }catch (Exception e) {
+            e.printStackTrace();
+            onBackPressed();
+            FirebaseCrash.log("Exception in making hierarchy:CategoryScreen.java >"+e);
+        }
 
         //For Background Image
         try {
@@ -297,7 +343,10 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     }
                 });
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in loading bg image:CategoryScreen.java >"+e);
+        }
 
 //Entries Per Page Adapter
         try {
@@ -317,7 +366,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            EntriesPerPage_Position = FIRST;
+            FirebaseCrash.log("Exception in entries per page adapter:CategoryScreen.java >"+e);
+        }
 
 //Initialize Adapters and WebService Method call
         try {
@@ -331,12 +384,9 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
 
         }catch (Exception e) {
             e.printStackTrace();
+            FirebaseCrash.log("Exception in Initialize Adapters and WebService Method call:CategoryScreen.java >"+e);
         }
-
     }
-    /**********
-     * End OnCreate()
-     *****************/
 
     //TODO Web Service Call for Categories and Videos
     private void categoryVideoWebServiceCall(String CategoryID){
@@ -366,7 +416,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 flag = true;
             }
 
-            String SendOrderAttribute = null;
+            String SendOrderAttribute = "";
             if(Category_ID.equalsIgnoreCase(RecentlyViewedID)){
                 SendOrderAttribute = LOADSORTEDVIDEOSURL_VIEWTIMEID;
             }else{
@@ -409,11 +459,13 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         } catch (Exception exe) {
                             exe.printStackTrace();
                         }
-                        System.out.println("Set Outer VideoThumbnailGridBaseAdapter ----------------->");
-                        orderByAdapter.notifyDataSetChanged();
-                        System.out.println("orderByModeList>>>>>>"+orderByModeList);
+                        try {
+                            System.out.println("Set Outer VideoThumbnailGridBaseAdapter ----------------->");
+                            orderByAdapter.notifyDataSetChanged();
+                            System.out.println("orderByModeList>>>>>>" + orderByModeList);
+                        }catch (Exception ed){e.printStackTrace();}
                     }
-                    childCategoryGridBaseAdapter.notifyDataSetChanged();
+                    try{childCategoryGridBaseAdapter.notifyDataSetChanged();}catch (Exception ed){ed.printStackTrace();}
                     hidePDialog();
                 }
             }, new Response.ErrorListener() {
@@ -458,32 +510,39 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) { //TODO ClickListener
                     // Getting the Container Layout of the ListView
-                    LinearLayout linearLayoutParent = (LinearLayout) view;
-                    TextView tvVidName = (TextView) linearLayoutParent.getChildAt(1);
-                    TextView tvVidId = (TextView) linearLayoutParent.getChildAt(2);
+                    try {
+                        LinearLayout linearLayoutParent = (LinearLayout) view;
+                        TextView tvVidName = (TextView) linearLayoutParent.getChildAt(1);
+                        TextView tvVidId = (TextView) linearLayoutParent.getChildAt(2);
 
-                    PrevActivityNo = ActivityNo;
-                    editor = preferences.edit();
-                    editor.putInt(PREFS_KEY, PrevActivityNo);
-                    editor.commit();
-                    PrevActivityNo  = preferences.getInt(PREFS_KEY, 0);
-                    ActivityNo = ActivityNo+1;
-                    releaseYoutubeThumbnailView();
+                        PrevActivityNo = ActivityNo;
+                        editor = preferences.edit();
+                        editor.putInt(PREFS_KEY, PrevActivityNo);
+                        editor.commit();
+                        PrevActivityNo = preferences.getInt(PREFS_KEY, 0);
+                        ActivityNo = ActivityNo + 1;
+                        releaseYoutubeThumbnailView();
 
-                    Intent intentcat = new Intent(CategoryScreen.this, YoutubePlayer.class);
-                    intentcat.putExtra("VIDEO_ID", tvVidId.getText().toString());
-                    intentcat.putExtra("VIDEO_NAME", tvVidName.getText().toString());
-                    intentcat.putExtra("categoryID", HierarchyList);
-                    intentcat.putExtra("showBanner", getshowBanner);
-                    intentcat.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
-                    intentcat.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
-                    intentcat.putExtra("showAdMovingInside", getshowAdMovingInside);
-                    intentcat.putExtra("deviceID", getdeviceID);
-                    intentcat.putExtra("back_img", BackGround_Image);
-                    intentcat.putExtra("flag",flag);
-                    intentcat.putExtra("ActivityNo",ActivityNo);
-                    startActivity(intentcat);
-                    CategoryScreen.this.finish();
+                        Intent intentcat = new Intent(CategoryScreen.this, YoutubePlayer.class);
+                        intentcat.putExtra("VIDEO_ID", tvVidId.getText().toString());
+                        intentcat.putExtra("VIDEO_NAME", tvVidName.getText().toString());
+                        intentcat.putExtra("categoryID", HierarchyList);
+                        intentcat.putExtra("CategoryName", Category_Name);
+                        intentcat.putExtra("showBanner", getshowBanner);
+                        intentcat.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
+                        intentcat.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
+                        intentcat.putExtra("showAdMovingInside", getshowAdMovingInside);
+                        intentcat.putExtra("deviceID", getdeviceID);
+                        intentcat.putExtra("back_img", BackGround_Image);
+                        intentcat.putExtra("flag", flag);
+                        intentcat.putExtra("ActivityNo", ActivityNo);
+                        startActivity(intentcat);
+                        CategoryScreen.this.finish();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        onBackPressed();
+                        FirebaseCrash.log("Exception in videoGridList.setOnItemClickListener:CategoryScreen.java >"+e);
+                    }
                 }
             });
             //On Click Listener childCategoriesGridList
@@ -494,11 +553,14 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                    try {
                        // Getting the Container Layout of the ListView
                        LinearLayout linearLayoutParent = (LinearLayout) view;
+                       TextView cat_name_text = (TextView) linearLayoutParent.getChildAt(1);
+                       NEWCATNAME = cat_name_text.getText().toString();
                        TextView tvCategory = (TextView) linearLayoutParent.getChildAt(2);
                        String selectedChildCategory = tvCategory.getText().toString();
                        Category_ID = selectedChildCategory;
                        OrderAttributeCategoryValue = Category_ID;
                        HierarchyList.add(Category_ID);
+                       Category_Name.add(NEWCATNAME);
                        PrevActivityNo = ActivityNo;
                        editor = preferences.edit();
                        editor.putInt(PREFS_KEY, PrevActivityNo);
@@ -507,7 +569,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                        ActivityNo = ActivityNo + 1;
                        System.out.println("After Add 1 ActivityNo from Intent>>> And set ActivityNo = " + ActivityNo + ";");
                        RefreshCatVid();
-                   }catch (Exception e){e.printStackTrace();}
+                   }catch (Exception e){
+                       e.printStackTrace();
+                       onBackPressed();
+                       FirebaseCrash.log("Exception in childCategoriesGridList.setOnItemClickListener:CategoryScreen.java >"+e);
+                   }
                 }
             });
 
@@ -547,7 +613,10 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
 
                         //Requesting and calling method for getting Videos
                         LoadVideos(APP_ID, OrderAttributeCategoryValue, SelectedOrderValue, CatPageNo, EntriesPerPage_Position, getdeviceID);
-                    }catch (Exception e){e.printStackTrace();}
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        FirebaseCrash.log("Exception in orderBySpin.setOnItemSelectedListener:CategoryScreen.java >"+e);
+                    }
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> arg0) {
@@ -555,6 +624,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             });
         } catch (Exception e) {
             e.printStackTrace();
+            hidePDialog();
+            FirebaseCrash.log("Exception in Web Service Call for Categories and Videos:CategoryScreen.java >"+e);
         }
     }//End WebServices
 
@@ -568,72 +639,79 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         final String setdeviceId = getdeviceId;
 
         progressDialogCall();
-        // Creating volley request obj getting videos
-        final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&catId=" + URLEncoder.encode(setcatId) + "&orderAttr=" + URLEncoder.encode(setorderAttr) + "&page_no=" + URLEncoder.encode(setpage_no) + "&entries_per_page=" + URLEncoder.encode(setentries_per_page) + "&deviceId=" + URLEncoder.encode(setdeviceId);
-        System.out.println("loadChildCatURL = "+loadChildCatURL);
-        JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject childCategoryVideoResponse) {
-                try {
-                    childCategoryGridBaseAdapter.clearCategoryGrid();
-                    childCategoryListBaseAdapter.clearCategoryList();
-                    VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
-                    VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
-                    videoGridList.setVisibility(View.VISIBLE);
-                    JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
-                    for (int k = 0; k < videoCatArray.length(); k++) {
-                        JSONObject videoCatObject = videoCatArray.getJSONObject(k);
-                        VideoModel videoModel = new VideoModel();
-                        videoModel.setVideoName(videoCatObject.getString("name"));
-                        videoModel.setVideoId(videoCatObject.getString("id"));
-                        videoModeList.add(videoModel);
+        try {
+            // Creating volley request obj getting videos
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&catId=" + URLEncoder.encode(setcatId) + "&orderAttr=" + URLEncoder.encode(setorderAttr) + "&page_no=" + URLEncoder.encode(setpage_no) + "&entries_per_page=" + URLEncoder.encode(setentries_per_page) + "&deviceId=" + URLEncoder.encode(setdeviceId);
+            System.out.println("loadChildCatURL = " + loadChildCatURL);
+            JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject childCategoryVideoResponse) {
+                    try {
+                        childCategoryGridBaseAdapter.clearCategoryGrid();
+                        childCategoryListBaseAdapter.clearCategoryList();
+                        VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
+                        VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
+                        videoGridList.setVisibility(View.VISIBLE);
+                        JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
+                        for (int k = 0; k < videoCatArray.length(); k++) {
+                            JSONObject videoCatObject = videoCatArray.getJSONObject(k);
+                            VideoModel videoModel = new VideoModel();
+                            videoModel.setVideoName(videoCatObject.getString("name"));
+                            videoModel.setVideoId(videoCatObject.getString("id"));
+                            videoModeList.add(videoModel);
+                        }
+                        VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
+                        System.out.println("Set OrderBy VideoThumbnailGridBaseAdapter ----------------->");
+                        VideoThumbnailListBaseAdapter.notifyDataSetChanged();
+                        orderByAdapter.notifyDataSetChanged();
+                        hidePDialog();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                        hidePDialog();
                     }
                     hidePDialog();
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                    hidePDialog();
                 }
-                VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
-                System.out.println("Set OrderBy VideoThumbnailGridBaseAdapter ----------------->");
-                VideoThumbnailListBaseAdapter.notifyDataSetChanged();
-                orderByAdapter.notifyDataSetChanged();
-                hidePDialog();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError errorResponse) {
-                VolleyLog.d(TAG, "Movie Error: " + errorResponse.getMessage());
-                System.out.println("loadChildCatURL error= "+errorResponse.getMessage());
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError errorResponse) {
+                    VolleyLog.d(TAG, "Movie Error: " + errorResponse.getMessage());
+                    System.out.println("loadChildCatURL error= " + errorResponse.getMessage());
 
-                try {
-                    String ErrorMessage = errorResponse.getMessage();
-                    String Keyword = "Authentication Failed";
-                    if(ErrorMessage != null){
-                        if (ErrorMessage.contains(Keyword)) {
-                            authenticationErrorDialog();
+                    try {
+                        String ErrorMessage = errorResponse.getMessage();
+                        String Keyword = "Authentication Failed";
+                        if (ErrorMessage != null) {
+                            if (ErrorMessage.contains(Keyword)) {
+                                authenticationErrorDialog();
+                            } else {
+                                cantReachedDialog();
+                            }
                         } else {
                             cantReachedDialog();
                         }
-                    }else {
-                        cantReachedDialog();
-                    }
 
-                    hidePDialog();
-                    networkResponse = errorResponse.networkResponse;
-                    if (networkResponse != null) {
-                        Log.e("Status code", String.valueOf(networkResponse.statusCode));
+                        hidePDialog();
+                        networkResponse = errorResponse.networkResponse;
+                        if (networkResponse != null) {
+                            Log.e("Status code", String.valueOf(networkResponse.statusCode));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }catch (Exception e){e.printStackTrace();}
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put(TOKEN_KEY, TOKEN_VALUE);
-                return headers;
-            }
-        };
-        AppController.getInstance().addToRequestQueue(orderByVideoRequest);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put(TOKEN_KEY, TOKEN_VALUE);
+                    return headers;
+                }
+            };
+            AppController.getInstance().addToRequestQueue(orderByVideoRequest);
+        }catch (Exception e2) {
+            e2.printStackTrace();
+            hidePDialog();
+        }
     }
 
     //ArrayList for EntriesPerPage
@@ -675,107 +753,117 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
 
     // Method for repopulating recycler view
     private void updateListView() {
-        String Cat4PageNo = String.valueOf(PAGE_NO);
-        final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(APP_ID) + "&catId=" + URLEncoder.encode(OrderAttributeCategoryValue) + "&orderAttr=" + URLEncoder.encode(SelectedOrderValue) + "&page_no=" + URLEncoder.encode(Cat4PageNo) + "&entries_per_page=" + URLEncoder.encode(EntriesPerPage_Position) + "&deviceId=" + URLEncoder.encode(getdeviceID);
-        JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject childCategoryVideoResponse) {
-                try {
-                    videoGridList.setVisibility(View.VISIBLE);
-                    JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
-                    for (int k = 0; k < videoCatArray.length(); k++) {
-                        JSONObject videoCatObject = videoCatArray.getJSONObject(k);
-                        VideoModel videoModel = new VideoModel();
-                        videoModel.setVideoName(videoCatObject.getString("name"));
-                        videoModel.setVideoId(videoCatObject.getString("id"));
-                        videoModeList.add(videoModel);
+        try {
+            String Cat4PageNo = String.valueOf(PAGE_NO);
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(APP_ID) + "&catId=" + URLEncoder.encode(OrderAttributeCategoryValue) + "&orderAttr=" + URLEncoder.encode(SelectedOrderValue) + "&page_no=" + URLEncoder.encode(Cat4PageNo) + "&entries_per_page=" + URLEncoder.encode(EntriesPerPage_Position) + "&deviceId=" + URLEncoder.encode(getdeviceID);
+            JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject childCategoryVideoResponse) {
+                    try {
+                        videoGridList.setVisibility(View.VISIBLE);
+                        JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
+                        for (int k = 0; k < videoCatArray.length(); k++) {
+                            JSONObject videoCatObject = videoCatArray.getJSONObject(k);
+                            VideoModel videoModel = new VideoModel();
+                            videoModel.setVideoName(videoCatObject.getString("name"));
+                            videoModel.setVideoId(videoCatObject.getString("id"));
+                            videoModeList.add(videoModel);
+                        }
+                        VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
+                        VideoThumbnailListBaseAdapter.notifyDataSetChanged();
+                        orderByAdapter.notifyDataSetChanged();
+                        hidePDialog();
+                    } catch (Exception e2) {
+                        hidePDialog();
+                        e2.printStackTrace();
                     }
-                } catch (Exception e2) {
-                    e2.printStackTrace();
+                    hidePDialog();
                 }
-                VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
-                VideoThumbnailListBaseAdapter.notifyDataSetChanged();
-                orderByAdapter.notifyDataSetChanged();
-                hidePDialog();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError errorResponse) {
-                VolleyLog.d(TAG, "Movie Error: " + errorResponse.getMessage());
-                hidePDialog();
-                networkResponse = errorResponse.networkResponse;
-                if (networkResponse != null) {
-                    Log.e("Status code", String.valueOf(networkResponse.statusCode));
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError errorResponse) {
+                    VolleyLog.d(TAG, "Movie Error: " + errorResponse.getMessage());
+                    hidePDialog();
+                    networkResponse = errorResponse.networkResponse;
+                    if (networkResponse != null) {
+                        Log.e("Status code", String.valueOf(networkResponse.statusCode));
+                    }
                 }
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put(TOKEN_KEY, TOKEN_VALUE);
-                return headers;
-            }
-        };
-        AppController.getInstance().addToRequestQueue(orderByVideoRequest);
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put(TOKEN_KEY, TOKEN_VALUE);
+                    return headers;
+                }
+            };
+            AppController.getInstance().addToRequestQueue(orderByVideoRequest);
 
-        // After adding new data hide the view.
-        //bottomLayout.setVisibility(View.GONE);
-        hidePDialog();
+            // After adding new data hide the view.
+            //bottomLayout.setVisibility(View.GONE);
+            hidePDialog();
+        }catch (Exception esd) {
+            hidePDialog();
+            esd.printStackTrace();
+        }
     }
 
     private void showInMobiAdBanner() {
-    try{
-        mBannerAd = new InMobiBanner(CategoryScreen.this, INMOBI_BANNER);
-        inMobiAdContainer.setVisibility(View.VISIBLE);
-        if (inMobiAdContainer != null) {
+        try{
+            mBannerAd = new InMobiBanner(CategoryScreen.this, INMOBI_BANNER);
+            inMobiAdContainer.setVisibility(View.VISIBLE);
+            if (inMobiAdContainer != null) {
 
-            mBannerAd.setAnimationType(InMobiBanner.AnimationType.ROTATE_HORIZONTAL_AXIS);
-            mBannerAd.setListener(new InMobiBanner.BannerAdListener() {
-                @Override
-                public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
-                    progressBar.setVisibility(View.GONE);
-                }
+                mBannerAd.setAnimationType(InMobiBanner.AnimationType.ROTATE_HORIZONTAL_AXIS);
+                mBannerAd.setListener(new InMobiBanner.BannerAdListener() {
+                    @Override
+                    public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onAdLoadFailed(InMobiBanner inMobiBanner,
-                                           InMobiAdRequestStatus inMobiAdRequestStatus) {
-                    Log.w(TAG, "Banner ad failed to load with error: " +
-                            inMobiAdRequestStatus.getMessage());
-                }
+                    @Override
+                    public void onAdLoadFailed(InMobiBanner inMobiBanner,
+                                               InMobiAdRequestStatus inMobiAdRequestStatus) {
+                        Log.w(TAG, "Banner ad failed to load with error: " +
+                                inMobiAdRequestStatus.getMessage());
+                    }
 
-                @Override
-                public void onAdDisplayed(InMobiBanner inMobiBanner) {
-                    progressBar.setVisibility(View.GONE);
-                }
+                    @Override
+                    public void onAdDisplayed(InMobiBanner inMobiBanner) {
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onAdDismissed(InMobiBanner inMobiBanner) {
-                }
+                    @Override
+                    public void onAdDismissed(InMobiBanner inMobiBanner) {
+                    }
 
-                @Override
-                public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                }
+                    @Override
+                    public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+                    }
 
-                @Override
-                public void onUserLeftApplication(InMobiBanner inMobiBanner) {
-                }
+                    @Override
+                    public void onUserLeftApplication(InMobiBanner inMobiBanner) {
+                    }
 
-                @Override
-                public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                }
-            });
+                    @Override
+                    public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+                    }
+                });
 
-            int width = toPixelUnits(320);
-            int height = toPixelUnits(50);
-            RelativeLayout.LayoutParams bannerLayoutParams =
-                    new RelativeLayout.LayoutParams(width, height);
-            bannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            bannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            inMobiAdContainer.addView(mBannerAd, bannerLayoutParams);
-            mBannerAd.load();
+                int width = toPixelUnits(320);
+                int height = toPixelUnits(50);
+                RelativeLayout.LayoutParams bannerLayoutParams =
+                        new RelativeLayout.LayoutParams(width, height);
+                bannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                bannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                inMobiAdContainer.addView(mBannerAd, bannerLayoutParams);
+                mBannerAd.load();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in showInMobiAdBanner():CategoryScreen.java >"+e);
         }
-    }catch (Exception e){e.printStackTrace();}
-    }
+    }//end showInMobiAdBanner()
 
     private int toPixelUnits(int dipUnit) {
         float density = getResources().getDisplayMetrics().density;
@@ -803,8 +891,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     }
                 }
             });
-        }catch (Exception e){e.printStackTrace();}
-    }
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in showAdmobBanner():CategoryScreen.java >"+e);
+        }
+    }// end showAdmobBanner()
 
     @Override
     public void onDestroy() {
@@ -830,7 +921,10 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         try {
             VideoThumbnailGridBaseAdapter.releaseGridThumbnailView();
             VideoThumbnailListBaseAdapter.releaseListThumbnailView();
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in releaseYoutubeThumbnailView():CategoryScreen.java >"+e);
+        }
     }
 
     private void authenticationErrorDialog(){
@@ -872,6 +966,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent ref = new Intent(CategoryScreen.this, CategoryScreen.class);
                         ref.putExtra("categoryID", HierarchyList);
+                        ref.putExtra("CategoryName", Category_Name);
                         ref.putExtra("showBanner", getshowBanner);
                         ref.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
                         ref.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
@@ -893,6 +988,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         try {
             Intent ref = new Intent(CategoryScreen.this, CategoryScreen.class);
             ref.putExtra("categoryID", HierarchyList);
+            ref.putExtra("CategoryName", Category_Name);
             ref.putExtra("showBanner", getshowBanner);
             ref.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
             ref.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
@@ -903,7 +999,12 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             ref.putExtra("ActivityNo", ActivityNo);
             startActivity(ref);
             CategoryScreen.this.finish();
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            Intent intent = new Intent(CategoryScreen.this, CategorizationScreen.class);
+            startActivity(intent);
+            CategoryScreen.this.finish();
+        }
     }
 
     private void noInternetPresent(){
@@ -939,6 +1040,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 System.out.println("HierarchyList = " + HierarchyList);
                 //Toast.makeText(CategoryScreen.this,"HierarchyList = "+HierarchyList,Toast.LENGTH_SHORT).show();
                 HierarchyList.remove(HierarchyList.size() - 1);  //Remove Last Value
+                Category_Name.remove(Category_Name.size() - 1);
                 if (HierarchyList.isEmpty()) {
                     Intent intentCatzation = new Intent(CategoryScreen.this, CategorizationScreen.class);
                     intentCatzation.putExtra("flag", flag);
@@ -956,7 +1058,12 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     RefreshCatVid();  //Refresh
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            Intent intent = new Intent(CategoryScreen.this, CategorizationScreen.class);
+            startActivity(intent);
+            CategoryScreen.this.finish();
+        }
     }
 
     @Override

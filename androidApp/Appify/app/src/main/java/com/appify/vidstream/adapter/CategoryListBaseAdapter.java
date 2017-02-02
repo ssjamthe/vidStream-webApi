@@ -54,24 +54,30 @@ public class CategoryListBaseAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ImageLoader imageLoader = AppController.getInstance().getImageLoader();
-        CategoryListViewHolder viewHolder = new CategoryListViewHolder();
-        // getting model data for the row
-        final CategoriesModel model = categoriesModels.get(position);
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.category_list_item, null);
-            viewHolder.name = (TextView) convertView.findViewById(R.id.categoriListText);
-            viewHolder.id = (TextView) convertView.findViewById(R.id.categoriListID);
-            viewHolder.image = (NetworkImageView) convertView.findViewById(R.id.categoriListImage);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (CategoryListViewHolder) convertView.getTag();
+        try {
+            LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+            CategoryListViewHolder viewHolder = new CategoryListViewHolder();
+            // getting model data for the row
+            final CategoriesModel model = categoriesModels.get(position);
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.category_list_item, null);
+                viewHolder.name = (TextView) convertView.findViewById(R.id.categoriListText);
+                viewHolder.id = (TextView) convertView.findViewById(R.id.categoriListID);
+                viewHolder.image = (NetworkImageView) convertView.findViewById(R.id.categoriListImage);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (CategoryListViewHolder) convertView.getTag();
+            }
+            viewHolder.name.setText(model.getCatTitle());
+            viewHolder.id.setText(model.getCateID());
+            try {
+                viewHolder.image.setImageUrl(model.getCatImage(), imageLoader);
+            }catch (Exception ex){ex.printStackTrace();}
+            System.out.println("List ImageUrl: " + model.getCatImage());
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        viewHolder.name.setText(model.getCatTitle());
-        viewHolder.id.setText(model.getCateID());
-        viewHolder.image.setImageUrl(model.getCatImage(), imageLoader);
-        System.out.println("List ImageUrl: " + model.getCatImage());
         return convertView;
     }
 }

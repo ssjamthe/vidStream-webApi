@@ -3,6 +3,7 @@ package com.appify.vidstream.app_10;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.crash.FirebaseCrash;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiBanner;
 import com.inmobi.ads.InMobiInterstitial;
@@ -87,6 +89,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Toast;
 
 public class CategorizationScreen extends AppCompatActivity implements ApplicationConstants {
+
+    //MAke change at 579 gridViewCategoriesText.setNumColumns(2);
 
     private static final String TAG = CategorizationScreen.class.getSimpleName();
     private InMobiBanner mBannerAd;
@@ -151,7 +155,10 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             CATZ_preferences = getSharedPreferences(PREFS_CATZ_NAME, Context.MODE_PRIVATE);
             adManager = new AdManager(CategorizationScreen.this);
             SSLManager.handleSSLHandshake(); //For SSL Request
-        }catch (Exception e) {e.printStackTrace();}
+        }catch (Exception e) {
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in SSL Request:CategorizationScreen.java >"+e);
+        }
 
         //Initialize View
         categorization = (Spinner) findViewById(R.id.categorizationSpinner);
@@ -194,75 +201,8 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             mInterstitialAd = adManager.getInMobiAd();
             System.out.println("Catz InMobi interstitial="+mInterstitialAd);
 
-            if(ActivityNo != 0)
-            {
-                // Prepare the Banner and Interstitial Ad
-                double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
-                if (showAdWeight > randomNo && (!(mInterstitialAd.equals(null))))
-                {
-                    // InterstitialAd
-                    try{
-                        long CurrentTime = new Date().getTime() / 1000;
-                        long AdShowTime = adManager.getNewTime(); //Get New Time From AdManager
-                        long Duration = CurrentTime - AdShowTime;
-                        System.out.println("InMobi Catz Duration = " + Duration);
-                        //Toast.makeText(CategorizationScreen.this, "Catz Duration = " + Duration, Toast.LENGTH_SHORT).show();
-                        if (Duration >= minIntervalInterstitial && PrevActivityNo != ActivityNo )
-                        {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(mInterstitialAd != null)
-                                    {
-                                        mInterstitialAd.load();
-                                        mInterstitialAd.show();
-                                    }
-                                    System.out.println("Inmobi after interstitial show ="+mInterstitialAd);
-                                    //Toast.makeText(CategorizationScreen.this,"Inmobi after interstitial show()",Toast.LENGTH_SHORT).show();
-                                    PrevActivityNo = ActivityNo;
-                                    editor = preferences.edit();
-                                    editor.putInt(PREFS_KEY, PrevActivityNo);
-                                    editor.commit();
-                                }
-                            }, 1);
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    //interstitialAd
-                    try {
-                        // Prepare the Interstitial Ad
-                        long CurrentTime = new Date().getTime() / 1000;
-                        long AdShowTime = adManager.getNewTime(); //Get New Time From AdManager
-                        long Duration = CurrentTime - AdShowTime;
-                        System.out.println("Admob Catz Duration = " + Duration);
-                        if(Duration >= minIntervalInterstitial && PrevActivityNo != ActivityNo)
-                        {
-                            if (interstitial.isLoaded()) {
-                                interstitial.show();
-                                PrevActivityNo = ActivityNo;
-                                editor = preferences.edit();
-                                editor.putInt(PREFS_KEY, PrevActivityNo);
-                                editor.commit();
-                            }else {
-                                System.out.println("Interstitial ad failed to load");
-                            }
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-            if (!interstitial.isLoaded()) {
-                adManager.createAdMobAds(); //Request for creating Ad.
-            }
-            if(!mInterstitialAd.isReady()){
-                adManager.createInMobiInterstitial(); //Request for creating Ad.
-            }
+            //For showing interstitial ads
+            ShowInterstitialBothAds();
            //Toast.makeText(CategorizationScreen.this, "After Launch", Toast.LENGTH_SHORT).show();
 
         }catch (Exception e){
@@ -282,9 +222,99 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             editor.commit();
             Log.e("ActivityNo>>>", ""+ ActivityNo);
             //Toast.makeText(CategorizationScreen.this, "First Launch = "+GetShowTime, Toast.LENGTH_SHORT).show();
+            //FirebaseCrash.log("Exception in getIntent:CategorizationScreen.java >"+e);
         }
 
+        //requestiong for categorizations
+        LoadCategorizations();
+
+    }
+    /*******************************
+     * End OnCreate
+     **************************/
+
+    private void ShowInterstitialBothAds(){
+        try {
+            if (ActivityNo != 0) {
+                // Prepare the Banner and Interstitial Ad
+                double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
+                if (showAdWeight > randomNo && (!(mInterstitialAd.equals(null)))) {
+                    // InterstitialAd
+                    try {
+                        long CurrentTime = new Date().getTime() / 1000;
+                        long AdShowTime = adManager.getNewTime(); //Get New Time From AdManager
+                        long Duration = CurrentTime - AdShowTime;
+                        System.out.println("InMobi Catz Duration = " + Duration);
+                        //Toast.makeText(CategorizationScreen.this, "Catz Duration = " + Duration, Toast.LENGTH_SHORT).show();
+                        if (Duration >= minIntervalInterstitial && PrevActivityNo != ActivityNo) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mInterstitialAd != null) {
+                                        mInterstitialAd.load();
+                                        mInterstitialAd.show();
+                                    }
+                                    System.out.println("Inmobi after interstitial show =" + mInterstitialAd);
+                                    //Toast.makeText(CategorizationScreen.this,"Inmobi after interstitial show()",Toast.LENGTH_SHORT).show();
+                                    PrevActivityNo = ActivityNo;
+                                    editor = preferences.edit();
+                                    editor.putInt(PREFS_KEY, PrevActivityNo);
+                                    editor.commit();
+                                }
+                            }, 1);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    //interstitialAd
+                    try {
+                        // Prepare the Interstitial Ad
+                        long CurrentTime = new Date().getTime() / 1000;
+                        long AdShowTime = adManager.getNewTime(); //Get New Time From AdManager
+                        long Duration = CurrentTime - AdShowTime;
+                        System.out.println("Admob Catz Duration = " + Duration);
+                        if (Duration >= minIntervalInterstitial && PrevActivityNo != ActivityNo) {
+                            if (interstitial.isLoaded()) {
+                                interstitial.show();
+                                PrevActivityNo = ActivityNo;
+                                editor = preferences.edit();
+                                editor.putInt(PREFS_KEY, PrevActivityNo);
+                                editor.commit();
+                            } else {
+                                System.out.println("Interstitial ad failed to load");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (!interstitial.isLoaded()) {
+                adManager.createAdMobAds(); //Request for creating Ad.
+            }
+            if (!mInterstitialAd.isReady()) {
+                adManager.createInMobiInterstitial(); //Request for creating Ad.
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            try{
+                if (!interstitial.isLoaded()) {
+                    adManager.createAdMobAds(); //Request for creating Ad.
+                }
+                if (!mInterstitialAd.isReady()) {
+                    adManager.createInMobiInterstitial(); //Request for creating Ad.
+                }
+            }catch (Exception e1){
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    private void LoadCategorizations(){
         // first instalation Date-Time
+        String inatallDateAndTime = "";
         PackageInfo packageInfo;
         try {
             PackageManager pm = getApplicationContext().getPackageManager();
@@ -293,9 +323,21 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             String appFile = appInfo.sourceDir;
             installTime = new Date(packageInfo.firstInstallTime);
             Log.e("Installed>>>", installTime.toString());
+            inatallDateAndTime = String.valueOf(installTime.toString());
             updateTime = new Date(packageInfo.lastUpdateTime);
             Log.e("Updated>>>", updateTime.toString());
-        } catch (NameNotFoundException e) {e.printStackTrace();}
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in instalation Date-Time and PackageManager:CategorizationScreen.java >"+e);
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date date = new Date();
+                inatallDateAndTime = dateFormat.format(date);
+            }catch (Exception exx){
+                exx.printStackTrace();
+                inatallDateAndTime = "No installTime Found";
+            }
+        }
 
         //get IMEI No.
         try {
@@ -308,125 +350,149 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                         .getContentResolver(), Secure.ANDROID_ID);
                 Log.e("Serial NO>>>", deviceID);
             }
-        }catch (Exception e) {e.printStackTrace();}
+        }catch (Exception e) {
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in get IMEI No.:CategorizationScreen.java >"+e);
+            deviceID = "00000000000000";
+        }
 
 // Categorization
 // Spinner setAdapter
-        String inatallDateAndTime = String.valueOf(installTime.toString());
-        categorization.setAdapter(catZationGridAdapter);
-        @SuppressWarnings("deprecation")
-        final String catzationspinurl = URL_IP_ADDRESS + URL_LOADAPP + "?appId=" + URLEncoder.encode(APP_ID) + "&installTimestamp=" + URLEncoder.encode(inatallDateAndTime) + "&deviceId=" + URLEncoder.encode(deviceID.toString());
-        System.out.println("catzationspinurl = "+catzationspinurl);
-        JsonObjectRequest spinRequest = new JsonObjectRequest(Request.Method.POST, catzationspinurl,
-                null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                // for categorization
-                try {
-                    // for banner, mininterval, background.
-                    showBanner = response.getString("showBanner");
-                    Log.e("showBanner: ", showBanner);
-                    showAdMovingInside = response.getString("showAdMovingInside");
-                    Log.e("showAdMovingInside: ", showAdMovingInside);
-                    showInmobiAdWeightage = response.getString("showInmobiAdWeightage");
-                    Log.e("showInmobiAdWeightage: ", showInmobiAdWeightage);
-                    minIntervalInterstitial = response.getLong("minIntervalInterstitial");
-                    String minIntInterstitial = String.valueOf(minIntervalInterstitial);
-                    Log.e("minInterval: ", minIntInterstitial);
-
-                    hidePDialog();
-                    //Get Categorization
-                    JSONArray categorizationsArray = response.getJSONArray("categorizations");
-                    for (int i = 0; i < categorizationsArray.length(); i++) {
-                        JSONObject categorizationsObject = categorizationsArray.getJSONObject(i);
-                        CatZationModel spinMod = new CatZationModel();
-                        spinMod.setCatZationName(categorizationsObject.getString("name"));
-                        spinMod.setCatZationId(categorizationsObject.getString("id"));
-                        catZationModeList.add(spinMod);
-                    }
-
-                    //For single categorization
-                    if(catZationModeList.size()==1){
-                        mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(0, 0);
-                        mainCategorizationLinearLayout.setLayoutParams(layoutParams);
-                    }else{
-                        mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    //Background image
-                    appBgImageUrl = response.getString("appBgImageUrl");
-                    Log.e("appBgImageUrl", appBgImageUrl);
+        try {
+            categorization.setAdapter(catZationGridAdapter);
+            @SuppressWarnings("deprecation")
+            final String catzationspinurl = URL_IP_ADDRESS + URL_LOADAPP + "?appId=" + URLEncoder.encode(APP_ID) + "&installTimestamp=" + URLEncoder.encode(inatallDateAndTime) + "&deviceId=" + URLEncoder.encode(deviceID.toString());
+            System.out.println("catzationspinurl = " + catzationspinurl);
+            JsonObjectRequest spinRequest = new JsonObjectRequest(Request.Method.POST, catzationspinurl,
+                    null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    // for categorization
                     try {
-                        //new LoadImage().execute(appBgImageUrl);         //for backgroung image
-                        if(appBgImageUrl != null)
-                        {
-                            Picasso.with(CategorizationScreen.this).load(appBgImageUrl).into(new Target() {
-                                @Override
-                                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                    catzation_Relative_Background.setBackgroundDrawable(new BitmapDrawable(bitmap));
-                                }
+                        // for banner, mininterval, background.
+                        showBanner = response.getString("showBanner");
+                        Log.e("showBanner: ", showBanner);
+                        showAdMovingInside = response.getString("showAdMovingInside");
+                        Log.e("showAdMovingInside: ", showAdMovingInside);
+                        showInmobiAdWeightage = response.getString("showInmobiAdWeightage");
+                        Log.e("showInmobiAdWeightage: ", showInmobiAdWeightage);
+                        minIntervalInterstitial = response.getLong("minIntervalInterstitial");
+                        String minIntInterstitial = String.valueOf(minIntervalInterstitial);
+                        Log.e("minInterval: ", minIntInterstitial);
 
-                                @Override
-                                public void onBitmapFailed(Drawable errorDrawable) {
-
-                                }
-
-                                @Override
-                                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                }
-                            });
+                        hidePDialog();
+                        //Get Categorization
+                        JSONArray categorizationsArray = response.getJSONArray("categorizations");
+                        for (int i = 0; i < categorizationsArray.length(); i++) {
+                            JSONObject categorizationsObject = categorizationsArray.getJSONObject(i);
+                            CatZationModel spinMod = new CatZationModel();
+                            spinMod.setCatZationName(categorizationsObject.getString("name"));
+                            spinMod.setCatZationId(categorizationsObject.getString("id"));
+                            catZationModeList.add(spinMod);
                         }
-                    }catch (Exception e){e.printStackTrace();}
 
-                    //For Banner
-                    try{
-                        double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
-                        if (showAdWeight > randomNo) {
-                            if (showBanner.equalsIgnoreCase("true")) {showInMobiBanner();}
-                        }else{
-                            if (showBanner.equalsIgnoreCase("true")) {showAdBanner();}
+                        //For single categorization
+                        if (catZationModeList.size() == 1) {
+                            mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
+                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(0, 0);
+                            mainCategorizationLinearLayout.setLayoutParams(layoutParams);
+                        } else {
+                            mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
                         }
-                    }catch (Exception e){e.printStackTrace();}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    hidePDialog();
+                        //Background image
+                        appBgImageUrl = response.getString("appBgImageUrl");
+                        Log.e("appBgImageUrl", appBgImageUrl);
+                        try {
+                            //new LoadImage().execute(appBgImageUrl);         //for backgroung image
+                            if (appBgImageUrl != null) {
+                                Picasso.with(CategorizationScreen.this).load(appBgImageUrl).into(new Target() {
+                                    @Override
+                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                        catzation_Relative_Background.setBackgroundDrawable(new BitmapDrawable(bitmap));
+                                    }
+
+                                    @Override
+                                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                                    }
+
+                                    @Override
+                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                                    }
+                                });
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //For Banner
+                        try {
+                            double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
+                            if (showAdWeight > randomNo) {
+                                if (showBanner.equalsIgnoreCase("true")) {
+                                    showInMobiBanner();
+                                }
+                            } else {
+                                if (showBanner.equalsIgnoreCase("true")) {
+                                    showAdBanner();
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        catZationGridAdapter.notifyDataSetChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        hidePDialog();
+                        FirebaseCrash.log("Exception in onResponse catzationspinurl:CategorizationScreen.java >" + e);
+                    }
+
                 }
-                catZationGridAdapter.notifyDataSetChanged();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Spin Error: " + error.getMessage());
-                System.out.println("catzationspinurl errorMessage= "+error.getMessage());
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d(TAG, "Spin Error: " + error.getMessage());
+                    System.out.println("catzationspinurl errorMessage= " + error.getMessage());
 
-                try {
-                    String ErrorMessage = error.getMessage();
-                    String Keyword = "Authentication Failed";
-                    if(ErrorMessage != null){
-                        if (ErrorMessage.contains(Keyword)) {
-                            authenticationErrorDialog();
+                    try {
+                        String ErrorMessage = error.getMessage();
+                        String Keyword = "Authentication Failed";
+                        if (ErrorMessage != null) {
+                            if (ErrorMessage.contains(Keyword)) {
+                                authenticationErrorDialog();
+                            } else {
+                                cantReachedDialog();
+                            }
                         } else {
                             cantReachedDialog();
                         }
-                    }else {
-                        cantReachedDialog();
+                        hidePDialog();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    hidePDialog();
-                }catch (Exception e){e.printStackTrace();}
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put(TOKEN_KEY, TOKEN_VALUE);
-                return headers;
-            }
-        };
-        RequestQueue spinrequestQueue = Volley.newRequestQueue(CategorizationScreen.this);
-        spinrequestQueue.add(spinRequest);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put(TOKEN_KEY, TOKEN_VALUE);
+                    return headers;
+                }
+            };
+            RequestQueue spinrequestQueue = Volley.newRequestQueue(CategorizationScreen.this);
+            spinrequestQueue.add(spinRequest);
+        }catch (Exception e) {
+            e.printStackTrace();
+            hidePDialog();
+            /*try {
+                Toast.makeText(CategorizationScreen.this, "No data found due to internet connection!", Toast.LENGTH_SHORT);
+            }catch (Exception ed){
+                ed.printStackTrace();
+            }*/
+            FirebaseCrash.log("Exception in calling catzationspinurl:CategorizationScreen.java >" + e);
+        }
 
         //set selected spinner position
         try {
@@ -442,7 +508,10 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             }else {
                 System.out.println("Categorization size is 1.");
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception at fetching old categorization:CategorizationScreen.java >"+e);
+        }
 
         //Categorization Spinner Item Selected Listener
         categorization.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -453,7 +522,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     // Getting the Container Layout of the ListView
                     LinearLayout linearLayoutParent = (LinearLayout) container;
                     // Getting the inner Linear Layout if it is used :LinearLayout
-                    // linearLayoutChild = (LinearLayout )
+                    // linearLayoutChild = (LinearLayout)
                     // linearLayoutParent.getChildAt(1); 1 indicate position
                     TextView tvSpinName = (TextView) linearLayoutParent.getChildAt(0);
                     String NOW_SELECTED_CATEGORIZATION_NAME = tvSpinName.getText().toString();
@@ -484,15 +553,20 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                         LoadCategories(APP_ID, NOW_SELECTED_CATEGORIZATION_ID, deviceID.toString());
                     }
 
-                        int SELECTED_CATEGORIZATION_ID = categorization.getSelectedItemPosition();
-                        System.out.println("SELECTED_CATEGORIZATION_ID = " + SELECTED_CATEGORIZATION_ID);
-                        PREVIOUS_SELECTED_CATEGORIZATION_ID = SELECTED_CATEGORIZATION_ID + 1;
-                        CATZ_editor = CATZ_preferences.edit();
-                        CATZ_editor.putInt(PREFS_CATZ_KEY, PREVIOUS_SELECTED_CATEGORIZATION_ID);
-                        CATZ_editor.commit();
-                        System.out.println("SELECTED_CATEGORIZATION_ID + 1 = " + PREVIOUS_SELECTED_CATEGORIZATION_ID);
+                    int SELECTED_CATEGORIZATION_ID = categorization.getSelectedItemPosition();
+                    System.out.println("SELECTED_CATEGORIZATION_ID = " + SELECTED_CATEGORIZATION_ID);
+                    PREVIOUS_SELECTED_CATEGORIZATION_ID = SELECTED_CATEGORIZATION_ID + 1;
+                    CATZ_editor = CATZ_preferences.edit();
+                    CATZ_editor.putInt(PREFS_CATZ_KEY, PREVIOUS_SELECTED_CATEGORIZATION_ID);
+                    CATZ_editor.commit();
+                    System.out.println("SELECTED_CATEGORIZATION_ID + 1 = " + PREVIOUS_SELECTED_CATEGORIZATION_ID);
 
-                }catch (Exception e) {e.printStackTrace();}
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    gridViewCategoriesText.setVisibility(View.GONE);
+                    PersonalizeLayout.setVisibility(View.GONE);
+                    FirebaseCrash.log("Exception in categorization.setOnItemSelectedListener:CategorizationScreen.java >"+e);
+                }
             }
 
             @Override
@@ -502,7 +576,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
         // GridView
         // Adding request to request queue
-        gridViewCategoriesText.setNumColumns(2);
+        //gridViewCategoriesText.setNumColumns(2);
         //listGrid.setImageResource(R.drawable.ic_action_view_as_list);
         gridViewCategoriesText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -511,6 +585,8 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                 try {
                     // Getting the Container Layout of the ListView
                     LinearLayout linearLayoutParent = (LinearLayout) view;
+                    TextView cat_name_text = (TextView) linearLayoutParent.getChildAt(1);
+                    String NOW_SELECTED_CATEGORY_NAME = cat_name_text.getText().toString();
                     TextView tvCategory = (TextView) linearLayoutParent.getChildAt(2);
 
                     PrevActivityNo = ActivityNo;
@@ -526,9 +602,13 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     final ArrayList CatArray = new ArrayList();
                     CatArray.add(SelectedCategoryId);
                     System.out.println("CatArray=" + CatArray);
+                    final ArrayList CatNameArray = new ArrayList();
+                    CatNameArray.add(NOW_SELECTED_CATEGORY_NAME);
+                    System.out.println("CatNameArray=" + CatNameArray);
 
                     Intent intentcat = new Intent(CategorizationScreen.this, CategoryScreen.class);
                     intentcat.putExtra("categoryID", CatArray);
+                    intentcat.putExtra("CategoryName", CatNameArray);
                     intentcat.putExtra("showBanner", showBanner);
                     intentcat.putExtra("showInmobiAdWeightage", showInmobiAdWeightage);
                     intentcat.putExtra("minIntervalInterstitial", minIntervalInterstitial);
@@ -540,14 +620,18 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     intentcat.putExtra("ActivityNo", ActivityNo);
                     startActivity(intentcat);
                     CategorizationScreen.this.finish();
-                }catch (Exception e) {e.printStackTrace();}
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    FirebaseCrash.log("Exception in  gridViewCategoriesText.setOnItemClickListener:CategorizationScreen.java >"+e);
+                    /*try{
+                        Toast.makeText(CategorizationScreen.this, "Please wait...\nOr try again...", Toast.LENGTH_SHORT).show();
+                    }catch (Exception exx){
+                        exx.printStackTrace();
+                    }*/
+                }
             }
         });
     }
-
-    /*******************************
-     * End OnCreate
-     **************************/
 
     private void LoadCategories(String getappId, String getcategorizationId, String getdeviceId)
     {
@@ -557,70 +641,83 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
         progressDialogCall();
         // Creating volley request obj getting Categories
+        try {
         @SuppressWarnings("deprecation")
-        final String categoriesurl = URL_IP_ADDRESS + URL_LOADCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&categorizationId=" + URLEncoder.encode(setcategorizationId) + "&deviceId=" + URLEncoder.encode(setdeviceId);
-        System.out.println("categoriesurl = "+categoriesurl);
-        JsonObjectRequest categoriesRequest = new JsonObjectRequest(Request.Method.POST, categoriesurl, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject volleyResponse) {
-                        // For Categories
-                        try {
-                            hidePDialog();
-                            categoriGridBaseAdapter.clearCategoryGrid();
-                            categoriListBaseAdapter.clearCategoryList();
+            final String categoriesurl = URL_IP_ADDRESS + URL_LOADCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&categorizationId=" + URLEncoder.encode(setcategorizationId) + "&deviceId=" + URLEncoder.encode(setdeviceId);
+            System.out.println("categoriesurl = " + categoriesurl);
+            JsonObjectRequest categoriesRequest = new JsonObjectRequest(Request.Method.POST, categoriesurl, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject volleyResponse) {
+                            // For Categories
+                            try {
+                                hidePDialog();
+                                categoriGridBaseAdapter.clearCategoryGrid();
+                                categoriListBaseAdapter.clearCategoryList();
 
-                            JSONArray categoriesArray = volleyResponse.getJSONArray("categories");
-                            System.out.println("categoriesArray.length()="+categoriesArray.length());
-                            for (int i = 0; i < categoriesArray.length(); i++) {
-                                JSONObject categoryObject = categoriesArray.getJSONObject(i);
-                                CategoriesModel categoriesModel = new CategoriesModel();
-                                categoriesModel.setCatTitle(categoryObject.getString("name"));
-                                categoriesModel.setCatID(categoryObject.getString("id"));
-                                categoriesModel.setCatImage(categoryObject.getString("image"));
-                                System.out.println("Inside Cat: "+categoryObject.getString("name"));
-                                System.out.println("Inside Cat: "+categoryObject.getString("id"));
-                                System.out.println("Inside Cat: "+categoryObject.getString("image"));
-                                categoriesModeList.add(categoriesModel);
+                                JSONArray categoriesArray = volleyResponse.getJSONArray("categories");
+                                System.out.println("categoriesArray.length()=" + categoriesArray.length());
+                                for (int i = 0; i < categoriesArray.length(); i++) {
+                                    JSONObject categoryObject = categoriesArray.getJSONObject(i);
+                                    CategoriesModel categoriesModel = new CategoriesModel();
+                                    categoriesModel.setCatTitle(categoryObject.getString("name"));
+                                    categoriesModel.setCatID(categoryObject.getString("id"));
+                                    categoriesModel.setCatImage(categoryObject.getString("image"));
+                                    System.out.println("Inside Cat: " + categoryObject.getString("name"));
+                                    System.out.println("Inside Cat: " + categoryObject.getString("id"));
+                                    System.out.println("Inside Cat: " + categoryObject.getString("image"));
+                                    categoriesModeList.add(categoriesModel);
+                                }
+
+                                categoriGridBaseAdapter.notifyDataSetChanged();
+                                categoriListBaseAdapter.notifyDataSetChanged();
+                                catZationGridAdapter.notifyDataSetChanged();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                hidePDialog();
+                                FirebaseCrash.log("Exception at getting categories:CategorizationScreen.java >" + e);
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        categoriGridBaseAdapter.notifyDataSetChanged();
-                        categoriListBaseAdapter.notifyDataSetChanged();
-                        catZationGridAdapter.notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                VolleyLog.d(TAG, "Cateegory fetching Error: " + volleyError.getMessage());
-                System.out.println("categoriesurl error= "+volleyError.getMessage());
 
-                try {
-                    String ErrorMessage = volleyError.getMessage();
-                    String Keyword = "Authentication Failed";
-                    if(ErrorMessage != null){
-                        if (ErrorMessage.contains(Keyword)) {
-                            authenticationErrorDialog();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    VolleyLog.d(TAG, "Cateegory fetching Error: " + volleyError.getMessage());
+                    System.out.println("categoriesurl error= " + volleyError.getMessage());
+
+                    try {
+                        String ErrorMessage = volleyError.getMessage();
+                        String Keyword = "Authentication Failed";
+                        if (ErrorMessage != null) {
+                            if (ErrorMessage.contains(Keyword)) {
+                                authenticationErrorDialog();
+                            } else {
+                                cantReachedDialog();
+                            }
                         } else {
                             cantReachedDialog();
                         }
-                    }else {
-                        cantReachedDialog();
+                        hidePDialog();
+                    } catch (Exception e) {
+                        hidePDialog();
+                        e.printStackTrace();
                     }
-                    hidePDialog();
-                }catch (Exception e){e.printStackTrace();}
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put(TOKEN_KEY, TOKEN_VALUE);
-                return headers;
-            }
-        };
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(categoriesRequest);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put(TOKEN_KEY, TOKEN_VALUE);
+                    return headers;
+                }
+            };
+            // Adding request to request queue
+            AppController.getInstance().addToRequestQueue(categoriesRequest);
+        }catch (Exception e) {
+            e.printStackTrace();
+            hidePDialog();
+            FirebaseCrash.log("Exception at getting categories:CategorizationScreen.java >"+e);
+        }
     }
 
     private void showAdBanner() {
@@ -645,7 +742,10 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     }
                 }
             });
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in showAdBanner():CategorizationScreen.java >"+e);
+        }
     }
 
     private void showInMobiBanner() {
@@ -700,7 +800,10 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                 inMobiAdView.addView(mBannerAd, bannerLayoutParams);
                 mBannerAd.load();
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            FirebaseCrash.log("Exception in showInMobiBanner():CategorizationScreen.java >"+e);
+        }
     }
 
     private int toPixelUnits(int dipUnit) {
@@ -825,15 +928,15 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                                 @Override
                                 public void onClick(
                                         DialogInterface dialogInterface, int i) {
-                                    CategorizationScreen.this.finish();
                                     try {
                                         CATZ_editor.clear();
                                         CATZ_editor.commit();
                                         editor.clear();
                                         editor.commit();
-                                        finish();
+                                        CategorizationScreen.this.finish();
                                     } catch (Exception e) {
                                         e.printStackTrace();
+                                        CategorizationScreen.this.finish();
                                     }
                                 }
                             });
@@ -858,18 +961,18 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             @Override
             public boolean onMenuItemClick(MenuItem arg0) {
                try{
-                if (!flag) {
-                    gridViewCategoriesText.setAdapter(categoriListBaseAdapter);
-                    gridViewCategoriesText.setNumColumns(1);
-                    listGridConvertor.setIcon(R.drawable.ic_action_view_as_grid);
-                    flag = true;
-                } else {
-                    gridViewCategoriesText.setAdapter(categoriGridBaseAdapter);
-                    gridViewCategoriesText.setNumColumns(2);
-                    listGridConvertor.setIcon(R.drawable.ic_action_view_as_list);
-                    flag = false;
-                }
-            }catch (Exception e){e.printStackTrace();}
+                    if (!flag) {
+                        gridViewCategoriesText.setAdapter(categoriListBaseAdapter);
+                        gridViewCategoriesText.setNumColumns(1);
+                        listGridConvertor.setIcon(R.drawable.ic_action_view_as_grid);
+                        flag = true;
+                    } else {
+                        gridViewCategoriesText.setAdapter(categoriGridBaseAdapter);
+                        gridViewCategoriesText.setNumColumns(2);
+                        listGridConvertor.setIcon(R.drawable.ic_action_view_as_list);
+                        flag = false;
+                    }
+                }catch (Exception e){e.printStackTrace();}
                 return false;
             }
         });

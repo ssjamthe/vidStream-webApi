@@ -22,6 +22,7 @@ import com.google.android.youtube.player.YouTubePlayer.ErrorReason;
 import com.google.android.youtube.player.YouTubePlayer.PlaybackEventListener;
 import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
+import com.google.firebase.crash.FirebaseCrash;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiBanner;
 import com.inmobi.sdk.InMobiSdk;
@@ -83,8 +84,9 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 	private CheckInternetConnection cic;
 	private Boolean isInternetPresent = false;
 	private ArrayList CategoryHierarchyList = new ArrayList();
+	private ArrayList Category_Name = new ArrayList();
 	private long showMinIntervalInterstitial;
-	private int ActivityNo, PrevActivityNo;
+	private int ActivityNo = 0, PrevActivityNo = 0;
 	private static final String PREFS_NAME = "VID_PREF";
 	private static final String PREFS_KEY = "VID_PREF_PREV_ACTNO";
 	private SharedPreferences preferences;
@@ -110,7 +112,10 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			//Sheared Preferences
 			preferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 			SSLManager.handleSSLHandshake(); //For SSL Request
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			FirebaseCrash.log("Exception in SSL Request:YoutubePlayer.java >"+e);
+		}
 
 		player_background = (RelativeLayout) findViewById(R.id.player_background);
 		videoName = (TextView) findViewById(R.id.youtubeVidText);
@@ -120,6 +125,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			final Intent intentget = getIntent();
 			VIDEO_ID = intentget.getStringExtra("VIDEO_ID");
 			VIDEO_NAME = intentget.getStringExtra("VIDEO_NAME");
+			Category_Name = intentget.getStringArrayListExtra("CategoryName");
 			CategoryHierarchyList = intentget.getStringArrayListExtra("categoryID");
 			showBanner = intentget.getStringExtra("showBanner");
 			youtubeshowInmobiAdWeightage = intentget.getStringExtra("showInmobiAdWeightage");
@@ -130,7 +136,13 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			flag = intentget.getExtras().getBoolean("flag");
 			ActivityNo = getIntent().getIntExtra("ActivityNo", 0);
 			System.out.println("Get Categorization ActivityNo from Intent>>>And set ActivityNo = " + ActivityNo + ";");
-		}catch(Exception e){e.printStackTrace();}
+		}catch(Exception e){
+			e.printStackTrace();
+			Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+			startActivity(intent);
+			YoutubePlayer.this.finish();
+			FirebaseCrash.log("Exception in getting intent:YoutubePlayer.java >"+e);
+		}
 
 		cic = new CheckInternetConnection(getApplicationContext());
 		isInternetPresent = cic.isConnectingToInternet();
@@ -182,7 +194,12 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
                         intentHome.putExtra("minIntervalInterstitial", showMinIntervalInterstitial);
                         startActivity(intentHome);
                         YoutubePlayer.this.finish();
-                    }catch (Exception e){e.printStackTrace();}
+                    }catch (Exception e){
+						e.printStackTrace();
+						Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+						startActivity(intent);
+						YoutubePlayer.this.finish();
+					}
 				}
 			});
 
@@ -190,7 +207,10 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 		try {
 			youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtubeplayerview);
 			youTubePlayerView.initialize(API_KEY, this);
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			FirebaseCrash.log("Exception in initializing YouTubePlayerView:YoutubePlayer.java >"+e);
+		}
 
 		try {
 			if(youTubePlayer != null){
@@ -219,7 +239,10 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 					}
 				});
 			}
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			FirebaseCrash.log("Exception in bg image loading:YoutubePlayer.java >"+e);
+		}
 
 		//For Video Beacons
 		try {
@@ -248,6 +271,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 
 		}catch (Exception e){
 			e.printStackTrace();
+			FirebaseCrash.log("Exception in video beacones :YoutubePlayer.java >"+e);
 		}
 
 	}
@@ -262,7 +286,10 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 				String error = String.format(getString(R.string.player_error), errorReason.toString());
 				Toast.makeText(this, error, Toast.LENGTH_LONG).show();
 			}
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			FirebaseCrash.log("Exception in onInitializationFailure():YoutubePlayer.java >"+e);
+		}
 	}
 
 	@Override
@@ -272,7 +299,10 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 				// Retry initialization if user performed a recovery action
 				getYouTubePlayerProvider().initialize(API_KEY, this);
 			}
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			FirebaseCrash.log("Exception in onActivityResult():YoutubePlayer.java >"+e);
+		}
 	}
 
 	protected Provider getYouTubePlayerProvider() {
@@ -293,7 +323,11 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			}else {
 				Toast.makeText(this, R.string.player_error, Toast.LENGTH_LONG).show();
 			}
-		}catch (Exception e){e.printStackTrace();Toast.makeText(this, R.string.player_error, Toast.LENGTH_LONG).show();}
+		}catch (Exception e){
+			e.printStackTrace();
+			Toast.makeText(this, R.string.player_error, Toast.LENGTH_LONG).show();
+			FirebaseCrash.log("Exception in onInitializationSuccess():YoutubePlayer.java >"+e);
+		}
 	}
 
 	private PlaybackEventListener playbackEventListener = new PlaybackEventListener() {
@@ -385,6 +419,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 				deleteDir(dir);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 	}
@@ -431,6 +466,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
             }
             Intent intentplayer = new Intent(YoutubePlayer.this, CategoryScreen.class);
             intentplayer.putExtra("categoryID", CategoryHierarchyList);
+			intentplayer.putExtra("CategoryName", Category_Name);
             intentplayer.putExtra("showBanner", showBanner);
             intentplayer.putExtra("showInmobiAdWeightage", youtubeshowInmobiAdWeightage);
             intentplayer.putExtra("minIntervalInterstitial", showMinIntervalInterstitial);
@@ -443,6 +479,9 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
             YoutubePlayer.this.finish();
         } catch (Exception e) {
             e.printStackTrace();
+			Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+			startActivity(intent);
+			YoutubePlayer.this.finish();
         }
     }
 }

@@ -48,22 +48,25 @@ public class CategorizationBaseAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView , ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		CategorizationViewHolder viewHolder = new CategorizationViewHolder();
-		//getting model data from the row
-		CatZationModel model = catzationModels.get(position);
+		try {
+			LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			CategorizationViewHolder viewHolder = new CategorizationViewHolder();
+			//getting model data from the row
+			CatZationModel model = catzationModels.get(position);
 
-		if(convertView == null) {
-			convertView = inflater.inflate(R.layout.catzation_row, null);
-			viewHolder.categorizationName = (TextView) convertView.findViewById(R.id.categorizationSpinName);
-			viewHolder.categorizationSelectedID = (TextView) convertView.findViewById(R.id.categorizationSelectedID);
-			convertView.setTag(viewHolder);
-		}else{
-			viewHolder = (CategorizationViewHolder) convertView.getTag();
+			if (convertView == null) {
+				convertView = inflater.inflate(R.layout.catzation_row, null);
+				viewHolder.categorizationName = (TextView) convertView.findViewById(R.id.categorizationSpinName);
+				viewHolder.categorizationSelectedID = (TextView) convertView.findViewById(R.id.categorizationSelectedID);
+				convertView.setTag(viewHolder);
+			} else {
+				viewHolder = (CategorizationViewHolder) convertView.getTag();
+			}
+			viewHolder.categorizationName.setText(model.getCatZationName());
+			viewHolder.categorizationSelectedID.setText(model.getCatZationId());
+		}catch (Exception e){
+			e.printStackTrace();
 		}
-		viewHolder.categorizationName.setText(model.getCatZationName());
-		viewHolder.categorizationSelectedID.setText(model.getCatZationId());
-
 		return convertView;
 	}
 }

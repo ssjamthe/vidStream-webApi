@@ -45,12 +45,16 @@ public class OrderByAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View contextView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		if(contextView == null)
-			contextView = inflater.inflate(R.layout.order_by, null);
-		TextView textView = (TextView) contextView.findViewById(R.id.orderByList);
-		OrderByModel model = orderByModels.get(position);
-		textView.setText(model.getOrderTitle());
+		try {
+			LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			if (contextView == null)
+				contextView = inflater.inflate(R.layout.order_by, null);
+			TextView textView = (TextView) contextView.findViewById(R.id.orderByList);
+			OrderByModel model = orderByModels.get(position);
+			textView.setText(model.getOrderTitle());
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return contextView;
 	}
 

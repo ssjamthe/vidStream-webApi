@@ -68,7 +68,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
     private boolean flag;
     private long minIntervalInterstitial;
     private RelativeLayout inMobiAdContainer, feedback_linear;
-    private int ActivityNo;
+    private int ActivityNo = 0;
     private String BackGround_Image, deviceID, showBanner, showInmobiAdWeightage;
     private LinearLayout feedbackInnerLayout;
     private NetworkResponse networkResponse;
@@ -111,7 +111,12 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
             showBanner = adIntent.getStringExtra("showBanner");
             showInmobiAdWeightage = adIntent.getStringExtra("showInmobiAdWeightage");
             minIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial", 0);
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+            Intent intent = new Intent(FeedbackForm.this, CategorizationScreen.class);
+            startActivity(intent);
+            FeedbackForm.this.finish();
+        }
 
         //Initialize Views
         feedback_linear = (RelativeLayout) findViewById(R.id.feedback_linear);

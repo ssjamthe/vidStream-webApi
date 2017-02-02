@@ -28,27 +28,36 @@ public class AdManager implements ApplicationConstants{
 
     public void createAdMobAds()
     {
-        AdMob_Interstitial = new InterstitialAd(_context);
-        AdMob_Interstitial.setAdUnitId(ADMOB_INTERSTITIAL);
-        requestNewAdMobInt();
-        AdMob_Interstitial.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-            }
-            @Override
-            public void onAdClosed() {
-                long adNewTime = new Date().getTime() / 1000;
-                setNewTime(adNewTime);
-                requestNewAdMobInt();
-            }
-        });
+        try {
+            AdMob_Interstitial = new InterstitialAd(_context);
+            AdMob_Interstitial.setAdUnitId(ADMOB_INTERSTITIAL);
+            requestNewAdMobInt();
+            AdMob_Interstitial.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                }
+
+                @Override
+                public void onAdClosed() {
+                    long adNewTime = new Date().getTime() / 1000;
+                    setNewTime(adNewTime);
+                    requestNewAdMobInt();
+                }
+            });
+        }catch (Exception e){
+            System.out.println("Exception occure to generate AdMob_InterstitialAd >>>>"+e);
+        }
     }
 
     private void requestNewAdMobInt()
     {
-        AdRequest adRequestInt = new AdRequest.Builder().build();
-        // Load the interstitial ad.
-        AdMob_Interstitial.loadAd(adRequestInt);
+        try {
+            AdRequest adRequestInt = new AdRequest.Builder().build();
+            // Load the interstitial ad.
+            AdMob_Interstitial.loadAd(adRequestInt);
+        }catch (Exception e){
+            System.out.println("Exception occure to generate AdRequest >>>>"+e);
+        }
     }
 
     public InterstitialAd getAdMobAd() {
@@ -65,40 +74,50 @@ public class AdManager implements ApplicationConstants{
 
     public void createInMobiInterstitial()
     {
-        //Fresco.initialize(this);
-        InMobiSdk.setLogLevel(InMobiSdk.LogLevel.DEBUG);
-        InMobiSdk.init(_context, INMOBI_ACCOUNT_ID);
+        try {
+            //Fresco.initialize(this);
+            InMobiSdk.setLogLevel(InMobiSdk.LogLevel.DEBUG);
+            InMobiSdk.init(_context, INMOBI_ACCOUNT_ID);
 
-        InMobi_InterstitialAd = new InMobiInterstitial(_context, INMOBI_INTERSTITIAL,
-                new InMobiInterstitial.InterstitialAdListener() {
-                    @Override
-                    public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
-                    }
-                    @Override
-                    public void onAdDisplayed(InMobiInterstitial inMobiInterstitial) {
-                    }
-                    @Override
-                    public void onAdDismissed(InMobiInterstitial inMobiInterstitial) {
-                        long adNewTime = new Date().getTime() / 1000;
-                        setNewTime(adNewTime);
-                        createInMobiInterstitial();
-                    }
-                    @Override
-                    public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
-                    }
-                    @Override
-                    public void onAdLoadSucceeded(InMobiInterstitial inMobiInterstitial) {
-                        if (inMobiInterstitial.isReady()) {
-                            InMobi_InterstitialAd.load();
+            InMobi_InterstitialAd = new InMobiInterstitial(_context, INMOBI_INTERSTITIAL,
+                    new InMobiInterstitial.InterstitialAdListener() {
+                        @Override
+                        public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
                         }
-                    }
-                    @Override
-                    public void onAdLoadFailed(InMobiInterstitial inMobiInterstitial, InMobiAdRequestStatus inMobiAdRequestStatus) {
-                    }
-                    @Override
-                    public void onUserLeftApplication(InMobiInterstitial inMobiInterstitial) {
-                    }
-                });
+
+                        @Override
+                        public void onAdDisplayed(InMobiInterstitial inMobiInterstitial) {
+                        }
+
+                        @Override
+                        public void onAdDismissed(InMobiInterstitial inMobiInterstitial) {
+                            long adNewTime = new Date().getTime() / 1000;
+                            setNewTime(adNewTime);
+                            createInMobiInterstitial();
+                        }
+
+                        @Override
+                        public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+                        }
+
+                        @Override
+                        public void onAdLoadSucceeded(InMobiInterstitial inMobiInterstitial) {
+                            if (inMobiInterstitial.isReady()) {
+                                InMobi_InterstitialAd.load();
+                            }
+                        }
+
+                        @Override
+                        public void onAdLoadFailed(InMobiInterstitial inMobiInterstitial, InMobiAdRequestStatus inMobiAdRequestStatus) {
+                        }
+
+                        @Override
+                        public void onUserLeftApplication(InMobiInterstitial inMobiInterstitial) {
+                        }
+                    });
+        }catch (Exception e){
+            System.out.println("Exception occure to generate InMobi_InterstitialAd >>>>"+e);
+        }
     }
 
     public InMobiInterstitial getInMobiAd() {

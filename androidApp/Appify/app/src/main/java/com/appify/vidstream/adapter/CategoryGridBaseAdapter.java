@@ -54,25 +54,30 @@ public class CategoryGridBaseAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ImageLoader imageLoader = AppController.getInstance().getImageLoader();
-        CategoryGridViewHolder viewHolder = new CategoryGridViewHolder();
-        // getting model data for the row
-        final CategoriesModel model = categoriesModels.get(position);
-        if (convertView == null){
-            convertView = inflater.inflate(R.layout.category_grid_item, null);
-            viewHolder.name = (TextView) convertView.findViewById(R.id.categoriGridText);
-            viewHolder.id = (TextView) convertView.findViewById(R.id.categoriGridID);
-            viewHolder.image = (NetworkImageView) convertView.findViewById(R.id.categoriGridImage);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (CategoryGridViewHolder) convertView.getTag();
+        try {
+            LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+            CategoryGridViewHolder viewHolder = new CategoryGridViewHolder();
+            // getting model data for the row
+            final CategoriesModel model = categoriesModels.get(position);
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.category_grid_item, null);
+                viewHolder.name = (TextView) convertView.findViewById(R.id.categoriGridText);
+                viewHolder.id = (TextView) convertView.findViewById(R.id.categoriGridID);
+                viewHolder.image = (NetworkImageView) convertView.findViewById(R.id.categoriGridImage);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (CategoryGridViewHolder) convertView.getTag();
+            }
+            viewHolder.name.setText(model.getCatTitle());
+            viewHolder.id.setText(model.getCateID());
+            try {
+                viewHolder.image.setImageUrl(model.getCatImage(), imageLoader);
+            }catch (Exception ex){ex.printStackTrace();}
+            System.out.println("Grid ImageURL: " + model.getCatImage());
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        viewHolder.name.setText(model.getCatTitle());
-        viewHolder.id.setText(model.getCateID());
-        viewHolder.image.setImageUrl(model.getCatImage(), imageLoader);
-        System.out.println("Grid ImageURL: " + model.getCatImage());
         return convertView;
     }
 
