@@ -139,6 +139,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 		}catch(Exception e){
 			e.printStackTrace();
 			Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+			intent.putExtra("ActivityName", "FirstLaunch");
 			startActivity(intent);
 			YoutubePlayer.this.finish();
 			FirebaseCrash.log("Exception in getting intent:YoutubePlayer.java >"+e);
@@ -187,6 +188,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 				public void onClick(View v) {
                     try {
                         Intent intentHome = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+                        intentHome.putExtra("ActivityName", "NextLaunch");
                         intentHome.putExtra("flag", flag);
                         intentHome.putExtra("ActivityNo", ActivityNo);
                         intentHome.putExtra("showBanner", showBanner);
@@ -197,6 +199,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
                     }catch (Exception e){
 						e.printStackTrace();
 						Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+						intent.putExtra("ActivityName", "FirstLaunch");
 						startActivity(intent);
 						YoutubePlayer.this.finish();
 					}
@@ -314,12 +317,12 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 		/** add listeners to YouTubePlayer instance **/
 		try {
 			youTubePlayer = player;
-			player.setPlayerStateChangeListener(playerStateChangeListener);
-			player.setPlaybackEventListener(playbackEventListener);
+			youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
+			youTubePlayer.setPlaybackEventListener(playbackEventListener);
 			/** Start buffering **/
 			if (!wasRestored) {
-				player.loadVideo(VIDEO_ID);
-				player.cueVideo(VIDEO_ID);
+				youTubePlayer.loadVideo(VIDEO_ID);
+				youTubePlayer.cueVideo(VIDEO_ID);
 			}else {
 				Toast.makeText(this, R.string.player_error, Toast.LENGTH_LONG).show();
 			}
@@ -480,6 +483,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
         } catch (Exception e) {
             e.printStackTrace();
 			Intent intent = new Intent(YoutubePlayer.this, CategorizationScreen.class);
+			intent.putExtra("ActivityName", "FirstLaunch");
 			startActivity(intent);
 			YoutubePlayer.this.finish();
         }

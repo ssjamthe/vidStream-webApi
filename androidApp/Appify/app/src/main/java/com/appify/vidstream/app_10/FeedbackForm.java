@@ -114,6 +114,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
         }catch (Exception e){
             e.printStackTrace();
             Intent intent = new Intent(FeedbackForm.this, CategorizationScreen.class);
+            intent.putExtra("ActivityName", "FirstLaunch");
             startActivity(intent);
             FeedbackForm.this.finish();
         }
@@ -432,6 +433,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
     public void onBackPressed() {
         ActivityNo = ActivityNo+1;
         Intent intentCatzation = new Intent(FeedbackForm.this,CategorizationScreen.class);
+        intentCatzation.putExtra("ActivityName", "NextLaunch");
         intentCatzation.putExtra("flag",flag);
         intentCatzation.putExtra("ActivityNo",ActivityNo);
         intentCatzation.putExtra("showBanner", showBanner);

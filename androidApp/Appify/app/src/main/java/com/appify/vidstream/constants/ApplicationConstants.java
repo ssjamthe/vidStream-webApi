@@ -17,13 +17,13 @@ package com.appify.vidstream.constants;
 public interface ApplicationConstants {
 
     //TODO:- Application Changes
-    String APP_ID = "10";                                                   // Change APP_ID = "2"    // U'll get .apk file from "Appify\app\build\outputs\apk\app_debug.apk"
+    String APP_ID = "12";                                                   // Change APP_ID = "2"    // U'll get .apk file from "Appify\app\build\outputs\apk\app_debug.apk"
     String APP_NAME = "Fitness";                                            // Change APP_NAME = ABC  // Also need to Change App Name From "app\res\values\strings.xml\app_name"
     String APP_THEME_COLOR = "#15da19";                                     // Change APP_THEME_COLOR for Alert messages Appify text color  // Also Need to change colors from "app\res\values\colors.xml"
     String APP_PACKAGE = "com.appify.vidstream.app_10";                     // This required for IMEI // Change APP_PACKAGE = com.appify.vidstream.app_10  // Also need to Change Pkg Name at line no. 4 From "app\manifests\AndroidManifest.xml\package="com.appify.vidstream.app"" and Also from Gradle Scripts\build.gradle(Module: app)\applicationId "com.appify.vidstream.app"
 
     //TODO:- IP ADDRESS
-    String URL_IP_ADDRESS = "http://192.168.1.8:8080/vidStreamWebApi/";   //"http://103.235.104.122:8080/Appify_Server/" Need to change IP Address if required. eg: https://appifyvids.com/Appify_Server/
+    String URL_IP_ADDRESS = "https://appifyworld.com/vidStreamWebApi/";   //"http://103.235.104.122:8080/Appify_Server/" Need to change IP Address if required. eg: https://appifyvids.com/Appify_Server/
 
     //TODO:- For Ads
     String ADMOB_BANNER = "ca-app-pub-9457891612292134/4990221400";         // Change AdMob Banner Id "ca-app-pub-9457891612292134/4990221400" also need to change from "app\res\values\strings.xml\banner_admob_ad_unit_id".
@@ -33,7 +33,7 @@ public interface ApplicationConstants {
     String INMOBI_ACCOUNT_ID = "86e456a90dec401f9a7c9a90a3e6dfad";          // User InMobi Account Id
 
     //TODO:- Token ID
-    String TOKEN_VALUE = "WGFtYXJpblVzZXI6WGFtYXJpblBhc3N3b2Jk";            // Change TOKEN_VALUE when you have in database
+    String TOKEN_VALUE = "0B:91:24:C5:8B:D8:22:28:02:7E:DD:A8:E2:F0:3E:07:C9:B4:CA:4D";            // Change TOKEN_VALUE when you have in database
 
     //TODO:- Youtube Api Key collected from Google Developer Console
     String API_KEY = "AIzaSyA19p2DzkYYV0oOVglAf-OHCF-Kazwod0E";             // Make sure change where there Android API key is available at your https://console.developers.google.com

@@ -34,8 +34,26 @@ public class SSLManager {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
+                public boolean verify(String Hostname, SSLSession Session) {
+                    System.out.println("Hostname = "+Hostname);
+                    System.out.println("Session = "+Session);
+                    if(Hostname.contains("appifyworld.com")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("youtube.com")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("googleadservices.com")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("admob")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("inmobi")){
+                        System.out.println(" return true");
+                        return true;
+                    }
+                    return false;
                 }
             });
         } catch (Exception ignored) {

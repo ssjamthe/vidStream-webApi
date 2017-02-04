@@ -55,6 +55,7 @@ public class NoInternetScreen extends AppCompatActivity {
 			public void onClick(View arg0) {
 				try {
 					Intent intent = new Intent(NoInternetScreen.this, CategorizationScreen.class);
+					intent.putExtra("ActivityName", "NoInternet");
 					intent.putExtra("flag", flag);
 					startActivity(intent);
 					NoInternetScreen.this.finish();
@@ -67,6 +68,7 @@ public class NoInternetScreen extends AppCompatActivity {
 			public void onClick(View arg0) {
 				try{
 					Intent intent = new Intent(NoInternetScreen.this,CategorizationScreen.class);
+					intent.putExtra("ActivityName", "NoInternet");
 					intent.putExtra("flag",flag);
 					startActivity(intent);
 					NoInternetScreen.this.finish();
@@ -79,6 +81,7 @@ public class NoInternetScreen extends AppCompatActivity {
 			public void onClick(View arg0) {
 				try {
 					Intent intent = new Intent(NoInternetScreen.this, CategorizationScreen.class);
+					intent.putExtra("ActivityName", "NoInternet");
 					intent.putExtra("flag", flag);
 					startActivity(intent);
 					NoInternetScreen.this.finish();

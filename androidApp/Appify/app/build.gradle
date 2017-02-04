@@ -39,7 +39,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
     compile "com.squareup.picasso:picasso:2.4.0"
-    compile files('libs/InMobi-5.3.1.jar','libs/volley.jar','libs/http-core-4.1.jar','libs/httpclient-4.3.6.jar','libs/YouTubeAndroidPlayerApi.jar')
+    compile files('libs/InMobi-6.0.4.jar','libs/volley.jar','libs/http-core-4.1.jar','libs/httpclient-4.3.6.jar','libs/YouTubeAndroidPlayerApi.jar')
 
     // Google
     compile 'com.google.android.gms:play-services-auth:9.4.0'

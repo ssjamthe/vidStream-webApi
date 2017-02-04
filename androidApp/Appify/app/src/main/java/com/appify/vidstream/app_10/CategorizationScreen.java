@@ -113,7 +113,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
     private String deviceID, showBanner, showAdMovingInside;
     private String appBgImageUrl;
     private int ActivityNo=0, PrevActivityNo, PREVIOUS_SELECTED_CATEGORIZATION_ID;
-    private String showInmobiAdWeightage;
+    private String showInmobiAdWeightage, ActivityName;
     private Date installTime, updateTime;
     private Spinner categorization;
     private MenuItem listGridConvertor;
@@ -188,22 +188,55 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
         //getIntent
         try {
-            flag = getIntent().getExtras().getBoolean("flag");
-            System.out.println("Get flag from Intent>>> And set flag = "+ flag +";");
-            ActivityNo = getIntent().getIntExtra("ActivityNo",0);
-            System.out.println("Get Categorization ActivityNo from Intent>>> And set ActivityNo = "+ ActivityNo +";");
-            showBanner = getIntent().getStringExtra("showBanner");
-            showInmobiAdWeightage = getIntent().getStringExtra("showInmobiAdWeightage");
-            minIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial",0);
-            //for getting Interstitial Ad.
-            interstitial = adManager.getAdMobAd();
-            System.out.println("Catz AdMob interstitial="+interstitial);
-            mInterstitialAd = adManager.getInMobiAd();
-            System.out.println("Catz InMobi interstitial="+mInterstitialAd);
+            ActivityName = getIntent().getStringExtra("ActivityName");
+            Log.e("ActivityName>>>", ""+ ActivityName);
+            if(ActivityName.equals("FirstLaunch")){
+                adManager.createAdMobAds(); //Request for creating Ad.
+                adManager.createInMobiInterstitial();
+                flag = false; //for List to Grid
+                long NewShowTime = new Date().getTime() / 1000;
+                Log.e("AdShowTime = ", "" + NewShowTime);
+                adManager.setNewTime(NewShowTime);
+                //long GetShowTime = adManager.getNewTime(); //Get New Time From AdManager
+                ActivityNo = 1;
+                PrevActivityNo = 1;
+                editor = preferences.edit();
+                editor.putInt(PREFS_KEY, PrevActivityNo);
+                editor.commit();
+                Log.e("ActivityNo>>>", ""+ ActivityNo);
+            }else if(ActivityName.equals("NoInternet")){
+                adManager.createAdMobAds(); //Request for creating Ad.
+                adManager.createInMobiInterstitial();
+                flag = getIntent().getExtras().getBoolean("flag");
+                System.out.println("Get flag from Intent>>> And set flag = "+ flag +";");
+                long NewShowTime = new Date().getTime() / 1000;
+                Log.e("AdShowTime = ", "" + NewShowTime);
+                adManager.setNewTime(NewShowTime);
+                //long GetShowTime = adManager.getNewTime(); //Get New Time From AdManager
+                ActivityNo = 1;
+                PrevActivityNo = 1;
+                editor = preferences.edit();
+                editor.putInt(PREFS_KEY, PrevActivityNo);
+                editor.commit();
+                Log.e("ActivityNo>>>", ""+ ActivityNo);
+            }else{
+                flag = getIntent().getExtras().getBoolean("flag");
+                System.out.println("Get flag from Intent>>> And set flag = "+ flag +";");
+                ActivityNo = getIntent().getIntExtra("ActivityNo",0);
+                System.out.println("Get Categorization ActivityNo from Intent>>> And set ActivityNo = "+ ActivityNo +";");
+                showBanner = getIntent().getStringExtra("showBanner");
+                showInmobiAdWeightage = getIntent().getStringExtra("showInmobiAdWeightage");
+                minIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial",0);
+                //for getting Interstitial Ad.
+                interstitial = adManager.getAdMobAd();
+                System.out.println("Catz AdMob interstitial="+interstitial);
+                mInterstitialAd = adManager.getInMobiAd();
+                System.out.println("Catz InMobi interstitial="+mInterstitialAd);
 
-            //For showing interstitial ads
-            ShowInterstitialBothAds();
-           //Toast.makeText(CategorizationScreen.this, "After Launch", Toast.LENGTH_SHORT).show();
+                //For showing interstitial ads
+                ShowInterstitialBothAds();
+                //Toast.makeText(CategorizationScreen.this, "After Launch", Toast.LENGTH_SHORT).show();
+            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -871,6 +904,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent intent = new Intent(CategorizationScreen.this, CategorizationScreen.class);
+                        intent.putExtra("ActivityName", "NextLaunch");
                         intent.putExtra("flag",flag);
                         intent.putExtra("ActivityNo",ActivityNo);
                         intent.putExtra("showBanner", showBanner);
@@ -991,6 +1025,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
             case R.id.refresh:
                 Intent ref = new Intent(CategorizationScreen.this,
                         CategorizationScreen.class);
+                ref.putExtra("ActivityName", "NextLaunch");
                 ref.putExtra("flag",flag);
                 ref.putExtra("ActivityNo",ActivityNo);
                 ref.putExtra("showBanner", showBanner);

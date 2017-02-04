@@ -36,6 +36,7 @@ public class SplashScreen extends AppCompatActivity {
                 }else{
                     Intent intent = new Intent(SplashScreen.this,
                             CategorizationScreen.class);
+                    intent.putExtra("ActivityName", "FirstLaunch");
                     startActivity(intent);
                     SplashScreen.this.finish();
                 }

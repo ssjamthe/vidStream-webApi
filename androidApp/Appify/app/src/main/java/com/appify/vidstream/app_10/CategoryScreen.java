@@ -432,39 +432,46 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 @Override
                 public void onResponse(JSONObject childCategoryVideoResponse) {
                     try { //If response for Categories
-                        childCategoriesGridList.setVisibility(View.VISIBLE);
-                        orderByRelativeLayout.setVisibility(View.GONE);
-                        videoORcategory = "category";
-                        JSONArray childCatArray = childCategoryVideoResponse.getJSONArray("categories");
-                        for (int j = 0; j < childCatArray.length(); j++) {
-                            JSONObject childCatObject = childCatArray.getJSONObject(j);
-                            CategoriesModel categoriesModel = new CategoriesModel();
-                            categoriesModel.setCatTitle(childCatObject.getString("name"));
-                            categoriesModel.setCatID(childCatObject.getString("id"));
-                            categoriesModel.setCatImage(childCatObject.getString("image"));
-                            categoriesModeList.add(categoriesModel);
+                        String response = childCategoryVideoResponse.toString();
+                        Log.e("childCategoryVideoResponse>>>>",""+response);
+                        if(response.contains("orderAttributes")){
+                            childCategoriesGridList.setVisibility(View.GONE);
+                            videoORcategory = "video";
+                            try {//Response for Order By Attributes
+                                orderByRelativeLayout.setVisibility(View.VISIBLE);
+                                JSONArray orderArray = childCategoryVideoResponse.getJSONArray("orderAttributes");
+                                for (int i = 0; i < orderArray.length(); i++) {
+                                    OrderByModel byModel = new OrderByModel();
+                                    byModel.setOrderTitle(orderArray.getString(i));
+                                    orderByModeList.add(byModel);
+                                }
+                            } catch (Exception exe) {
+                                exe.printStackTrace();
+                            }
+                            try {
+                                System.out.println("Set Outer VideoThumbnailGridBaseAdapter ----------------->");
+                                orderByAdapter.notifyDataSetChanged();
+                                System.out.println("orderByModeList>>>>>>" + orderByModeList);
+                            }catch (Exception ed){ed.printStackTrace();}
+                        }else{
+                            childCategoriesGridList.setVisibility(View.VISIBLE);
+                            orderByRelativeLayout.setVisibility(View.GONE);
+                            videoORcategory = "category";
+                            JSONArray childCatArray = childCategoryVideoResponse.getJSONArray("categories");
+                            for (int j = 0; j < childCatArray.length(); j++) {
+                                JSONObject childCatObject = childCatArray.getJSONObject(j);
+                                CategoriesModel categoriesModel = new CategoriesModel();
+                                categoriesModel.setCatTitle(childCatObject.getString("name"));
+                                categoriesModel.setCatID(childCatObject.getString("id"));
+                                categoriesModel.setCatImage(childCatObject.getString("image"));
+                                categoriesModeList.add(categoriesModel);
+                            }
                         }
                     } catch (Exception e) { //If response for Videos
                         e.printStackTrace();
-                        childCategoriesGridList.setVisibility(View.GONE);
-                        videoORcategory = "video";
-                        try {//Response for Order By Attributes
-                            orderByRelativeLayout.setVisibility(View.VISIBLE);
-                            JSONArray orderArray = childCategoryVideoResponse.getJSONArray("orderAttributes");
-                            for (int i = 0; i <= childCategoryVideoResponse.length(); i++) {
-                                OrderByModel byModel = new OrderByModel();
-                                byModel.setOrderTitle(orderArray.getString(i));
-                                orderByModeList.add(byModel);
-                            }
-                        } catch (Exception exe) {
-                            exe.printStackTrace();
-                        }
-                        try {
-                            System.out.println("Set Outer VideoThumbnailGridBaseAdapter ----------------->");
-                            orderByAdapter.notifyDataSetChanged();
-                            System.out.println("orderByModeList>>>>>>" + orderByModeList);
-                        }catch (Exception ed){e.printStackTrace();}
+                        hidePDialog();
                     }
+
                     try{childCategoryGridBaseAdapter.notifyDataSetChanged();}catch (Exception ed){ed.printStackTrace();}
                     hidePDialog();
                 }
@@ -647,24 +654,28 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 @Override
                 public void onResponse(JSONObject childCategoryVideoResponse) {
                     try {
-                        childCategoryGridBaseAdapter.clearCategoryGrid();
-                        childCategoryListBaseAdapter.clearCategoryList();
-                        VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
-                        VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
-                        videoGridList.setVisibility(View.VISIBLE);
-                        JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
-                        for (int k = 0; k < videoCatArray.length(); k++) {
-                            JSONObject videoCatObject = videoCatArray.getJSONObject(k);
-                            VideoModel videoModel = new VideoModel();
-                            videoModel.setVideoName(videoCatObject.getString("name"));
-                            videoModel.setVideoId(videoCatObject.getString("id"));
-                            videoModeList.add(videoModel);
+                        String response = childCategoryVideoResponse.toString();
+                        Log.e("childCategoryVideoResponse>>>>",""+response);
+                        if(response.contains("orderAttributes")){
+                            childCategoryGridBaseAdapter.clearCategoryGrid();
+                            childCategoryListBaseAdapter.clearCategoryList();
+                            VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
+                            VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
+                            videoGridList.setVisibility(View.VISIBLE);
+                            JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
+                            for (int k = 0; k < videoCatArray.length(); k++) {
+                                JSONObject videoCatObject = videoCatArray.getJSONObject(k);
+                                VideoModel videoModel = new VideoModel();
+                                videoModel.setVideoName(videoCatObject.getString("name"));
+                                videoModel.setVideoId(videoCatObject.getString("id"));
+                                videoModeList.add(videoModel);
+                            }
+                            VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
+                            System.out.println("Set OrderBy VideoThumbnailGridBaseAdapter ----------------->");
+                            VideoThumbnailListBaseAdapter.notifyDataSetChanged();
+                            orderByAdapter.notifyDataSetChanged();
+                            hidePDialog();
                         }
-                        VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
-                        System.out.println("Set OrderBy VideoThumbnailGridBaseAdapter ----------------->");
-                        VideoThumbnailListBaseAdapter.notifyDataSetChanged();
-                        orderByAdapter.notifyDataSetChanged();
-                        hidePDialog();
                     } catch (Exception e2) {
                         e2.printStackTrace();
                         hidePDialog();
@@ -760,18 +771,22 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 @Override
                 public void onResponse(JSONObject childCategoryVideoResponse) {
                     try {
-                        videoGridList.setVisibility(View.VISIBLE);
-                        JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
-                        for (int k = 0; k < videoCatArray.length(); k++) {
-                            JSONObject videoCatObject = videoCatArray.getJSONObject(k);
-                            VideoModel videoModel = new VideoModel();
-                            videoModel.setVideoName(videoCatObject.getString("name"));
-                            videoModel.setVideoId(videoCatObject.getString("id"));
-                            videoModeList.add(videoModel);
+                        String response = childCategoryVideoResponse.toString();
+                        Log.e("childCategoryVideoResponse>>>>",""+response);
+                        if(response.contains("orderAttributes")){
+                            videoGridList.setVisibility(View.VISIBLE);
+                            JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
+                            for (int k = 0; k < videoCatArray.length(); k++) {
+                                JSONObject videoCatObject = videoCatArray.getJSONObject(k);
+                                VideoModel videoModel = new VideoModel();
+                                videoModel.setVideoName(videoCatObject.getString("name"));
+                                videoModel.setVideoId(videoCatObject.getString("id"));
+                                videoModeList.add(videoModel);
+                            }
+                            VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
+                            VideoThumbnailListBaseAdapter.notifyDataSetChanged();
+                            orderByAdapter.notifyDataSetChanged();
                         }
-                        VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
-                        VideoThumbnailListBaseAdapter.notifyDataSetChanged();
-                        orderByAdapter.notifyDataSetChanged();
                         hidePDialog();
                     } catch (Exception e2) {
                         hidePDialog();
@@ -1002,6 +1017,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         }catch (Exception e){
             e.printStackTrace();
             Intent intent = new Intent(CategoryScreen.this, CategorizationScreen.class);
+            intent.putExtra("ActivityName", "FirstLaunch");
             startActivity(intent);
             CategoryScreen.this.finish();
         }
@@ -1028,6 +1044,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             releaseYoutubeThumbnailView();
             if (HierarchyList.isEmpty()) {
                 Intent intentCatzation = new Intent(CategoryScreen.this, CategorizationScreen.class);
+                intentCatzation.putExtra("ActivityName", "NextLaunch");
                 intentCatzation.putExtra("flag", flag);
                 intentCatzation.putExtra("ActivityNo", ActivityNo);
                 intentCatzation.putExtra("showBanner", getshowBanner);
@@ -1043,6 +1060,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 Category_Name.remove(Category_Name.size() - 1);
                 if (HierarchyList.isEmpty()) {
                     Intent intentCatzation = new Intent(CategoryScreen.this, CategorizationScreen.class);
+                    intentCatzation.putExtra("ActivityName", "NextLaunch");
                     intentCatzation.putExtra("flag", flag);
                     intentCatzation.putExtra("ActivityNo", ActivityNo);
                     intentCatzation.putExtra("showBanner", getshowBanner);
@@ -1061,6 +1079,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         }catch (Exception e){
             e.printStackTrace();
             Intent intent = new Intent(CategoryScreen.this, CategorizationScreen.class);
+            intent.putExtra("ActivityName", "FirstLaunch");
             startActivity(intent);
             CategoryScreen.this.finish();
         }
@@ -1142,6 +1161,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             case R.id.child_category_home:
                 releaseYoutubeThumbnailView();
                 Intent intentHome = new Intent(CategoryScreen.this, CategorizationScreen.class);
+                intentHome.putExtra("ActivityName", "NextLaunch");
                 intentHome.putExtra("flag",flag);
                 intentHome.putExtra("ActivityNo",ActivityNo);
                 intentHome.putExtra("showBanner", getshowBanner);
