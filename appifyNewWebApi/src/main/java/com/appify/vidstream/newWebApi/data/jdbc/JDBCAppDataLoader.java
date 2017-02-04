@@ -50,7 +50,7 @@ public class JDBCAppDataLoader extends AppDataLoader {
     }
 
     @Override
-    public void startUp() {
+    public void startLoading() {
         loadData();
     }
 
@@ -111,9 +111,8 @@ public class JDBCAppDataLoader extends AppDataLoader {
     private static void setDerivedFields(AppInfo appInfo, List<Categorization> categorizations) {
         ImmutableMap.Builder<String, Categorization> categorizationMapBuilder = ImmutableMap.builder();
         ImmutableMap.Builder<String, Category> categoryMapBuilder = ImmutableMap.builder();
-        ImmutableMap.Builder<String, Video> videoMapBuilder = ImmutableMap.builder();
-
-
+        HashMap<String, Video> videoMap = new HashMap<>();
+        
         Queue<Category> categories = new LinkedList<>();
         List<Category> categorizationAsCategories = new ArrayList<>();
 
@@ -138,10 +137,12 @@ public class JDBCAppDataLoader extends AppDataLoader {
                 for (Entity childCategory : category.getChildren())
                     categories.offer((Category) childCategory);
             } else if (category.getChildType() == EntityType.ORDERED_VIDEOS) {
+            	if(!category.getChildren().isEmpty()){
                 List<Entity> videoList = category.getChildren().get(0).getChildren();
                 for (Entity video : videoList) {
-                    videoMapBuilder.put(video.getId(), (Video) video);
+                	videoMap.put(video.getId(), (Video) video);
                 }
+            	}
             }
 
         }
@@ -149,7 +150,7 @@ public class JDBCAppDataLoader extends AppDataLoader {
         appInfo.setCategorizationsAsCategories(ImmutableList.copyOf(categorizationAsCategories));
         appInfo.setCategorizationMap(ImmutableMap.copyOf(categorizationMapBuilder.build()));
         appInfo.setCategoryMap(ImmutableMap.copyOf(categoryMapBuilder.build()));
-        appInfo.setVideoMap(videoMapBuilder.build());
+        appInfo.setVideoMap(ImmutableMap.copyOf(videoMap));
     }
 
     @Override

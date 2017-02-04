@@ -48,7 +48,8 @@ public class GetImageServlet extends HttpServlet {
             throws ServletException, IOException {
 
         System.out.println("Inside DoGet Of GetImageServlet");
-
+        RRLogs rrLogs = new RRLogs();
+        long startTime = System.currentTimeMillis();
         Map<String, String[]> params = paramsProvider.get();
 
         String imageId = params.get("imageId")[0];
@@ -57,6 +58,18 @@ public class GetImageServlet extends HttpServlet {
         response.setContentType("image/jpg");
         response.getOutputStream().flush();
 		response.getOutputStream().write(image, 0, image.length);
+
+        // Sending data to RRLogs
+        String apiname = "imageServlet.java";
+        String requestparam = "{" + "imgId=" + imageId+ "}";
+        String responseparam = response.toString();
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("EndTime : "+ endTime);
+        long duration = endTime-startTime;
+        String responseTime = duration + " msec.";
+        rrLogs.getImageServletData(apiname, requestparam, responseparam, responseTime);
+
 		response.getOutputStream().close();
     }    
 }

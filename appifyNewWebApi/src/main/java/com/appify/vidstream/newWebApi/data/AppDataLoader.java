@@ -9,5 +9,6 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 public abstract class AppDataLoader extends AbstractScheduledServiceRobust {
 
     public abstract Map<String, AppInfo> getAppsData();
+    public abstract void startLoading();
 
 }

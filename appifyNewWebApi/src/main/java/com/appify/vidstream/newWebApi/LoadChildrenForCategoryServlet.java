@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import java.util.Map;
 /**
  * Created by swapnil on 10/01/17.
  */
+@Singleton
 public class LoadChildrenForCategoryServlet extends HttpServlet {
 
     private static final int DEFAULT_ENTRIES_PER_PAGE = 10;
@@ -26,8 +29,10 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
     private CategoryDataLoader defaultCategoryLoader;
     private ExploreCategoryDataLoader exploreCategoryLoader;
 
+    @Inject
     public LoadChildrenForCategoryServlet(@RequestParameters Provider<Map<String, String[]>> paramsProvider,
-                                          List<CategoryDataLoader> categoryLoaders, ExploreCategoryDataLoader
+                                          @Annotations.CategoryDataLoaders List<CategoryDataLoader> categoryLoaders,
+                                          ExploreCategoryDataLoader
                                                   exploreCategoryLoader) {
         this.categoryLoaders = categoryLoaders;
         this.paramsProvider = paramsProvider;
@@ -35,6 +40,9 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
     }
 
     @Override
+    /**
+     * TODO : Move some functionality to other class.
+     */
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         Map<String, String[]> params = paramsProvider.get();
@@ -45,12 +53,14 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
         String orderAttr = params.get("orderAttr")[0];
         String pageNoParam = params.get("page_no")[0];
         String entriesPerPageParam = params.get("entries_per_page")[0];
+        String deviceId = params.get("deviceId")[0];
 
         CategoryPrefixHelper.CategoryIdData categoryIdData = CategoryPrefixHelper.getCategoryIdData(catIdWithPrefix);
 
         CategoryDataLoader categoryDataLoader = getCategoryDataLoader(categoryIdData.getPrefix());
 
-        EntityCollection entityCollection = categoryDataLoader.getChildren(appId, categoryIdData.getCategoryId());
+        EntityCollection entityCollection = categoryDataLoader.getChildren(appId, categoryIdData.getCategoryId(),
+                deviceId);
         if (entityCollection.getEntityType() == null) {
 
             response.setCategories(new CategoryResp[0]);
@@ -103,6 +113,17 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
             }
             response.setOrderAttributes(orderAttributesApi);
             response.setVideos(videoResps);
+        } else if (entityCollection.getEntityType() == EntityType.LINK) {
+            LinkResp[] linkResps = new LinkResp[entityCollection.getEntities().size()];
+            LinkToLinkRespConverter converter = new LinkToLinkRespConverter();
+
+            List<? extends Entity> links = entityCollection.getEntities();
+            for (int i = 0; i < links.size(); i++) {
+                Link link = (Link) links.get(i);
+                LinkResp linkResp = converter.getLinkRespFromLink(link);
+                linkResps[i] = linkResp;
+            }
+            response.setLinks(linkResps);
         }
 
         ObjectMapper mapper = new ObjectMapper();

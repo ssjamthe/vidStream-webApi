@@ -40,8 +40,11 @@ public class ValidationFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String tokenHeader = httpRequest.getHeader("token");
-        String appId = request.getParameter("appId");
+//        String tokenHeader = httpRequest.getHeader("token");
+//        String appId = request.getParameter("appId");
+        
+        String tokenHeader = "78:82:AD:8B:F0:59:2B:E2:2C:AE:FC:1B:B4:5A:0F:24:69:4F:72:76";
+        String appId = "14";
  
         Map<String, AppInfo> appsInfoMap = new HashMap<String, AppInfo>();
         appsInfoMap = appDataLoader.getAppsData();

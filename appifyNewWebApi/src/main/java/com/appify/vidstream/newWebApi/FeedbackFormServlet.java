@@ -40,6 +40,7 @@ public class FeedbackFormServlet extends HttpServlet {
             throws ServletException, IOException {
 
         System.out.print("Inside DoGet Of FeedbackFormServlet");
+        RRLogs rrLogs = new RRLogs();
 
         Map<String, String[]> params = paramsProvider.get();
 
@@ -54,6 +55,14 @@ public class FeedbackFormServlet extends HttpServlet {
 
         response.setContentType("application/json");
         response.getWriter().write(jsonResponse.toString());
+
+        // Sending data to RRLogs
+        String apiname = "feedbackForm.java";
+        String requestparam = "{" + "appId=" + appId
+                + ", deviceId=" + deviceId
+                + ", user_comment=" + userComment + "}";
+        String responseData = "{"+ allData +"}";
+        rrLogs.getFeedbackFormData(apiname, requestparam, responseData);
     
     }
 

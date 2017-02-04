@@ -8,15 +8,14 @@ import javax.inject.Singleton;
 import javax.servlet.ServletContextEvent;
 import javax.sql.DataSource;
 
+import com.appify.vidstream.newWebApi.data.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
-import com.appify.vidstream.newWebApi.data.AppDataLoader;
-import com.appify.vidstream.newWebApi.data.CombinedPropertyDataLoader;
-import com.appify.vidstream.newWebApi.data.FilePropertyDataLoader;
-import com.appify.vidstream.newWebApi.data.PropertyDataLoader;
 import com.appify.vidstream.newWebApi.data.jdbc.JDBCAppDataLoader;
 import com.appify.vidstream.newWebApi.data.jdbc.JDBCPropertyDataLoader;
+import com.appify.vidstream.newWebApi.data.jdbc.JDBCUserVideoDataHelper;
+import com.appify.vidstream.newWebApi.Annotations;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
@@ -30,7 +29,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
     private Injector injector;
     static final Logger guiceServletConfigLogger = Logger.getLogger(GuiceServletConfig.class);
-    
+
     @Override
     protected Injector getInjector() {
         Injector injector = Guice.createInjector(new ServletModule() {
@@ -40,9 +39,11 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
                 serve("*imageServlet").with(GetImageServlet.class);
-                serve("*videoViewed").with(VideoViewServlet.class);
+                serve("*videoViewed").with(VideoViewedServlet.class);
                 serve("*feedbackForm").with(FeedbackFormServlet.class);
+                serve("*loadChildren").with(LoadChildrenForCategoryServlet.class);
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
+                bind(UserVideoDataHelper.class).to(JDBCUserVideoDataHelper.class);
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
                 bind(String.class).annotatedWith(Annotations.PropertyFilePath.class).
                         toInstance(Constants.PROPERTY_FILE_PATH);
@@ -50,7 +51,25 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
             }
 
-        
+            @Provides
+            @Annotations.CategoryDataLoaders
+            List<CategoryDataLoader> provideTabs(ExploreCategoryDataLoader exploreCategoryDataLoader,
+                                                 MostlyViewedVideosCategoryLoader mostlyViewedVideosCategoryLoader,
+                                                 NewlyAddedVideosCategoryLoader newlyAddedTabDataLoader,
+                                                 OthersWatchingVideosCategoryLoader othersWatchingVideosCategoryLoader,
+                                                 RecentlyViewedVideosCategoryLoader recentlyViewedVideosCategoryLoader,
+                                                 OtherAppsCategoryLoader otherAppsCategoryLoader) {
+                List<CategoryDataLoader> loaders = new ArrayList<CategoryDataLoader>();
+                loaders.add(exploreCategoryDataLoader);
+                loaders.add(mostlyViewedVideosCategoryLoader);
+                loaders.add(newlyAddedTabDataLoader);
+                loaders.add(othersWatchingVideosCategoryLoader);
+                loaders.add(recentlyViewedVideosCategoryLoader);
+                loaders.add(otherAppsCategoryLoader);
+
+                return loaders;
+            }
+
             @Provides
             @Singleton
             DataSource provideDataSource(FilePropertyDataLoader filePropertyDataLoader) {
@@ -66,12 +85,11 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
                 return ds;
             }
-            
+
 
         });
 
-       
-        
+
         FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
         filePropertyDataLoader.startLoading();
 
@@ -87,6 +105,10 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         PropertyDataLoader propertyDataLoader = injector.getInstance(PropertyDataLoader.class);
         propertyDataLoader.startLoading();
 
+        NewlyAddedVideosCategoryLoader newlyAddedVideosCategoryLoader = injector.getInstance
+                (NewlyAddedVideosCategoryLoader.class);
+        newlyAddedVideosCategoryLoader.startLoading();
+
         this.injector = injector;
         return injector;
 
@@ -95,24 +117,24 @@ public class GuiceServletConfig extends GuiceServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
-    	if(injector!=null){
-        AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
-        appDataLoader.stopLoading();
+        if (injector != null) {
+            AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
+            // appDataLoader.stopLoading();
 
-        FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
-        //filePropertyDataLoader.startLoading();
-        filePropertyDataLoader.stopLoading();
+            FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
+            //filePropertyDataLoader.startLoading();
+            filePropertyDataLoader.stopLoading();
 
-        JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
-        //jdbcPropertyDataLoader.startLoading();
-        jdbcPropertyDataLoader.stopLoading();
+            JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
+            //jdbcPropertyDataLoader.startLoading();
+            jdbcPropertyDataLoader.stopLoading();
 
-        CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader.class);
-        //combinedPropertyDataLoader.startLoading();
-        combinedPropertyDataLoader.stopLoading();
+            CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader
+                    .class);
+            //combinedPropertyDataLoader.startLoading();
+            combinedPropertyDataLoader.stopLoading();
 
-    	}
-        
+        }
 
 
     }

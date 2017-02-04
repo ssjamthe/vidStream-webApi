@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.AppDataLoader;
+import com.appify.vidstream.newWebApi.data.RRLogs;
 import com.appify.vidstream.newWebApi.data.jdbc.JDBCUserVideoDataHelper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
@@ -41,6 +42,7 @@ public class VideoViewedServlet extends HttpServlet {
             HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException{
         videoViewedServletLogger.info("Inside VideoViewedServlet doGet method");
+        RRLogs rrLogs = new RRLogs();
 
         Map<String, String[]> params = paramsProvider.get();
         String appId = params.get("appId")[0];
@@ -49,5 +51,12 @@ public class VideoViewedServlet extends HttpServlet {
 
         jdbcUserVideoDataHelper.updateVideoWatchedByUser(videoId,deviceId,appId);
 
+        // Sending data to RRLogs
+        String apiname = "videoViewed.java";
+        String requestparam = "{" + "appId=" + appId
+                + ", videoId=" + videoId
+                + ", deviceId=" + deviceId + "}";
+        String responseData = "Video "+videoId+" viewed by device device id : "+deviceId+ " updated successfully" ;
+        rrLogs.getVideoViewedData(apiname, requestparam, responseData);
     }
 }

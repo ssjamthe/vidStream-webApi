@@ -1,5 +1,7 @@
 package com.appify.vidstream.newWebApi;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by swapnil on 29/11/16.
  */
@@ -12,7 +14,7 @@ public class LoadAppResponse {
     private String appBgImageURL;
     private int videosPerCall;
     private String noChildrenMsg;
-    private CategorizationResp[] categorizationResps;
+    private CategorizationResp[] categorizations;
     private CategorizationResp selectedCategorization;
 
     public boolean isShowBanner() {
@@ -78,19 +80,19 @@ public class LoadAppResponse {
 	}
 
 	public CategorizationResp[] getDefaultCategorization() {
-		return categorizationResps;
+		return categorizations;
 	}
 
-	public void setDefaultCategorization(CategorizationResp[] categorizationResps) {
-		this.categorizationResps = categorizationResps;
+	public void setDefaultCategorization(CategorizationResp[] categorizations) {
+		this.categorizations = categorizations;
+	}
+	
+	public CategorizationResp[] getCategorizations() {
+		return categorizations;
 	}
 
-	public CategorizationResp[] getCategorizationResps() {
-		return categorizationResps;
-	}
-
-	public void setCategorizationResps(CategorizationResp[] categorizationResps) {
-		this.categorizationResps = categorizationResps;
+	public void setCategorizations(CategorizationResp[] categorizations) {
+		this.categorizations = categorizations;
 	}
 
 	public CategorizationResp getSelectedCategorization() {

@@ -37,7 +37,7 @@ public class ExploreCategoryDataLoader extends CategoryDataLoader {
     }
 
     @Override
-    public EntityCollection getChildren(String appId, String categoryId) {
+    public EntityCollection getChildren(String appId, String categoryId,String deviceId) {
         EntityCollection entityCollection = new EntityCollection();
         if (ID.equals(categoryId)) {
             entityCollection.setEntityType(EntityType.CATEGORY);

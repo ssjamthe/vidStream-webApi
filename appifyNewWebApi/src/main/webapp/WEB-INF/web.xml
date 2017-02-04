@@ -16,6 +16,6 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>com.appify.vidstream.newWebApiTest.GuiceServletConfig</listener-class>
+    <listener-class>com.appify.vidstream.newWebApi.GuiceServletConfig</listener-class>
   </listener>
 </web-app>

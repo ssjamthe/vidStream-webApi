@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.*;
+import com.appify.vidstream.newWebApi.Annotations;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
@@ -33,7 +34,7 @@ public class LoadAppServlet extends HttpServlet {
     @Inject
     public LoadAppServlet(AppDataLoader appDataLoader,
                           @RequestParameters Provider<Map<String, String[]>> paramsProvider,
-                          List<CategoryDataLoader> categoryLoaders) {
+                          @Annotations.CategoryDataLoaders List<CategoryDataLoader> categoryLoaders) {
         this.appDataLoader = appDataLoader;
         this.paramsProvider = paramsProvider;
         this.categoryLoaders = categoryLoaders;
@@ -43,6 +44,8 @@ public class LoadAppServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         System.out.print("Inside DoGet Of LoadAppServlet");
+        RRLogs rrLogs = new RRLogs();
+        long startTime = System.currentTimeMillis();
         Map<String, AppInfo> appsInfoMap = appDataLoader.getAppsData();
 
         Map<String, String[]> params = paramsProvider.get();
@@ -51,7 +54,11 @@ public class LoadAppServlet extends HttpServlet {
 
         AppInfo appInfo = appsInfoMap.get(appId);
 
+        String installTimestamp = params.get("installTimestamp")[0];
+        String deviceId = params.get("deviceId")[0];
         LoadAppResponse response = new LoadAppResponse();
+
+        String authenticationError = "Authentication Success";
 
         CategoryToCategoryRespConverter categoryToCategoryRespConverter = new CategoryToCategoryRespConverter();
         CategoryResp[] categoryResps = new CategoryResp[categoryLoaders.size()];
@@ -73,7 +80,7 @@ public class LoadAppServlet extends HttpServlet {
         CategorizationResp[] categorizationResps = new CategorizationResp[1];
         categorizationResps[0] = selectedCategorization;
 
-        response.setCategorizationResps(categorizationResps);
+        response.setCategorizations(categorizationResps);
         response.setSelectedCategorization(selectedCategorization);
         response.setShowAdMovingInside(appInfo.isShowAdMovingInside());
         response.setShowBanner(appInfo.isShowBanner());
@@ -85,6 +92,16 @@ public class LoadAppServlet extends HttpServlet {
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = mapper.writeValueAsString(response);
+
+        // Sending data to RRLogs
+        String apiname = "loadApp.java";
+        String requestparam = "{" + "appId=" + appId
+                + ", installTimestamp=" + installTimestamp
+                + ", deviceId=" + deviceId + "}";
+        long endTime = System.currentTimeMillis();
+        long duration = endTime-startTime;
+        String responseTime = duration + " msec.";
+        rrLogs.getLoadAppData(apiname, requestparam, jsonResponse, responseTime, authenticationError);
 
         resp.setContentType("application/json");
         resp.getWriter().write(jsonResponse.toString());

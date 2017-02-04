@@ -45,7 +45,7 @@ public enum VideoAttribute {
     }
 
     public static VideoAttribute getAttributeByDataName(String dataName) {
-        VideoAttribute videoAttribute = API_NAME_MAP.get(dataName);
+        VideoAttribute videoAttribute = DATA_NAME_MAP.get(dataName);
         if (videoAttribute == null) {
             throw new IllegalArgumentException("Unknown data name " + dataName);
         }

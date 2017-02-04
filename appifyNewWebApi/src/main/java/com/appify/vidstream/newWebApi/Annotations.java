@@ -11,7 +11,7 @@ public class Annotations {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier
-    @interface TabDataLoaders {};
+    @interface CategoryDataLoaders {};
 
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier

@@ -9,12 +9,14 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Kalyani on 17/01/17.
  */
+@Singleton
 public class OthersWatchingVideosCategoryLoader extends CategoryDataLoader {
 
     private static final String ID = "othersWatching";

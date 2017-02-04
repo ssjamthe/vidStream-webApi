@@ -7,12 +7,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by swapnil on 17/01/17.
  */
+@Singleton
 public class RecentlyViewedVideosCategoryLoader extends CategoryDataLoader {
 
     private static final String ID = "recentlyViewed";

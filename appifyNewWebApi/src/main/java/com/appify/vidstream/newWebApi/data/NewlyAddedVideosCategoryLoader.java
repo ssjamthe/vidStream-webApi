@@ -102,7 +102,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
 
             }
         }
-        return OrderedVideosListHelper.createOrderedVideosList(attributes, newVideos);
+        return OrderedVideosListHelper.createOrderedVideosList(newVideos,attributes);
     }
 
     private static int getDaysBeforeVideoAdded(Video video) {
@@ -141,5 +141,9 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
     @Override
     protected Scheduler scheduler() {
         return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
+    }
+    
+    public void startLoading(){
+    	loadData();
     }
 }

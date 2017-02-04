@@ -2,7 +2,7 @@ package com.appify.vidstream.newWebApi;
 
 public interface PropertyNames {
 	String DB_URL = "url";
-    String DB_DRIVER_CLASS_NAME = "driver_class_name";
+    String DB_DRIVER_CLASS_NAME = "driverClassName";
     String DB_USER_NAME = "username";
     String DB_PASSWORD = "password";
     String DB_MAX_CONNECTIONS = "maxConnections";
@@ -26,5 +26,7 @@ public interface PropertyNames {
     String OTHERSWATCHING_CATEGORY_IMAGE_ID = "othersWatching_cat_image_id";
     String RECENTLY_VIEWED_CATEGORY_IMAGE_ID = "recently_viewed_cat_image_id";
     String RECENTLY_VIEWED_CATEGORY_NAME = "recently_viewed_cat_name";
+    String OTHER_APPS_CATEGORY_NAME = "Other Apps";
+    String OTHER_APPS_CATEGORY_IMAGE_ID = "other_apps_cat_image_id";
 
 }

@@ -13,7 +13,7 @@ public class EntityResp {
     private String imageURL;
     private EntityResp[] children;
     private EntityType childType;
-    private OrderAttributeResp[] orderAttributes;
+   // private OrderAttributeResp[] orderAttributes;
 
     public String getId() {
         return id;
@@ -61,12 +61,12 @@ public class EntityResp {
 		this.imageURL = imageURL;
 	}
 
-	public OrderAttributeResp[] getOrderAttributes() {
+/*	public OrderAttributeResp[] getOrderAttributes() {
 		return orderAttributes;
 	}
 
 	public void setOrderAttributes(OrderAttributeResp[] orderAttributes) {
 		this.orderAttributes = orderAttributes;
-	}
+	}*/
 
 }
