@@ -112,7 +112,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
     }
 
     @Override
-    public void startUp() {
+    protected void startUp() {
         loadData();
     }
 

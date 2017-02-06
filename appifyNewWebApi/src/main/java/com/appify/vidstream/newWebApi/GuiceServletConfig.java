@@ -24,6 +24,7 @@ import com.google.inject.servlet.ServletModule;
 
 /**
  * Created by swapnil on 28/11/16.
+ * TODO : Move functionalities to other classes.
  */
 public class GuiceServletConfig extends GuiceServletContextListener {
 
@@ -41,7 +42,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                 serve("*imageServlet").with(GetImageServlet.class);
                 serve("*videoViewed").with(VideoViewedServlet.class);
                 serve("*feedbackForm").with(FeedbackFormServlet.class);
-                serve("*loadChildren").with(LoadChildrenForCategoryServlet.class);
+                serve("*loadChildrenForCategories").with(LoadChildrenForCategoryServlet.class);
                 bind(AppDataLoader.class).to(JDBCAppDataLoader.class);
                 bind(UserVideoDataHelper.class).to(JDBCUserVideoDataHelper.class);
                 bind(PropertyDataLoader.class).to(CombinedPropertyDataLoader.class);
@@ -89,25 +90,52 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
         });
 
-
         FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
-        filePropertyDataLoader.startLoading();
+        filePropertyDataLoader.startAsync();
+        filePropertyDataLoader.awaitRunning();
 
         JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
-        jdbcPropertyDataLoader.startLoading();
+        jdbcPropertyDataLoader.startAsync();
+        jdbcPropertyDataLoader.awaitRunning();
 
         CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader.class);
-        combinedPropertyDataLoader.startLoading();
+        combinedPropertyDataLoader.startAsync();
+        combinedPropertyDataLoader.awaitRunning();
 
         AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
-        appDataLoader.startLoading();
+        appDataLoader.startAsync();
+        appDataLoader.awaitRunning();
 
-        PropertyDataLoader propertyDataLoader = injector.getInstance(PropertyDataLoader.class);
-        propertyDataLoader.startLoading();
+        ExploreCategoryDataLoader exploreCategoryDataLoader = injector.getInstance
+                (ExploreCategoryDataLoader.class);
+        exploreCategoryDataLoader.startAsync();
+        exploreCategoryDataLoader.awaitRunning();
+
+        MostlyViewedVideosCategoryLoader mostlyViewedVideosCategoryLoader = injector.getInstance
+                (MostlyViewedVideosCategoryLoader.class);
+        mostlyViewedVideosCategoryLoader.startAsync();
+        mostlyViewedVideosCategoryLoader.awaitRunning();
 
         NewlyAddedVideosCategoryLoader newlyAddedVideosCategoryLoader = injector.getInstance
                 (NewlyAddedVideosCategoryLoader.class);
-        newlyAddedVideosCategoryLoader.startLoading();
+        newlyAddedVideosCategoryLoader.startAsync();
+        newlyAddedVideosCategoryLoader.awaitRunning();
+
+        OthersWatchingVideosCategoryLoader othersWatchingVideosCategoryLoader = injector.getInstance
+                (OthersWatchingVideosCategoryLoader.class);
+        othersWatchingVideosCategoryLoader.startAsync();
+        othersWatchingVideosCategoryLoader.awaitRunning();
+
+        RecentlyViewedVideosCategoryLoader recentlyViewedVideosCategoryLoader = injector.getInstance
+                (RecentlyViewedVideosCategoryLoader.class);
+        recentlyViewedVideosCategoryLoader.startAsync();
+        recentlyViewedVideosCategoryLoader.awaitRunning();
+
+        OtherAppsCategoryLoader otherAppsCategoryLoader = injector.getInstance
+                (OtherAppsCategoryLoader.class);
+        otherAppsCategoryLoader.startAsync();
+        otherAppsCategoryLoader.awaitRunning();
+
 
         this.injector = injector;
         return injector;
@@ -118,21 +146,52 @@ public class GuiceServletConfig extends GuiceServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
         if (injector != null) {
+            OtherAppsCategoryLoader otherAppsCategoryLoader = injector.getInstance
+                    (OtherAppsCategoryLoader.class);
+            otherAppsCategoryLoader.stopAsync();
+            otherAppsCategoryLoader.awaitTerminated();
+
+            RecentlyViewedVideosCategoryLoader recentlyViewedVideosCategoryLoader = injector.getInstance
+                    (RecentlyViewedVideosCategoryLoader.class);
+            recentlyViewedVideosCategoryLoader.stopAsync();
+            recentlyViewedVideosCategoryLoader.awaitTerminated();
+
+            OthersWatchingVideosCategoryLoader othersWatchingVideosCategoryLoader = injector.getInstance
+                    (OthersWatchingVideosCategoryLoader.class);
+            othersWatchingVideosCategoryLoader.stopAsync();
+            othersWatchingVideosCategoryLoader.awaitTerminated();
+
+            NewlyAddedVideosCategoryLoader newlyAddedVideosCategoryLoader = injector.getInstance
+                    (NewlyAddedVideosCategoryLoader.class);
+            newlyAddedVideosCategoryLoader.stopAsync();
+            newlyAddedVideosCategoryLoader.awaitTerminated();
+
+            MostlyViewedVideosCategoryLoader mostlyViewedVideosCategoryLoader = injector.getInstance
+                    (MostlyViewedVideosCategoryLoader.class);
+            mostlyViewedVideosCategoryLoader.stopAsync();
+            mostlyViewedVideosCategoryLoader.awaitTerminated();
+
+            ExploreCategoryDataLoader exploreCategoryDataLoader = injector.getInstance
+                    (ExploreCategoryDataLoader.class);
+            exploreCategoryDataLoader.stopAsync();
+            exploreCategoryDataLoader.awaitTerminated();
+
             AppDataLoader appDataLoader = injector.getInstance(AppDataLoader.class);
-            // appDataLoader.stopLoading();
-
-            FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
-            //filePropertyDataLoader.startLoading();
-            filePropertyDataLoader.stopLoading();
-
-            JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
-            //jdbcPropertyDataLoader.startLoading();
-            jdbcPropertyDataLoader.stopLoading();
+            appDataLoader.stopAsync();
+            appDataLoader.awaitTerminated();
 
             CombinedPropertyDataLoader combinedPropertyDataLoader = injector.getInstance(CombinedPropertyDataLoader
                     .class);
-            //combinedPropertyDataLoader.startLoading();
-            combinedPropertyDataLoader.stopLoading();
+            combinedPropertyDataLoader.stopAsync();
+            combinedPropertyDataLoader.awaitTerminated();
+
+            JDBCPropertyDataLoader jdbcPropertyDataLoader = injector.getInstance(JDBCPropertyDataLoader.class);
+            jdbcPropertyDataLoader.stopAsync();
+            jdbcPropertyDataLoader.awaitTerminated();
+
+            FilePropertyDataLoader filePropertyDataLoader = injector.getInstance(FilePropertyDataLoader.class);
+            filePropertyDataLoader.stopAsync();
+            filePropertyDataLoader.awaitTerminated();
 
         }
 

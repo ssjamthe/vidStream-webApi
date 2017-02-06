@@ -10,5 +10,6 @@ public class Constants {
     public static final String PROPERTY_VALUE_FOR_VIDEO_COUNT = "20";
     public static final String DEFAULT_ENTRIES_PER_PAGE = "10";
     public static final String DEFAULT_PAGE_NUMBER = "1" ;
+    public static final String APP_PLAYSTORE_URL_PREFIX = "https://play.google.com/store/apps/details?id=com.appify.vidstream.app_";
 
 }

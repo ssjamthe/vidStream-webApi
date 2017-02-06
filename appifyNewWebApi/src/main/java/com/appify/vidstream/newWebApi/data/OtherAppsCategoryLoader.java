@@ -1,5 +1,6 @@
 package com.appify.vidstream.newWebApi.data;
 
+import com.appify.vidstream.newWebApi.Constants;
 import com.appify.vidstream.newWebApi.PropertyHelper;
 import com.appify.vidstream.newWebApi.PropertyNames;
 import com.appify.vidstream.newWebApi.util.WebAPIUtil;
@@ -10,6 +11,8 @@ import com.google.inject.Singleton;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,105 +21,93 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class OtherAppsCategoryLoader extends CategoryDataLoader {
 
-    private static final String ID = "othersWatching";
-    private static final ImmutableList<Link> LINKS = createLinks();
+	private static final String ID = "othersApps";
+	private static final String DEFAULT_OTHER_APPS_CATEGORY_NAME = "Other Apps";
 
-    private final PropertyHelper propertyHelper;
-    private final WebAPIUtil webAPIUtil;
+	private final AppDataLoader appDataLoader;
+	private final PropertyHelper propertyHelper;
+	private final WebAPIUtil webAPIUtil;
+	private volatile ImmutableList<Link> links;
 
-    /**
-     * Hardcoded apps just for now. Later we will take from DB. Currently no option in DB for app image.
-     */
-    private static ImmutableList<Link> createLinks() {
+	private void loadData() {
 
-        ImmutableList.Builder<Link> links = ImmutableList.builder();
+		ImmutableList.Builder<Link> linksBuilder = ImmutableList.builder();
+		Map<String, AppInfo> appsData = appDataLoader.getAppsData();
 
-        Link link = new Link();
-        link.setId("12");
-        link.setName("Absolute Gym");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_12");
-        links.add(link);
+		Set<Map.Entry<String, AppInfo>> entrySet = appsData.entrySet();
+		for (Map.Entry<String, AppInfo> entry : entrySet) {
+			String appId = entry.getKey();
+			AppInfo appInfo = entry.getValue();
+			String iconImageId = propertyHelper.getStringProperty(PropertyNames.APP_ICON_IMAGE_PREFIX + appId, null);
 
-        link = new Link();
-        link.setId("14");
-        link.setName("BeautifyU");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_14");
-        links.add(link);
+			if (appInfo.isActive() && iconImageId != null) {
+				Link link = new Link();
+				link.setId(appId);
+				link.setName(appInfo.getAppName());
+				link.setLinkUrl(Constants.APP_PLAYSTORE_URL_PREFIX + appId);
+				link.setImageURL(webAPIUtil.getImageURL(iconImageId));
+				linksBuilder.add(link);
+			}
+		}
 
-        link = new Link();
-        link.setId("18");
-        link.setName("संपूर्ण पूजा");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_18");
-        links.add(link);
+		this.links = linksBuilder.build();
 
-        link = new Link();
-        link.setId("15");
-        link.setName("Creative Home Decoration");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_15");
-        links.add(link);
+	}
 
-        link = new Link();
-        link.setId("21");
-        link.setName("Yoga and Meditation");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_21");
-        links.add(link);
+	@Inject
+	public OtherAppsCategoryLoader(AppDataLoader appDataLoader, PropertyHelper propertyHelper, WebAPIUtil webAPIUtil) {
+		this.appDataLoader = appDataLoader;
+		this.propertyHelper = propertyHelper;
+		this.webAPIUtil = webAPIUtil;
+	}
 
-        link = new Link();
-        link.setId("20");
-        link.setName("Kids Video World");
-        link.setLinkUrl("https://play.google.com/store/apps/details?id=com.appify.vidstream.app_20");
-        links.add(link);
+	@Override
+	public Category getTopLevelCategory() {
+		Category category = new Category();
+		category.setId(ID);
+		category.setName(propertyHelper.getStringProperty(PropertyNames.OTHER_APPS_CATEGORY_NAME,
+				DEFAULT_OTHER_APPS_CATEGORY_NAME));
+		category.setImageURL(webAPIUtil
+				.getImageURL(propertyHelper.getStringProperty(PropertyNames.OTHER_APPS_CATEGORY_IMAGE_ID, null)));
+		return category;
+	}
 
-        return links.build();
-    }
+	@Override
+	public void startUp() {
+		loadData();
+	}
 
-    @Inject
-    public OtherAppsCategoryLoader(PropertyHelper propertyHelper, WebAPIUtil webAPIUtil) {
-        this.propertyHelper = propertyHelper;
-        this.webAPIUtil = webAPIUtil;
-    }
+	@Override
+	public EntityCollection getChildren(String appId, String categoryId, String deviceId) {
+		if (ID.equals(categoryId)) {
+			EntityCollection entityCollection = new EntityCollection();
+			entityCollection.setEntityType(EntityType.LINK);
+			ImmutableList.Builder<Link> linksBuilder = ImmutableList.builder();
+			ImmutableList<Link> currLinks = this.links;
+			for (Link link : currLinks) {
+				if (!link.getId().equals(appId)) {
+					linksBuilder.add(link);
+				}
+			}
+			entityCollection.setEntities(linksBuilder.build());
+			return entityCollection;
+		} else {
+			throw new IllegalArgumentException("Only category supported is " + ID);
+		}
+	}
 
+	@Override
+	public String getId() {
+		return ID;
+	}
 
-    @Override
-    public Category getTopLevelCategory() {
-        Category category = new Category();
-        category.setId(ID);
-        category.setName(propertyHelper.getStringProperty(PropertyNames.OTHER_APPS_CATEGORY_NAME, null));
-        category.setImageURL(webAPIUtil.getImageURL(propertyHelper.getStringProperty(PropertyNames
-                .OTHER_APPS_CATEGORY_IMAGE_ID, null)));
-        return category;
-    }
+	@Override
+	protected void work() {
+		loadData();
+	}
 
-    @Override
-    public EntityCollection getChildren(String appId, String categoryId, String deviceId) {
-        if (ID.equals(categoryId)) {
-            EntityCollection entityCollection = new EntityCollection();
-            entityCollection.setEntityType(EntityType.LINK);
-            ImmutableList.Builder<Link> linksBuilder = ImmutableList.builder();
-            for (Link link : LINKS) {
-                if (!link.getId().equals(appId)) {
-                    linksBuilder.add(link);
-                }
-            }
-            entityCollection.setEntities(linksBuilder.build());
-            return entityCollection;
-        } else {
-            throw new IllegalArgumentException("Only category supported is " + ID);
-        }
-    }
-
-    @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    protected void work() {
-        // No scheduled task.
-    }
-
-    @Override
-    protected Scheduler scheduler() {
-        return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
-    }
+	@Override
+	protected Scheduler scheduler() {
+		return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
+	}
 }

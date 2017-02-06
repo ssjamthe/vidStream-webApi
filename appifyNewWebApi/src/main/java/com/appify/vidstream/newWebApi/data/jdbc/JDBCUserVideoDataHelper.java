@@ -149,7 +149,7 @@ public class JDBCUserVideoDataHelper implements UserVideoDataHelper {
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                videosList.add(rs.getString("id"));
+                videosList.add(rs.getString("video_id"));
             }
         } catch (SQLException ex) {
             throw new RuntimeException("Problem in getting video watched by all users per app.", ex);

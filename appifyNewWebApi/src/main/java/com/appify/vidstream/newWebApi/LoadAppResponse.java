@@ -78,14 +78,6 @@ public class LoadAppResponse {
 	public void setAppBgImageURL(String appBgImageURL) {
 		this.appBgImageURL = appBgImageURL;
 	}
-
-	public CategorizationResp[] getDefaultCategorization() {
-		return categorizations;
-	}
-
-	public void setDefaultCategorization(CategorizationResp[] categorizations) {
-		this.categorizations = categorizations;
-	}
 	
 	public CategorizationResp[] getCategorizations() {
 		return categorizations;

@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApi.data.jdbc;
 
 import com.appify.vidstream.newWebApi.data.PropertyDataLoader;
+import com.google.common.util.concurrent.AbstractScheduledService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,11 +22,10 @@ import java.util.concurrent.TimeUnit;
  * TODO Remove hardcoded values outside. Inject ScheduledExecutorService.
  */
 @Singleton
-public class JDBCPropertyDataLoader implements PropertyDataLoader, Runnable {
+public class JDBCPropertyDataLoader extends PropertyDataLoader {
 
     private volatile Map<String, String> props;
     private DataSource dataSource;
-    private ScheduledExecutorService es;
 
     @Inject
     public JDBCPropertyDataLoader(DataSource dataSource) {
@@ -56,28 +56,23 @@ public class JDBCPropertyDataLoader implements PropertyDataLoader, Runnable {
     }
 
     @Override
-    public void startLoading() {
-        loadData();
-        ScheduledExecutorService es = Executors.newScheduledThreadPool(1);
-        this.es = es;
-        es.schedule(this, 10, TimeUnit.MINUTES);
-    }
-
-    @Override
-    public void stopLoading() {
-        es.shutdown();
-    }
-
-    @Override
     public Map<String, String> getProps() {
         return props;
     }
 
+
     @Override
-    public void run() {
-
+    protected void startUp() {
         loadData();
-
     }
 
+    @Override
+    protected void work() {
+        loadData();
+    }
+
+    @Override
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
+    }
 }

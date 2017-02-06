@@ -14,6 +14,7 @@ public abstract class AbstractScheduledServiceRobust extends AbstractScheduledSe
 
     private static final Logger logger = Logger.getLogger(AbstractScheduledServiceRobust.class);
 
+    @Override
     public void runOneIteration() {
         try {
             logger.info("Starting service " + getName());

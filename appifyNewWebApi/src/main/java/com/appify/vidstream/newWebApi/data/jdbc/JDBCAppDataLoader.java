@@ -50,7 +50,7 @@ public class JDBCAppDataLoader extends AppDataLoader {
     }
 
     @Override
-    public void startLoading() {
+    public void startUp() {
         loadData();
     }
 
@@ -80,6 +80,8 @@ public class JDBCAppDataLoader extends AppDataLoader {
                 PropertyHelper propertyHelper = propertyHelperProvider.get();
                 AppInfo appInfo = new AppInfo();
                 appInfo.setAppId(appId);
+                appInfo.setAppName(name);
+                appInfo.setActive(status == null ? false : "active".equalsIgnoreCase(status));
                 appInfo.setAppBgImageURL(webAPIUtil.getImageURL(bgImage));
                 appInfo.setMinIntervalInterstitial(propertyHelper.getIntProperty(
                         PropertyNames.MIN_INTERVAL_INTERSTITIAL, DEFAULT_MIN_INTERVAL_INTERSTITIAL));
@@ -112,7 +114,7 @@ public class JDBCAppDataLoader extends AppDataLoader {
         ImmutableMap.Builder<String, Categorization> categorizationMapBuilder = ImmutableMap.builder();
         ImmutableMap.Builder<String, Category> categoryMapBuilder = ImmutableMap.builder();
         HashMap<String, Video> videoMap = new HashMap<>();
-        
+
         Queue<Category> categories = new LinkedList<>();
         List<Category> categorizationAsCategories = new ArrayList<>();
 
@@ -137,12 +139,12 @@ public class JDBCAppDataLoader extends AppDataLoader {
                 for (Entity childCategory : category.getChildren())
                     categories.offer((Category) childCategory);
             } else if (category.getChildType() == EntityType.ORDERED_VIDEOS) {
-            	if(!category.getChildren().isEmpty()){
-                List<Entity> videoList = category.getChildren().get(0).getChildren();
-                for (Entity video : videoList) {
-                	videoMap.put(video.getId(), (Video) video);
+                if (!category.getChildren().isEmpty()) {
+                    List<Entity> videoList = category.getChildren().get(0).getChildren();
+                    for (Entity video : videoList) {
+                        videoMap.put(video.getId(), (Video) video);
+                    }
                 }
-            	}
             }
 
         }

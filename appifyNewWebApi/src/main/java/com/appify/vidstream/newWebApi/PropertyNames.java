@@ -26,7 +26,8 @@ public interface PropertyNames {
     String OTHERSWATCHING_CATEGORY_IMAGE_ID = "othersWatching_cat_image_id";
     String RECENTLY_VIEWED_CATEGORY_IMAGE_ID = "recently_viewed_cat_image_id";
     String RECENTLY_VIEWED_CATEGORY_NAME = "recently_viewed_cat_name";
-    String OTHER_APPS_CATEGORY_NAME = "Other Apps";
+    String OTHER_APPS_CATEGORY_NAME = "other_apps_cat_name";
     String OTHER_APPS_CATEGORY_IMAGE_ID = "other_apps_cat_image_id";
+    String APP_ICON_IMAGE_PREFIX = "icon_image_app_";
 
 }

@@ -122,8 +122,9 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
                 Link link = (Link) links.get(i);
                 LinkResp linkResp = converter.getLinkRespFromLink(link);
                 linkResps[i] = linkResp;
+                i++;
             }
-            response.setLinks(linkResps);
+            response.setAppifyLinks(linkResps);
         }
 
         ObjectMapper mapper = new ObjectMapper();

@@ -2,6 +2,7 @@ package com.appify.vidstream.newWebApi.data;
 
 import com.appify.vidstream.newWebApi.Annotations;
 import com.appify.vidstream.newWebApi.Constants;
+import com.google.common.util.concurrent.AbstractScheduledService;
 
 
 import javax.imageio.IIOException;
@@ -17,12 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by swapnil on 30/11/16.
  */
 @Singleton
-public class FilePropertyDataLoader implements PropertyDataLoader, Runnable {
+public class FilePropertyDataLoader extends PropertyDataLoader {
 
     private volatile Map<String, String> props;
     private ScheduledExecutorService es;
@@ -46,22 +48,22 @@ public class FilePropertyDataLoader implements PropertyDataLoader, Runnable {
     }
 
     @Override
-    public void startLoading() {
-    	loadData();
-    }
-
-    @Override
-    public void stopLoading() {
-
-    }
-
-    @Override
     public Map<String, String> getProps() {
         return props;
     }
 
     @Override
-    public void run() {
+    protected void work() {
+        loadData();
+    }
 
+    @Override
+    protected void startUp() {
+        loadData();
+    }
+
+    @Override
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedDelaySchedule(0, 5, TimeUnit.MINUTES);
     }
 }

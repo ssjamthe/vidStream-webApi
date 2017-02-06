@@ -8,7 +8,7 @@ public class ChildrenEntitiesResponse {
     private String[] orderAttributes;
     private CategoryResp[] categories;
     private VideoResp[] videos;
-    private LinkResp[] links;
+    private LinkResp[] appifyLinks;
 
 
     public String[] getOrderAttributes() {
@@ -31,12 +31,12 @@ public class ChildrenEntitiesResponse {
         return videos;
     }
 
-    public LinkResp[] getLinks() {
-        return links;
+    public LinkResp[] getAppifyLinks() {
+        return appifyLinks;
     }
 
-    public void setLinks(LinkResp[] links) {
-        this.links = links;
+    public void setAppifyLinks(LinkResp[] appifyLinks) {
+        this.appifyLinks = appifyLinks;
     }
 
     public void setVideos(VideoResp[] videos) {

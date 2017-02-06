@@ -77,8 +77,12 @@ public class LoadAppServlet extends HttpServlet {
         selectedCategorization.setName("Home");
         selectedCategorization.setCategories(categoryResps);
 
+        CategorizationResp homeCategorizationWithoutChildren = new CategorizationResp();
+        homeCategorizationWithoutChildren.setId("homeCategorizationId");
+        homeCategorizationWithoutChildren.setName("Home");
+
         CategorizationResp[] categorizationResps = new CategorizationResp[1];
-        categorizationResps[0] = selectedCategorization;
+        categorizationResps[0] = homeCategorizationWithoutChildren;
 
         response.setCategorizations(categorizationResps);
         response.setSelectedCategorization(selectedCategorization);

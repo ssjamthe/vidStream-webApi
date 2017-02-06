@@ -14,6 +14,8 @@ public class AppInfo {
 
     private ImmutableList<Categorization> categorizations;
     private String appId;
+    private String appName;
+    private boolean active;
     private boolean showBanner;
     private boolean showAdMovingInside;
     private float inmobiAdWeightage;
@@ -158,5 +160,21 @@ public class AppInfo {
      */
     public void setAppBgImageURL(String appBgImageURL) {
         this.appBgImageURL = appBgImageURL;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 }
