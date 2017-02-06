@@ -28,9 +28,9 @@ public interface ApplicationConstants {
     //TODO:- For Ads
     String ADMOB_BANNER = "ca-app-pub-9457891612292134/4990221400";         // Change AdMob Banner Id "ca-app-pub-9457891612292134/4990221400" also need to change from "app\res\values\strings.xml\banner_admob_ad_unit_id".
     String ADMOB_INTERSTITIAL = "ca-app-pub-9457891612292134/3629409406";   // Change AdMob Interstitial Id "ca-app-pub-9457891612292134/3629409406"
-    long INMOBI_BANNER = 1468657372594L;                                    // Change InMobi Banner Id          // 1468657372594L banner  : need to write at the end of Id 'L' for long value
-    long INMOBI_INTERSTITIAL = 1471704245580L;                              // Change InMobi Interstitial Id    // 1471704245580L interstitial : need to write at the end of Id 'L' for long value
-    String INMOBI_ACCOUNT_ID = "86e456a90dec401f9a7c9a90a3e6dfad";          // User InMobi Account Id
+    long INMOBI_BANNER = 1472681905351L;                                    // Change InMobi Banner Id          // 1468657372594L banner  : need to write at the end of Id 'L' for long value
+    long INMOBI_INTERSTITIAL = 1471625484827L;                              // Change InMobi Interstitial Id    // 1471704245580L interstitial : need to write at the end of Id 'L' for long value
+    String INMOBI_ACCOUNT_ID = "fb82ae30fe024b799f0ecd41f183916d";          // User InMobi Account Id
 
     //TODO:- Token ID
     String TOKEN_VALUE = "0B:91:24:C5:8B:D8:22:28:02:7E:DD:A8:E2:F0:3E:07:C9:B4:CA:4D";            // Change TOKEN_VALUE when you have in database
@@ -56,6 +56,7 @@ public interface ApplicationConstants {
     String AUTHENTICATION_ERROR = "Problem accessing data. Authentication failed.";
     String UPDATING_APP = "Please try updating the app from Google Play Store.";
     String RecentlyViewedID = "-1";
+    String OS = "Android";
     String LOADSORTEDVIDEOSURL_UPLOADTIME = "Upload Time";                  // Make sure do not change never ever
     String LOADSORTEDVIDEOSURL_MOSTVIEWED = "Most Viewed";                  // Make sure do not change never ever
     String LOADSORTEDVIDEOSURL_VIEWTIME = "View Time";                      // Make sure do not change never ever

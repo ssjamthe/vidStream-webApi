@@ -21,12 +21,15 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.appify.vidstream.adapter.CategoryGridBaseAdapter;
 import com.appify.vidstream.adapter.CategoryListBaseAdapter;
+import com.appify.vidstream.adapter.LinkGridBaseAdapter;
+import com.appify.vidstream.adapter.LinkListBaseAdapter;
 import com.appify.vidstream.adapter.VideoThumbnailGridBaseAdapter;
 import com.appify.vidstream.adapter.VideoThumbnailListBaseAdapter;
 import com.appify.vidstream.adapter.OrderByAdapter;
 import com.appify.vidstream.constants.ApplicationConstants;
 import com.appify.vidstream.control.AppController;
 import com.appify.vidstream.model.CategoriesModel;
+import com.appify.vidstream.model.LinksModel;
 import com.appify.vidstream.model.OrderByModel;
 import com.appify.vidstream.model.VideoModel;
 import com.appify.vidstream.utility.AdManager;
@@ -50,6 +53,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
@@ -89,14 +93,18 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
     private List<VideoModel> videoModeList = new ArrayList<VideoModel>();
     private VideoThumbnailGridBaseAdapter VideoThumbnailGridBaseAdapter;
     private VideoThumbnailListBaseAdapter VideoThumbnailListBaseAdapter;
+    private LinearLayout CategoriesadInclude;
     private List<CategoriesModel> categoriesModeList = new ArrayList<CategoriesModel>();
     private CategoryGridBaseAdapter childCategoryGridBaseAdapter;
     private CategoryListBaseAdapter childCategoryListBaseAdapter;
+    private List<LinksModel> linksModelList = new ArrayList<LinksModel>();
+    private LinkGridBaseAdapter linkGridBaseAdapter;
+    private LinkListBaseAdapter linkListBaseAdapter;
     private List<OrderByModel> orderByModeList = new ArrayList<OrderByModel>();
     private OrderByAdapter orderByAdapter;
     private String OrderAttributeCategoryValue;
     private Spinner orderBySpin, entriesPerPageSpin;
-    private GridView videoGridList, childCategoriesGridList;
+    private GridView videoGridList, childCategoriesGridList, gridViewLinkCategories;
     private RelativeLayout orderByRelativeLayout,relative_category_background;
     private MenuItem listGridConvertor;
     private AdView adMobAdView;
@@ -152,9 +160,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         }
 
         //Initialize Views
+        CategoriesadInclude = (LinearLayout) findViewById(R.id.CategoriesadInclude);
         orderByRelativeLayout = (RelativeLayout) findViewById(R.id.orderByRelativeLayout);
         videoGridList = (GridView) findViewById(R.id.gridViewVideosCategories);
         childCategoriesGridList = (GridView) findViewById(R.id.gridViewChildCategories);
+        gridViewLinkCategories = (GridView) findViewById(R.id.gridViewLinkCategories);
         orderBySpin = (Spinner) findViewById(R.id.orderbySpin);
         progressBar = (ProgressBar) findViewById(R.id.cat_progressbar);
         entriesPerPageSpin = (Spinner) findViewById(R.id.entriesPerPageSpin);
@@ -163,6 +173,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         relative_category_background = (RelativeLayout) findViewById(R.id.relative_category);
         videoGridList.setVisibility(View.GONE);
         orderByRelativeLayout.setVisibility(View.GONE);
+        CategoriesadInclude.setVisibility(View.GONE);
+        gridViewLinkCategories.setVisibility(View.GONE);
         PAGE_NO = 1;
         EntriesPerPage_Position = FIRST;
 
@@ -187,6 +199,17 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 Object getArrayLastValue = Category_Name.get(Category_Name.size() - 1);  //Get Last Value
                 NEWCATNAME = String.valueOf(getArrayLastValue.toString());
                 getSupportActionBar().setTitle(NEWCATNAME);
+            }
+            if(getshowBanner.equalsIgnoreCase("false")){
+                CategoriesadInclude.setVisibility(View.GONE);
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                layoutParams.addRule(RelativeLayout.BELOW, R.id.Categoriesview1);
+                layoutParams.setMargins(3, 3, 3, 3);
+                childCategoriesGridList.setLayoutParams(layoutParams);
+                videoGridList.setLayoutParams(layoutParams);
+                gridViewLinkCategories.setLayoutParams(layoutParams);
+            }else {
+                CategoriesadInclude.setVisibility(View.VISIBLE);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -310,10 +333,12 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             if (flag == false) {
                 childCategoriesGridList.setNumColumns(2);
                 videoGridList.setNumColumns(2);
+                gridViewLinkCategories.setNumColumns(2);
                 flag = false;
             } else {
                 childCategoriesGridList.setNumColumns(1);
                 videoGridList.setNumColumns(1);
+                gridViewLinkCategories.setNumColumns(1);
                 flag = true;
             }
         }catch (Exception e) {
@@ -379,6 +404,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             childCategoryListBaseAdapter = new CategoryListBaseAdapter(CategoryScreen.this, categoriesModeList);
             VideoThumbnailGridBaseAdapter = new VideoThumbnailGridBaseAdapter(CategoryScreen.this, videoModeList);
             VideoThumbnailListBaseAdapter = new VideoThumbnailListBaseAdapter(CategoryScreen.this, videoModeList);
+            linkGridBaseAdapter = new LinkGridBaseAdapter(CategoryScreen.this, linksModelList);
+            linkListBaseAdapter = new LinkListBaseAdapter(CategoryScreen.this, linksModelList);
             orderByAdapter = new OrderByAdapter(CategoryScreen.this, orderByModeList);
             categoryVideoWebServiceCall(LAST_CAT_VALUE);  //WebService call
 
@@ -400,19 +427,25 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             childCategoryListBaseAdapter.clearCategoryList();
             VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
             VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
+            linkGridBaseAdapter.clearLinkGrid();
+            linkListBaseAdapter.clearLinkList();
             orderByAdapter.clearOrderByList();
             orderBySpin.setAdapter(orderByAdapter);
             if(flag==false){
                 childCategoriesGridList.setAdapter(childCategoryGridBaseAdapter);
                 videoGridList.setAdapter(VideoThumbnailGridBaseAdapter);
+                gridViewLinkCategories.setAdapter(linkGridBaseAdapter);
                 childCategoriesGridList.setNumColumns(2);
                 videoGridList.setNumColumns(2);
+                gridViewLinkCategories.setNumColumns(2);
                 flag = false;
             }else{
                 childCategoriesGridList.setAdapter(childCategoryListBaseAdapter);
                 videoGridList.setAdapter(VideoThumbnailListBaseAdapter);
+                gridViewLinkCategories.setAdapter(linkListBaseAdapter);
                 childCategoriesGridList.setNumColumns(1);
                 videoGridList.setNumColumns(1);
+                gridViewLinkCategories.setNumColumns(1);
                 flag = true;
             }
 
@@ -426,7 +459,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             System.out.println("Page No = "+PAGE_NO);
             System.out.println("Entries = "+EntriesPerPage_Position);
             final String Cat1PageNo = String.valueOf(PAGE_NO);
-            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES+"?appId="+URLEncoder.encode(APP_ID)+"&catId="+URLEncoder.encode(Category_ID)+"&orderAttr="+URLEncoder.encode(SendOrderAttribute)+"&page_no="+URLEncoder.encode(Cat1PageNo)+"&entries_per_page="+URLEncoder.encode(EntriesPerPage_Position)+"&deviceId="+URLEncoder.encode(getdeviceID);
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES+"?appId="+URLEncoder.encode(APP_ID)+"&catId="+URLEncoder.encode(Category_ID)+"&orderAttr="+URLEncoder.encode(SendOrderAttribute)+"&page_no="+URLEncoder.encode(Cat1PageNo)+"&entries_per_page="+URLEncoder.encode(EntriesPerPage_Position)+"&deviceId="+URLEncoder.encode(getdeviceID)+"&os="+URLEncoder.encode(OS);
             System.out.println("loadChildCatURL = "+loadChildCatURL);
             JsonObjectRequest childCategoryVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -436,6 +469,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         Log.e("childCategoryVideoResponse>>>>",""+response);
                         if(response.contains("orderAttributes")){
                             childCategoriesGridList.setVisibility(View.GONE);
+                            gridViewLinkCategories.setVisibility(View.GONE);
                             videoORcategory = "video";
                             try {//Response for Order By Attributes
                                 orderByRelativeLayout.setVisibility(View.VISIBLE);
@@ -453,9 +487,25 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                                 orderByAdapter.notifyDataSetChanged();
                                 System.out.println("orderByModeList>>>>>>" + orderByModeList);
                             }catch (Exception ed){ed.printStackTrace();}
+                        }else if(response.contains("appifyLinks")){
+                            childCategoriesGridList.setVisibility(View.GONE);
+                            orderByRelativeLayout.setVisibility(View.GONE);
+                            gridViewLinkCategories.setVisibility(View.VISIBLE);
+                            videoORcategory = "appifyLinks";
+                            JSONArray childlinkArray = childCategoryVideoResponse.getJSONArray("appifyLinks");
+                            for (int j = 0; j < childlinkArray.length(); j++) {
+                                JSONObject childlinkObject = childlinkArray.getJSONObject(j);
+                                LinksModel linksModel = new LinksModel();
+                                linksModel.setLinkName(childlinkObject.getString("name"));
+                                linksModel.setLinkID(childlinkObject.getString("id"));
+                                linksModel.setLinkURL(childlinkObject.getString("linkUrl"));
+                                linksModel.setLinkImage(childlinkObject.getString("image"));
+                                linksModelList.add(linksModel);
+                            }
                         }else{
                             childCategoriesGridList.setVisibility(View.VISIBLE);
                             orderByRelativeLayout.setVisibility(View.GONE);
+                            gridViewLinkCategories.setVisibility(View.GONE);
                             videoORcategory = "category";
                             JSONArray childCatArray = childCategoryVideoResponse.getJSONArray("categories");
                             for (int j = 0; j < childCatArray.length(); j++) {
@@ -473,6 +523,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     }
 
                     try{childCategoryGridBaseAdapter.notifyDataSetChanged();}catch (Exception ed){ed.printStackTrace();}
+                    try{linkGridBaseAdapter.notifyDataSetChanged();}catch (Exception ed){ed.printStackTrace();}
                     hidePDialog();
                 }
             }, new Response.ErrorListener() {
@@ -549,6 +600,30 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         e.printStackTrace();
                         onBackPressed();
                         FirebaseCrash.log("Exception in videoGridList.setOnItemClickListener:CategoryScreen.java >"+e);
+                    }
+                }
+            });
+            // On Click Listener of Link List and Intent to GooglePlayStore
+            gridViewLinkCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) { //TODO ClickListener
+                    // Getting the Container Layout of the ListView
+                    try {
+                        LinearLayout linearLayoutParent = (LinearLayout) view;
+                        TextView tvLinkName = (TextView) linearLayoutParent.getChildAt(1);
+                        TextView tvLinkId = (TextView) linearLayoutParent.getChildAt(2);
+                        TextView tvLinkURL = (TextView) linearLayoutParent.getChildAt(3);
+
+                        if(tvLinkURL.getText().length() > 1){
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tvLinkURL.toString()));
+                            startActivity(intent);
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        onBackPressed();
+                        FirebaseCrash.log("Exception in gridViewLinkCategories.setOnItemClickListener:CategoryScreen.java >"+e);
                     }
                 }
             });
@@ -648,7 +723,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         progressDialogCall();
         try {
             // Creating volley request obj getting videos
-            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&catId=" + URLEncoder.encode(setcatId) + "&orderAttr=" + URLEncoder.encode(setorderAttr) + "&page_no=" + URLEncoder.encode(setpage_no) + "&entries_per_page=" + URLEncoder.encode(setentries_per_page) + "&deviceId=" + URLEncoder.encode(setdeviceId);
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&catId=" + URLEncoder.encode(setcatId) + "&orderAttr=" + URLEncoder.encode(setorderAttr) + "&page_no=" + URLEncoder.encode(setpage_no) + "&entries_per_page=" + URLEncoder.encode(setentries_per_page) + "&deviceId=" + URLEncoder.encode(setdeviceId)+"&os="+URLEncoder.encode(OS);
             System.out.println("loadChildCatURL = " + loadChildCatURL);
             JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -661,6 +736,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                             childCategoryListBaseAdapter.clearCategoryList();
                             VideoThumbnailGridBaseAdapter.clearVideoThumbnailGrid();
                             VideoThumbnailListBaseAdapter.clearVideoThumbnailList();
+                            linkGridBaseAdapter.clearLinkGrid();
+                            linkListBaseAdapter.clearLinkList();
                             videoGridList.setVisibility(View.VISIBLE);
                             JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
                             for (int k = 0; k < videoCatArray.length(); k++) {
@@ -766,7 +843,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
     private void updateListView() {
         try {
             String Cat4PageNo = String.valueOf(PAGE_NO);
-            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(APP_ID) + "&catId=" + URLEncoder.encode(OrderAttributeCategoryValue) + "&orderAttr=" + URLEncoder.encode(SelectedOrderValue) + "&page_no=" + URLEncoder.encode(Cat4PageNo) + "&entries_per_page=" + URLEncoder.encode(EntriesPerPage_Position) + "&deviceId=" + URLEncoder.encode(getdeviceID);
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(APP_ID) + "&catId=" + URLEncoder.encode(OrderAttributeCategoryValue) + "&orderAttr=" + URLEncoder.encode(SelectedOrderValue) + "&page_no=" + URLEncoder.encode(Cat4PageNo) + "&entries_per_page=" + URLEncoder.encode(EntriesPerPage_Position) + "&deviceId=" + URLEncoder.encode(getdeviceID)+"&os="+URLEncoder.encode(OS);
             JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject childCategoryVideoResponse) {
@@ -1123,6 +1200,9 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         if (videoORcategory.equalsIgnoreCase("category")) {
                             childCategoriesGridList.setAdapter(childCategoryListBaseAdapter);
                             childCategoriesGridList.setNumColumns(1);
+                        } else if(videoORcategory.equalsIgnoreCase("appifyLinks")){
+                            gridViewLinkCategories.setAdapter(linkListBaseAdapter);
+                            gridViewLinkCategories.setNumColumns(1);
                         } else {
                             videoGridList.setAdapter(VideoThumbnailListBaseAdapter);
                             videoGridList.setNumColumns(1);
@@ -1133,6 +1213,9 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         if (videoORcategory.equalsIgnoreCase("category")) {
                             childCategoriesGridList.setAdapter(childCategoryGridBaseAdapter);
                             childCategoriesGridList.setNumColumns(2);
+                        } else if(videoORcategory.equalsIgnoreCase("appifyLinks")){
+                            gridViewLinkCategories.setAdapter(linkGridBaseAdapter);
+                            gridViewLinkCategories.setNumColumns(2);
                         } else {
                             videoGridList.setAdapter(VideoThumbnailGridBaseAdapter);
                             videoGridList.setNumColumns(2);

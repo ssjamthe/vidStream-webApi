@@ -47,7 +47,7 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/view1"
+            android:id="@+id/Categorizationview1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@+id/CategorizationMainLinearLayout"
@@ -58,13 +58,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/layout_background"
-            android:layout_below="@+id/view1"
+            android:layout_below="@+id/Categorizationview1"
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="10dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="0dp"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/personalize"
@@ -95,7 +95,7 @@
             android:id="@+id/gridViewCategoriesText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/view1"
+            android:layout_below="@+id/Categorizationview1"
             android:layout_marginBottom="53dp"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
@@ -106,6 +106,12 @@
             android:stretchMode="columnWidth"
             android:verticalSpacing="3dp"
             android:visibility="gone"></GridView>
+        <LinearLayout
+            android:id="@+id/adshowview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone">
         <include
             android:id="@+id/catz_ad_container"
             layout="@layout/categorization_ad_layout"
@@ -113,6 +119,7 @@
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:visibility="visible"></include>
+        </LinearLayout>
 
     </RelativeLayout>
 </LinearLayout>

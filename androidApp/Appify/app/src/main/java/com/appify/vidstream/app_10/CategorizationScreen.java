@@ -118,7 +118,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
     private Spinner categorization;
     private MenuItem listGridConvertor;
     private GridView gridViewCategoriesText;
-    private LinearLayout mainCategorizationLinearLayout, PersonalizeLayout;
+    private LinearLayout mainCategorizationLinearLayout, PersonalizeLayout, adshowview;
     private RelativeLayout catzation_Relative_Background;
 
     private static final String PREFS_NAME = "CATZ_PREF";
@@ -161,6 +161,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
         }
 
         //Initialize View
+        adshowview = (LinearLayout) findViewById(R.id.adshowview);
         categorization = (Spinner) findViewById(R.id.categorizationSpinner);
         gridViewCategoriesText = (GridView) findViewById(R.id.gridViewCategoriesText);
         inMobiAdView = (RelativeLayout) findViewById(R.id.inMobi_adView);
@@ -462,14 +463,23 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
                         //For Banner
                         try {
-                            double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
-                            if (showAdWeight > randomNo) {
-                                if (showBanner.equalsIgnoreCase("true")) {
-                                    showInMobiBanner();
-                                }
-                            } else {
-                                if (showBanner.equalsIgnoreCase("true")) {
-                                    showAdBanner();
+                            if(showBanner.equalsIgnoreCase("false")){
+                                adshowview.setVisibility(View.GONE);
+                                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                                layoutParams.addRule(RelativeLayout.BELOW, R.id.Categorizationview1);
+                                layoutParams.setMargins(3, 3, 3, 3);
+                                gridViewCategoriesText.setLayoutParams(layoutParams);
+                            }else {
+                                adshowview.setVisibility(View.VISIBLE);
+                                double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
+                                if (showAdWeight > randomNo) {
+                                    if (showBanner.equalsIgnoreCase("true")) {
+                                        showInMobiBanner();
+                                    }
+                                } else {
+                                    if (showBanner.equalsIgnoreCase("true")) {
+                                        showAdBanner();
+                                    }
                                 }
                             }
                         } catch (Exception e) {

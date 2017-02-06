@@ -76,6 +76,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
     private InterstitialAd banner;
     private AdView adMobAdView;
     private InMobiBanner mBannerAd;
+    private RelativeLayout feedback_ad_view;
 
     @Override
     public void onResume() {
@@ -120,6 +121,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
         }
 
         //Initialize Views
+        feedback_ad_view = (RelativeLayout) findViewById(R.id.feedback_ad_view);
         feedback_linear = (RelativeLayout) findViewById(R.id.feedback_linear);
         feedbackInnerLayout = (LinearLayout) findViewById(R.id.feedbackInnerLayout);
         ed_feedback = (EditText) findViewById(R.id.feefback_form_edit_text);
@@ -132,14 +134,19 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
         //for Showing Ads
         try
         {
-            double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
-            if (showAdWeight > randomNo) {
-                if (showBanner.equalsIgnoreCase("true")) {
-                    showInMobiAdBanner();
-                }
-            } else {
-                if (showBanner.equalsIgnoreCase("true")) {
-                    showAdMobBanner();
+            if(showBanner.equalsIgnoreCase("false")){
+                feedback_ad_view.setVisibility(View.GONE);
+            }else {
+                feedback_ad_view.setVisibility(View.VISIBLE);
+                double showAdWeight = Double.parseDouble(showInmobiAdWeightage);
+                if (showAdWeight > randomNo) {
+                    if (showBanner.equalsIgnoreCase("true")) {
+                        showInMobiAdBanner();
+                    }
+                } else {
+                    if (showBanner.equalsIgnoreCase("true")) {
+                        showAdMobBanner();
+                    }
                 }
             }
         }

@@ -85,7 +85,7 @@
         </RelativeLayout>
 
         <View
-            android:id="@+id/view1"
+            android:id="@+id/Categoriesview1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@+id/orderByRelativeLayout"
@@ -95,7 +95,7 @@
                 android:id="@+id/gridViewChildCategories"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/view1"
+                android:layout_below="@+id/Categoriesview1"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginTop="3dp"
@@ -112,7 +112,7 @@
                 android:id="@+id/gridViewVideosCategories"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/view1"
+                android:layout_below="@+id/Categoriesview1"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginTop="3dp"
@@ -124,6 +124,30 @@
                 android:verticalSpacing="3dp"
                 android:visibility="gone">
             </GridView>
+
+            <GridView
+                android:id="@+id/gridViewLinkCategories"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/Categoriesview1"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="53dp"
+                android:columnWidth="100dp"
+                android:gravity="center"
+                android:horizontalSpacing="3dp"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="3dp"
+                android:visibility="gone">
+            </GridView>
+
+        <LinearLayout
+            android:id="@+id/CategoriesadInclude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true">
             <include
                 android:id="@+id/cat_ad_container"
                 android:layout_width="match_parent"
@@ -132,6 +156,7 @@
                 layout="@layout/category_ad_layout"
                 android:visibility="visible" >
             </include>
+        </LinearLayout>
 
     </RelativeLayout>
 </LinearLayout>
