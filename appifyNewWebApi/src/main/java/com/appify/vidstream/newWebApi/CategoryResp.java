@@ -1,8 +1,12 @@
 package com.appify.vidstream.newWebApi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by swapnil on 29/11/16.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryResp {
 
     private String id;

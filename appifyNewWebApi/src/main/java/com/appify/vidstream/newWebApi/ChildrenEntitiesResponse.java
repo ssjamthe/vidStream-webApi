@@ -1,8 +1,11 @@
 package com.appify.vidstream.newWebApi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by swapnil on 10/01/17.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChildrenEntitiesResponse {
 
     private String[] orderAttributes;

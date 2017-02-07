@@ -2,11 +2,12 @@ package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.Entity;
 import com.appify.vidstream.newWebApi.data.EntityType;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Created by swapnil on 04/12/16.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EntityResp {
     private String id;
     private String name;

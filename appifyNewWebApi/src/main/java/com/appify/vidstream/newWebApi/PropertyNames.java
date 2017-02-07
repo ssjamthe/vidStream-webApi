@@ -17,7 +17,7 @@ public interface PropertyNames {
     String EXPLORE_CATEGORY_NAME = "explore";
     String NEWLY_ADDED_CATEGORY_IMAGE_ID = "newly_added_cat_image_id";
     String NEWLY_ADDED_CATEGORY_NAME = "newly_added_category_name";
-    String NEWLY_ADDED_VIDEOS_DAYS = "newly_added_videos_display_count";
+    String NEWLY_ADDED_VIDEOS_DAYS = "newly_added_videos_days_duration";
     String MOSTLY_VIEWED_VIDEOS_COUNT = "mostly_viewed_videos_count";
     String MOSTLY_VIEWED_CATEGORY_IMAGE_ID = "mostly_viewed_cat_image_id";
     String MOSTLY_VIEWED_CATEGORY_NAME = "mostly_viewed_category_name";
