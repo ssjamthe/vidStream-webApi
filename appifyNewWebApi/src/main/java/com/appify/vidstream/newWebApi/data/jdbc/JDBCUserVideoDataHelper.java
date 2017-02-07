@@ -38,8 +38,7 @@ public class JDBCUserVideoDataHelper implements UserVideoDataHelper {
 
                     + "' order by video_timestamp";
 
-            PreparedStatement stmt = con.prepareStatement(sql);
-
+            Statement stmt = con.createStatement();
             List<String> videoIds = new ArrayList<>();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -48,7 +47,7 @@ public class JDBCUserVideoDataHelper implements UserVideoDataHelper {
 
             return videoIds;
         } catch (SQLException ex) {
-            throw new RuntimeException("Problem in updating video watched by user.", ex);
+            throw new RuntimeException("Problem getting recently watched videos for the user.", ex);
         }
     }
 

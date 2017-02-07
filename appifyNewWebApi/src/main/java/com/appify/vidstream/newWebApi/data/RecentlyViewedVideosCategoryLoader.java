@@ -58,14 +58,13 @@ public class RecentlyViewedVideosCategoryLoader extends CategoryDataLoader {
             ImmutableMap<String, Video> videoMap = appInfo.getVideoMap();
             Set<String> attributeNames = new HashSet<>();
 
-
             int currrAttributeVal = videoIds.size();
             List<Video> videos = new ArrayList<>();
 
             for (String videoId : videoIds) {
                 Video video = videoMap.get(videoId);
-                attributeNames.add(video.getName());
                 if (video != null) {
+                	attributeNames.addAll(video.getAttributeValues().keySet());
                     Video newVideoObj = new Video(video);
                     newVideoObj.getAttributeValues().put(VideoAttribute.RECENTLY_VIEWED.getDataName(),
                             currrAttributeVal);
