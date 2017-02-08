@@ -77,7 +77,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 	private YouTubePlayer youTubePlayer;
 	private boolean flag;
 	private YouTubePlayerView youTubePlayerView;
-	private String VIDEO_ID, VIDEO_NAME, deviceID, showBanner, youtubeshowInmobiAdWeightage, showAdMovingInside, back_image;
+	private String VIDEO_ID, VIDEO_NAME, deviceID, showBanner, youtubeshowInmobiAdWeightage, showAdMovingInside, back_image, noContentMessage;
 	private TextView videoName;
 	private LinearLayout home_but, back_but;
 	private RelativeLayout player_background;
@@ -127,6 +127,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			VIDEO_NAME = intentget.getStringExtra("VIDEO_NAME");
 			Category_Name = intentget.getStringArrayListExtra("CategoryName");
 			CategoryHierarchyList = intentget.getStringArrayListExtra("categoryID");
+			noContentMessage = intentget.getStringExtra("noContentMessage");
 			showBanner = intentget.getStringExtra("showBanner");
 			youtubeshowInmobiAdWeightage = intentget.getStringExtra("showInmobiAdWeightage");
 			showMinIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial", 0);
@@ -249,7 +250,6 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 
 		//For Video Beacons
 		try {
-
 			final String VideoViewedUser_URL = URL_IP_ADDRESS + URL_YOUTUBEVIDEO + "?appId=" + URLEncoder.encode(APP_ID) + "&videoId=" + URLEncoder.encode(VIDEO_ID) + "&deviceId=" + URLEncoder.encode(deviceID.toString());
 			System.out.println("VideoViewedUser_URL = "+VideoViewedUser_URL);
 			JsonObjectRequest videoViewedRequest = new JsonObjectRequest(Request.Method.POST, VideoViewedUser_URL, null, new Response.Listener<JSONObject>() {
@@ -271,7 +271,6 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 			});
 			RequestQueue videoviewedrequestQueue = Volley.newRequestQueue(YoutubePlayer.this);
 			videoviewedrequestQueue.add(videoViewedRequest);
-
 		}catch (Exception e){
 			e.printStackTrace();
 			FirebaseCrash.log("Exception in video beacones :YoutubePlayer.java >"+e);
@@ -470,6 +469,7 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
             Intent intentplayer = new Intent(YoutubePlayer.this, CategoryScreen.class);
             intentplayer.putExtra("categoryID", CategoryHierarchyList);
 			intentplayer.putExtra("CategoryName", Category_Name);
+			intentplayer.putExtra("noContentMessage",noContentMessage);
             intentplayer.putExtra("showBanner", showBanner);
             intentplayer.putExtra("showInmobiAdWeightage", youtubeshowInmobiAdWeightage);
             intentplayer.putExtra("minIntervalInterstitial", showMinIntervalInterstitial);

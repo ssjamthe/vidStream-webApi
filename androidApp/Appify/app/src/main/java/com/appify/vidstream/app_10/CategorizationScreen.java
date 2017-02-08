@@ -110,7 +110,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
     private CheckInternetConnection cic;
     private Boolean isInternetPresent = false;
-    private String deviceID, showBanner, showAdMovingInside;
+    private String deviceID, showBanner, showAdMovingInside, noContentMessage;
     private String appBgImageUrl;
     private int ActivityNo=0, PrevActivityNo, PREVIOUS_SELECTED_CATEGORIZATION_ID;
     private String showInmobiAdWeightage, ActivityName;
@@ -118,8 +118,9 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
     private Spinner categorization;
     private MenuItem listGridConvertor;
     private GridView gridViewCategoriesText;
-    private LinearLayout mainCategorizationLinearLayout, PersonalizeLayout, adshowview;
+    private LinearLayout mainCategorizationLinearLayout, PersonalizeLayout, adshowview, nocontentcatzlayout;
     private RelativeLayout catzation_Relative_Background;
+    private TextView nocontentcatzText;
 
     private static final String PREFS_NAME = "CATZ_PREF";
     private static final String PREFS_KEY = "CATZ_PREF_PREV_ACTNO";
@@ -177,6 +178,9 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
         PersonalizeLayout.setVisibility(View.GONE);
         gridViewCategoriesText.setVisibility(View.GONE);
         catZationGridAdapter.clearCatzList();
+        nocontentcatzlayout = (LinearLayout) findViewById(R.id.nocontentcatzlayout);
+        nocontentcatzText = (TextView) findViewById(R.id.nocontentcatzText);
+        nocontentcatzlayout.setVisibility(View.GONE);
 
         cic = new CheckInternetConnection(getApplicationContext());
         isInternetPresent = cic.isConnectingToInternet();
@@ -413,25 +417,60 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                         minIntervalInterstitial = response.getLong("minIntervalInterstitial");
                         String minIntInterstitial = String.valueOf(minIntervalInterstitial);
                         Log.e("minInterval: ", minIntInterstitial);
+                        try{
+                            noContentMessage = response.getString("noContentMessage");
+                        }catch (Exception excep){
+                            System.out.println("Didnt Found noContentMessage and set DefaultNoContentMessage");
+                            noContentMessage = DefaultNoContentMessage;
+                        }
 
                         hidePDialog();
                         //Get Categorization
-                        JSONArray categorizationsArray = response.getJSONArray("categorizations");
-                        for (int i = 0; i < categorizationsArray.length(); i++) {
-                            JSONObject categorizationsObject = categorizationsArray.getJSONObject(i);
-                            CatZationModel spinMod = new CatZationModel();
-                            spinMod.setCatZationName(categorizationsObject.getString("name"));
-                            spinMod.setCatZationId(categorizationsObject.getString("id"));
-                            catZationModeList.add(spinMod);
+
+                        String catzresponse = response.toString();
+                        Log.e("response >>>> ", ""+catzresponse);
+
+                        if(catzresponse.contains("categorizations")){
+                            JSONArray categorizationsArray = response.getJSONArray("categorizations");
+                            Log.e("categorizationsArray.length() >>>> ", ""+categorizationsArray.length());
+                            if(categorizationsArray.length() == 0){
+                                mainCategorizationLinearLayout.setVisibility(View.GONE);
+                                nocontentcatzlayout.setVisibility(View.VISIBLE);
+                                nocontentcatzText.setText(noContentMessage);
+                            }else {
+                                for (int i = 0; i < categorizationsArray.length(); i++) {
+                                    JSONObject categorizationsObject = categorizationsArray.getJSONObject(i);
+                                    CatZationModel spinMod = new CatZationModel();
+                                    try {
+                                        spinMod.setCatZationName(categorizationsObject.getString("name"));
+                                        spinMod.setCatZationId(categorizationsObject.getString("id"));
+                                        catZationModeList.add(spinMod);
+                                    }catch (Exception ed){
+                                        Log.e("Null Categorization >>>> ", ""+ed);
+                                        if(categorizationsArray.length() == 1){
+                                            mainCategorizationLinearLayout.setVisibility(View.GONE);
+                                            nocontentcatzlayout.setVisibility(View.VISIBLE);
+                                            nocontentcatzText.setText(noContentMessage);
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+                            mainCategorizationLinearLayout.setVisibility(View.GONE);
+                            nocontentcatzlayout.setVisibility(View.VISIBLE);
+                            nocontentcatzText.setText(noContentMessage);
                         }
 
                         //For single categorization
+                        Log.e("catZationModeList.size() >>>> ", ""+catZationModeList.size());
                         if (catZationModeList.size() == 1) {
                             mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
                             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(0, 0);
                             mainCategorizationLinearLayout.setLayoutParams(layoutParams);
-                        } else {
+                            nocontentcatzlayout.setVisibility(View.GONE);
+                        } else if(catZationModeList.size() > 1){
                             mainCategorizationLinearLayout.setVisibility(View.VISIBLE);
+                            nocontentcatzlayout.setVisibility(View.GONE);
                         }
 
                         //Background image
@@ -490,6 +529,8 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                         e.printStackTrace();
                         hidePDialog();
                         FirebaseCrash.log("Exception in onResponse catzationspinurl:CategorizationScreen.java >" + e);
+                        nocontentcatzlayout.setVisibility(View.VISIBLE);
+                        nocontentcatzText.setText(DefaultNoContentMessage);
                     }
 
                 }
@@ -608,6 +649,8 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     e.printStackTrace();
                     gridViewCategoriesText.setVisibility(View.GONE);
                     PersonalizeLayout.setVisibility(View.GONE);
+                    nocontentcatzlayout.setVisibility(View.VISIBLE);
+                    nocontentcatzText.setText(noContentMessage);
                     FirebaseCrash.log("Exception in categorization.setOnItemSelectedListener:CategorizationScreen.java >"+e);
                 }
             }
@@ -652,6 +695,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                     Intent intentcat = new Intent(CategorizationScreen.this, CategoryScreen.class);
                     intentcat.putExtra("categoryID", CatArray);
                     intentcat.putExtra("CategoryName", CatNameArray);
+                    intentcat.putExtra("noContentMessage",noContentMessage);
                     intentcat.putExtra("showBanner", showBanner);
                     intentcat.putExtra("showInmobiAdWeightage", showInmobiAdWeightage);
                     intentcat.putExtra("minIntervalInterstitial", minIntervalInterstitial);
@@ -700,18 +744,25 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
 
                                 JSONArray categoriesArray = volleyResponse.getJSONArray("categories");
                                 System.out.println("categoriesArray.length()=" + categoriesArray.length());
-                                for (int i = 0; i < categoriesArray.length(); i++) {
-                                    JSONObject categoryObject = categoriesArray.getJSONObject(i);
-                                    CategoriesModel categoriesModel = new CategoriesModel();
-                                    categoriesModel.setCatTitle(categoryObject.getString("name"));
-                                    categoriesModel.setCatID(categoryObject.getString("id"));
-                                    categoriesModel.setCatImage(categoryObject.getString("image"));
-                                    System.out.println("Inside Cat: " + categoryObject.getString("name"));
-                                    System.out.println("Inside Cat: " + categoryObject.getString("id"));
-                                    System.out.println("Inside Cat: " + categoryObject.getString("image"));
-                                    categoriesModeList.add(categoriesModel);
+                                if(categoriesArray.length() == 0){
+                                    gridViewCategoriesText.setVisibility(View.GONE);
+                                    nocontentcatzlayout.setVisibility(View.VISIBLE);
+                                    nocontentcatzText.setText(noContentMessage);
+                                }else {
+                                    for (int i = 0; i < categoriesArray.length(); i++) {
+                                        JSONObject categoryObject = categoriesArray.getJSONObject(i);
+                                        CategoriesModel categoriesModel = new CategoriesModel();
+                                        try {
+                                            categoriesModel.setCatTitle(categoryObject.getString("name"));
+                                            categoriesModel.setCatID(categoryObject.getString("id"));
+                                            categoriesModel.setCatImage(categoryObject.getString("image"));
+                                            System.out.println("Inside Cat: " + categoryObject.getString("name"));
+                                            System.out.println("Inside Cat: " + categoryObject.getString("id"));
+                                            System.out.println("Inside Cat: " + categoryObject.getString("image"));
+                                            categoriesModeList.add(categoriesModel);
+                                        }catch (Exception ed){System.out.println("Empty Category>>>"+ed);}
+                                    }
                                 }
-
                                 categoriGridBaseAdapter.notifyDataSetChanged();
                                 categoriListBaseAdapter.notifyDataSetChanged();
                                 catZationGridAdapter.notifyDataSetChanged();
@@ -719,6 +770,9 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                                 e.printStackTrace();
                                 hidePDialog();
                                 FirebaseCrash.log("Exception at getting categories:CategorizationScreen.java >" + e);
+                                gridViewCategoriesText.setVisibility(View.GONE);
+                                nocontentcatzlayout.setVisibility(View.VISIBLE);
+                                nocontentcatzText.setText(noContentMessage);
                             }
 
                         }
@@ -974,10 +1028,14 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                                 public void onClick(
                                         DialogInterface dialogInterface, int i) {
                                     try {
-                                        CATZ_editor.clear();
-                                        CATZ_editor.commit();
-                                        editor.clear();
-                                        editor.commit();
+                                        if(CATZ_editor != null){
+                                            CATZ_editor.clear();
+                                            CATZ_editor.commit();
+                                        }
+                                        if(editor != null){
+                                            editor.clear();
+                                            editor.commit();
+                                        }
                                         CategorizationScreen.this.finish();
                                     } catch (Exception e) {
                                         e.printStackTrace();

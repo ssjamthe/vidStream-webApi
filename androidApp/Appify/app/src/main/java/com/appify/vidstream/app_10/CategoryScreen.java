@@ -15,10 +15,12 @@ import org.json.JSONObject;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.appify.vidstream.adapter.CategoryGridBaseAdapter;
 import com.appify.vidstream.adapter.CategoryListBaseAdapter;
 import com.appify.vidstream.adapter.LinkGridBaseAdapter;
@@ -86,14 +88,15 @@ import android.widget.Toast;
 public class CategoryScreen extends AppCompatActivity implements ApplicationConstants {
 
     private InterstitialAd banner, interstitial;
-    private String getshowBanner, getshowInmobiAdWeightage, getshowAdMovingInside, getdeviceID, BackGround_Image, videoORcategory;
+    private String getshowBanner, getshowInmobiAdWeightage, getshowAdMovingInside, getdeviceID, BackGround_Image, videoORcategory, noContentMessage;
     private boolean flag;
     private static final String TAG = CategoryScreen.class.getSimpleName();
     private ProgressDialog progressDialog;
     private List<VideoModel> videoModeList = new ArrayList<VideoModel>();
     private VideoThumbnailGridBaseAdapter VideoThumbnailGridBaseAdapter;
     private VideoThumbnailListBaseAdapter VideoThumbnailListBaseAdapter;
-    private LinearLayout CategoriesadInclude;
+    private LinearLayout CategoriesadInclude, nocontentcatlayout;
+    private TextView nocontentcatText;
     private List<CategoriesModel> categoriesModeList = new ArrayList<CategoriesModel>();
     private CategoryGridBaseAdapter childCategoryGridBaseAdapter;
     private CategoryListBaseAdapter childCategoryListBaseAdapter;
@@ -177,12 +180,16 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         gridViewLinkCategories.setVisibility(View.GONE);
         PAGE_NO = 1;
         EntriesPerPage_Position = FIRST;
+        nocontentcatlayout = (LinearLayout) findViewById(R.id.nocontentcatlayout);
+        nocontentcatText = (TextView) findViewById(R.id.nocontentcatText);
+        nocontentcatlayout.setVisibility(View.GONE);
 
         //Intent values from CategorizationScreen or YoutubeScreen.
         try {
             Intent adIntent = getIntent();
             HierarchyList = adIntent.getStringArrayListExtra("categoryID");
             Category_Name = adIntent.getStringArrayListExtra("CategoryName");
+            noContentMessage = adIntent.getStringExtra("noContentMessage");
             getshowBanner = adIntent.getStringExtra("showBanner");
             getshowInmobiAdWeightage = adIntent.getStringExtra("showInmobiAdWeightage");
             getminIntervalInterstitial = getIntent().getLongExtra("minIntervalInterstitial", 0);
@@ -193,6 +200,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             ActivityNo = getIntent().getIntExtra("ActivityNo", 0);
             System.out.println("Get Categorization ActivityNo from Intent>>> And set ActivityNo = " + ActivityNo + ";");
             PrevActivityNo = preferences.getInt(PREFS_KEY, 0);
+            nocontentcatText.setText(noContentMessage);
             if(Category_Name.isEmpty()){
                 getSupportActionBar().setTitle(APP_NAME);
             }else{
@@ -468,16 +476,29 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         String response = childCategoryVideoResponse.toString();
                         Log.e("childCategoryVideoResponse>>>>",""+response);
                         if(response.contains("orderAttributes")){
-                            childCategoriesGridList.setVisibility(View.GONE);
-                            gridViewLinkCategories.setVisibility(View.GONE);
                             videoORcategory = "video";
-                            try {//Response for Order By Attributes
+                            JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
+                            if(videoCatArray.length() == 0){
+                                childCategoriesGridList.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.GONE);
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.VISIBLE);
+                            }else{
+                                childCategoriesGridList.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.GONE);
                                 orderByRelativeLayout.setVisibility(View.VISIBLE);
+                                videoGridList.setVisibility(View.VISIBLE);
+                            }
+                            try {//Response for Order By Attributes
                                 JSONArray orderArray = childCategoryVideoResponse.getJSONArray("orderAttributes");
                                 for (int i = 0; i < orderArray.length(); i++) {
                                     OrderByModel byModel = new OrderByModel();
-                                    byModel.setOrderTitle(orderArray.getString(i));
-                                    orderByModeList.add(byModel);
+                                    try {
+                                        byModel.setOrderTitle(orderArray.getString(i));
+                                        orderByModeList.add(byModel);
+                                    }catch (Exception ed){Log.e("Null OrderByList >>>> ", ""+ed);}
                                 }
                             } catch (Exception exe) {
                                 exe.printStackTrace();
@@ -488,38 +509,73 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                                 System.out.println("orderByModeList>>>>>>" + orderByModeList);
                             }catch (Exception ed){ed.printStackTrace();}
                         }else if(response.contains("appifyLinks")){
-                            childCategoriesGridList.setVisibility(View.GONE);
-                            orderByRelativeLayout.setVisibility(View.GONE);
-                            gridViewLinkCategories.setVisibility(View.VISIBLE);
                             videoORcategory = "appifyLinks";
                             JSONArray childlinkArray = childCategoryVideoResponse.getJSONArray("appifyLinks");
-                            for (int j = 0; j < childlinkArray.length(); j++) {
-                                JSONObject childlinkObject = childlinkArray.getJSONObject(j);
-                                LinksModel linksModel = new LinksModel();
-                                linksModel.setLinkName(childlinkObject.getString("name"));
-                                linksModel.setLinkID(childlinkObject.getString("id"));
-                                linksModel.setLinkURL(childlinkObject.getString("linkUrl"));
-                                linksModel.setLinkImage(childlinkObject.getString("image"));
-                                linksModelList.add(linksModel);
+                            if(childlinkArray.length() == 0){
+                                childCategoriesGridList.setVisibility(View.GONE);
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.VISIBLE);
+                            }else {
+                                childCategoriesGridList.setVisibility(View.GONE);
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.VISIBLE);
+                                for (int j = 0; j < childlinkArray.length(); j++) {
+                                    JSONObject childlinkObject = childlinkArray.getJSONObject(j);
+                                    LinksModel linksModel = new LinksModel();
+                                    try {
+                                        linksModel.setLinkName(childlinkObject.getString("name"));
+                                        linksModel.setLinkID(childlinkObject.getString("id"));
+                                        linksModel.setLinkURL(childlinkObject.getString("linkUrl"));
+                                        linksModel.setLinkImage(childlinkObject.getString("image"));
+                                        linksModelList.add(linksModel);
+                                    }catch (Exception ed){Log.e("Null appifyLinkList >>>> ", ""+ed);}
+                                }
                             }
-                        }else{
-                            childCategoriesGridList.setVisibility(View.VISIBLE);
-                            orderByRelativeLayout.setVisibility(View.GONE);
-                            gridViewLinkCategories.setVisibility(View.GONE);
+                        }else if(response.contains("categories")){
                             videoORcategory = "category";
                             JSONArray childCatArray = childCategoryVideoResponse.getJSONArray("categories");
-                            for (int j = 0; j < childCatArray.length(); j++) {
-                                JSONObject childCatObject = childCatArray.getJSONObject(j);
-                                CategoriesModel categoriesModel = new CategoriesModel();
-                                categoriesModel.setCatTitle(childCatObject.getString("name"));
-                                categoriesModel.setCatID(childCatObject.getString("id"));
-                                categoriesModel.setCatImage(childCatObject.getString("image"));
-                                categoriesModeList.add(categoriesModel);
+                            if(childCatArray.length() == 0){
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.GONE);
+                                childCategoriesGridList.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.VISIBLE);
+                            }else {
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                gridViewLinkCategories.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.GONE);
+                                childCategoriesGridList.setVisibility(View.VISIBLE);
+                                for (int j = 0; j < childCatArray.length(); j++) {
+                                    JSONObject childCatObject = childCatArray.getJSONObject(j);
+                                    CategoriesModel categoriesModel = new CategoriesModel();
+                                    try {
+                                        categoriesModel.setCatTitle(childCatObject.getString("name"));
+                                        categoriesModel.setCatID(childCatObject.getString("id"));
+                                        categoriesModel.setCatImage(childCatObject.getString("image"));
+                                        categoriesModeList.add(categoriesModel);
+                                    }catch (Exception ed){Log.e("Null CategoryList >>>> ", ""+ed);}
+                                }
                             }
+                        }else{
+                            orderByRelativeLayout.setVisibility(View.GONE);
+                            videoGridList.setVisibility(View.GONE);
+                            gridViewLinkCategories.setVisibility(View.GONE);
+                            childCategoriesGridList.setVisibility(View.GONE);
+                            nocontentcatlayout.setVisibility(View.VISIBLE);
                         }
                     } catch (Exception e) { //If response for Videos
                         e.printStackTrace();
                         hidePDialog();
+                        orderByRelativeLayout.setVisibility(View.GONE);
+                        videoGridList.setVisibility(View.GONE);
+                        gridViewLinkCategories.setVisibility(View.GONE);
+                        childCategoriesGridList.setVisibility(View.GONE);
+                        nocontentcatlayout.setVisibility(View.VISIBLE);
                     }
 
                     try{childCategoryGridBaseAdapter.notifyDataSetChanged();}catch (Exception ed){ed.printStackTrace();}
@@ -586,6 +642,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         intentcat.putExtra("VIDEO_NAME", tvVidName.getText().toString());
                         intentcat.putExtra("categoryID", HierarchyList);
                         intentcat.putExtra("CategoryName", Category_Name);
+                        intentcat.putExtra("noContentMessage",noContentMessage);
                         intentcat.putExtra("showBanner", getshowBanner);
                         intentcat.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
                         intentcat.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
@@ -616,8 +673,42 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         TextView tvLinkURL = (TextView) linearLayoutParent.getChildAt(3);
 
                         if(tvLinkURL.getText().length() > 1){
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tvLinkURL.toString()));
+                            //For Link Beacons
+                            String linkurl = tvLinkURL.getText().toString();
+                            String linkID = tvLinkId.getText().toString();
+                            try {
+                                final String linkViewedUser_URL = URL_IP_ADDRESS + URL_LINKCLICKED + "?appId=" + URLEncoder.encode(APP_ID) + "&deviceId=" + URLEncoder.encode(getdeviceID.toString()) + "&linkId=" + URLEncoder.encode(linkID);
+                                System.out.println("linkViewedUser_URL = "+linkViewedUser_URL);
+                                JsonObjectRequest LinkViewedRequest = new JsonObjectRequest(Request.Method.POST, linkViewedUser_URL, null, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        try {
+                                            //String videoMessage = response.getString("allData");
+                                            //System.out.println("linkViewedUser_URL linkMessage= "+videoMessage);
+                                            System.out.println("Link Beacon Successfully Submitted.");
+                                        }catch (Exception e){e.printStackTrace();}
+
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError volleyError) {
+                                        VolleyLog.d(TAG, "Spin Error: " + volleyError.getMessage());
+                                        System.out.println("linkViewedUser_URL errorMessage= "+volleyError.getMessage());
+                                    }
+                                });
+                                RequestQueue linkviewedrequestQueue = Volley.newRequestQueue(CategoryScreen.this);
+                                linkviewedrequestQueue.add(LinkViewedRequest);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                FirebaseCrash.log("Exception in link beacones :CategoryScreen.java >"+e);
+                            }
+
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkurl));
                             startActivity(intent);
+                        }
+                        else{
+                            Toast.makeText(CategoryScreen.this, tvLinkName.getText().toString(), Toast.LENGTH_SHORT).show();
                         }
 
                     }catch (Exception e){
@@ -725,7 +816,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             // Creating volley request obj getting videos
             final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES + "?appId=" + URLEncoder.encode(setappId) + "&catId=" + URLEncoder.encode(setcatId) + "&orderAttr=" + URLEncoder.encode(setorderAttr) + "&page_no=" + URLEncoder.encode(setpage_no) + "&entries_per_page=" + URLEncoder.encode(setentries_per_page) + "&deviceId=" + URLEncoder.encode(setdeviceId)+"&os="+URLEncoder.encode(OS);
             System.out.println("loadChildCatURL = " + loadChildCatURL);
-            JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
+            final JsonObjectRequest orderByVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject childCategoryVideoResponse) {
                     try {
@@ -740,12 +831,22 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                             linkListBaseAdapter.clearLinkList();
                             videoGridList.setVisibility(View.VISIBLE);
                             JSONArray videoCatArray = childCategoryVideoResponse.getJSONArray("videos");
-                            for (int k = 0; k < videoCatArray.length(); k++) {
-                                JSONObject videoCatObject = videoCatArray.getJSONObject(k);
-                                VideoModel videoModel = new VideoModel();
-                                videoModel.setVideoName(videoCatObject.getString("name"));
-                                videoModel.setVideoId(videoCatObject.getString("id"));
-                                videoModeList.add(videoModel);
+                            if(videoCatArray.length() == 0){
+                                orderByRelativeLayout.setVisibility(View.GONE);
+                                videoGridList.setVisibility(View.GONE);
+                                nocontentcatlayout.setVisibility(View.VISIBLE);
+                            }else {
+                                videoGridList.setVisibility(View.VISIBLE);
+                                nocontentcatlayout.setVisibility(View.GONE);
+                                for (int k = 0; k < videoCatArray.length(); k++) {
+                                    JSONObject videoCatObject = videoCatArray.getJSONObject(k);
+                                    VideoModel videoModel = new VideoModel();
+                                    try {
+                                        videoModel.setVideoName(videoCatObject.getString("name"));
+                                        videoModel.setVideoId(videoCatObject.getString("id"));
+                                        videoModeList.add(videoModel);
+                                    }catch (Exception ed){Log.e("Null VideoList >>>> ", ""+ed);}
+                                }
                             }
                             VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
                             System.out.println("Set OrderBy VideoThumbnailGridBaseAdapter ----------------->");
@@ -756,6 +857,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                     } catch (Exception e2) {
                         e2.printStackTrace();
                         hidePDialog();
+                        videoGridList.setVisibility(View.GONE);
+                        nocontentcatlayout.setVisibility(View.VISIBLE);
                     }
                     hidePDialog();
                 }
@@ -856,9 +959,11 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                             for (int k = 0; k < videoCatArray.length(); k++) {
                                 JSONObject videoCatObject = videoCatArray.getJSONObject(k);
                                 VideoModel videoModel = new VideoModel();
-                                videoModel.setVideoName(videoCatObject.getString("name"));
-                                videoModel.setVideoId(videoCatObject.getString("id"));
-                                videoModeList.add(videoModel);
+                                try {
+                                    videoModel.setVideoName(videoCatObject.getString("name"));
+                                    videoModel.setVideoId(videoCatObject.getString("id"));
+                                    videoModeList.add(videoModel);
+                                }catch (Exception ed){Log.e("Null VideoList >>>> ", ""+ed);}
                             }
                             VideoThumbnailGridBaseAdapter.notifyDataSetChanged();
                             VideoThumbnailListBaseAdapter.notifyDataSetChanged();
@@ -1061,6 +1166,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         Intent ref = new Intent(CategoryScreen.this, CategoryScreen.class);
                         ref.putExtra("categoryID", HierarchyList);
                         ref.putExtra("CategoryName", Category_Name);
+                        ref.putExtra("noContentMessage",noContentMessage);
                         ref.putExtra("showBanner", getshowBanner);
                         ref.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
                         ref.putExtra("minIntervalInterstitial", getminIntervalInterstitial);
@@ -1083,6 +1189,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             Intent ref = new Intent(CategoryScreen.this, CategoryScreen.class);
             ref.putExtra("categoryID", HierarchyList);
             ref.putExtra("CategoryName", Category_Name);
+            ref.putExtra("noContentMessage",noContentMessage);
             ref.putExtra("showBanner", getshowBanner);
             ref.putExtra("showInmobiAdWeightage", getshowInmobiAdWeightage);
             ref.putExtra("minIntervalInterstitial", getminIntervalInterstitial);

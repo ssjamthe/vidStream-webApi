@@ -46,6 +46,7 @@ public interface ApplicationConstants {
     String URL_LOADCHILDCATEGORIES = "loadChildrenForCategories";
     String URL_YOUTUBEVIDEO = "videoViewed";
     String URL_FEEDBACKFORM = "feedbackForm";
+    String URL_LINKCLICKED = "linkClicked";
 
     //TODO:- Other String msgs
     String PERSONALIZED = "Personalized";
@@ -57,6 +58,7 @@ public interface ApplicationConstants {
     String UPDATING_APP = "Please try updating the app from Google Play Store.";
     String RecentlyViewedID = "-1";
     String OS = "Android";
+    String DefaultNoContentMessage = "No Content Found.";
     String LOADSORTEDVIDEOSURL_UPLOADTIME = "Upload Time";                  // Make sure do not change never ever
     String LOADSORTEDVIDEOSURL_MOSTVIEWED = "Most Viewed";                  // Make sure do not change never ever
     String LOADSORTEDVIDEOSURL_VIEWTIME = "View Time";                      // Make sure do not change never ever

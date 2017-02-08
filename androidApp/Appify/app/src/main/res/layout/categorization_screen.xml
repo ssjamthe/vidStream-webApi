@@ -91,6 +91,27 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/nocontentcatzlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/nocontentcatzText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_theme_color"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="30dp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
         <GridView
             android:id="@+id/gridViewCategoriesText"
             android:layout_width="match_parent"
