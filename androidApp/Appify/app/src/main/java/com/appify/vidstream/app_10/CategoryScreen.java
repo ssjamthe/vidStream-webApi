@@ -579,7 +579,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                         editor.commit();
                         PrevActivityNo = preferences.getInt(PREFS_KEY, 0);
                         ActivityNo = ActivityNo + 1;
-                        releaseYoutubeThumbnailView();
+                        //releaseYoutubeThumbnailView();
 
                         Intent intentcat = new Intent(CategoryScreen.this, YoutubePlayer.class);
                         intentcat.putExtra("VIDEO_ID", tvVidId.getText().toString());
@@ -918,6 +918,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                                                InMobiAdRequestStatus inMobiAdRequestStatus) {
                         Log.w(TAG, "Banner ad failed to load with error: " +
                                 inMobiAdRequestStatus.getMessage());
+                        showAdmobBanner();
                     }
 
                     @Override
@@ -993,6 +994,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
     public void onDestroy() {
         super.onDestroy();
         hidePDialog();
+        releaseYoutubeThumbnailView();
     }
 
     private void progressDialogCall() {
@@ -1118,7 +1120,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
             PrevActivityNo = preferences.getInt(PREFS_KEY, 0);
             ActivityNo = ActivityNo + 1;
             System.out.println("B4 HierarchyList = " + HierarchyList);
-            releaseYoutubeThumbnailView();
+            //releaseYoutubeThumbnailView();
             if (HierarchyList.isEmpty()) {
                 Intent intentCatzation = new Intent(CategoryScreen.this, CategorizationScreen.class);
                 intentCatzation.putExtra("ActivityName", "NextLaunch");
@@ -1242,7 +1244,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 break;
 
             case R.id.child_category_home:
-                releaseYoutubeThumbnailView();
+                //releaseYoutubeThumbnailView();
                 Intent intentHome = new Intent(CategoryScreen.this, CategorizationScreen.class);
                 intentHome.putExtra("ActivityName", "NextLaunch");
                 intentHome.putExtra("flag",flag);

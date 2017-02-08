@@ -374,6 +374,7 @@ public class FeedbackForm extends AppCompatActivity implements ApplicationConsta
                     @Override
                     public void onAdLoadFailed(InMobiBanner inMobiBanner,
                                                InMobiAdRequestStatus inMobiAdRequestStatus) {
+                        showAdMobBanner();
                     }
 
                     @Override

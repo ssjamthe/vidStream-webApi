@@ -810,6 +810,7 @@ public class CategorizationScreen extends AppCompatActivity implements Applicati
                                                InMobiAdRequestStatus inMobiAdRequestStatus) {
                         Log.w(TAG, "Banner ad failed to load with error: " +
                                 inMobiAdRequestStatus.getMessage());
+                        showAdBanner();
                     }
 
                     @Override
