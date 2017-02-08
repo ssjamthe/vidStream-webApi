@@ -14,7 +14,7 @@ public class LoadAppResponse {
     private int minIntervalInterstitial;
     private String appBgImageURL;
     private int videosPerCall;
-    private String noChildrenMsg;
+    private String noContentMessage;
     private CategorizationResp[] categorizations;
     private CategorizationResp selectedCategorization;
 
@@ -58,12 +58,12 @@ public class LoadAppResponse {
         this.videosPerCall = videosPerCall;
     }
 
-    public String getNoChildrenMsg() {
-        return noChildrenMsg;
+    public String getNoContentMessage() {
+        return noContentMessage;
     }
 
-    public void setNoChildrenMsg(String noChildrenMsg) {
-        this.noChildrenMsg = noChildrenMsg;
+    public void setNoContentMessage(String noContentMessage) {
+        this.noContentMessage = noContentMessage;
     }
 
 	/**

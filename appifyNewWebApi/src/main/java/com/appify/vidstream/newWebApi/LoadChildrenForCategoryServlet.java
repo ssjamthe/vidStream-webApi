@@ -127,7 +127,6 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
 				Link link = (Link) links.get(i);
 				LinkResp linkResp = converter.getLinkRespFromLink(link);
 				linkResps[i] = linkResp;
-				i++;
 			}
 			response.setAppifyLinks(linkResps);
 		}
