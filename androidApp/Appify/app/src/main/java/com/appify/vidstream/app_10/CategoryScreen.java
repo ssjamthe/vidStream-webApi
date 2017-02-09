@@ -1099,7 +1099,7 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
     public void onDestroy() {
         super.onDestroy();
         hidePDialog();
-        releaseYoutubeThumbnailView();
+        //releaseYoutubeThumbnailView();
     }
 
     private void progressDialogCall() {
@@ -1116,15 +1116,15 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
         }
     }
 
-    private void releaseYoutubeThumbnailView(){
+    /*private void releaseYoutubeThumbnailView(){
         try {
-            VideoThumbnailGridBaseAdapter.releaseGridThumbnailView();
-            VideoThumbnailListBaseAdapter.releaseListThumbnailView();
+            //VideoThumbnailGridBaseAdapter.releaseGridThumbnailView();
+            //VideoThumbnailListBaseAdapter.releaseListThumbnailView();
         }catch (Exception e){
             e.printStackTrace();
             FirebaseCrash.log("Exception in releaseYoutubeThumbnailView():CategoryScreen.java >"+e);
         }
-    }
+    }*/
 
     private void authenticationErrorDialog(){
         AlertDialog.Builder builderError = new AlertDialog.Builder(CategoryScreen.this);

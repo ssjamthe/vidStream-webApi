@@ -23,7 +23,7 @@ public class VideoThumbnailListBaseAdapter extends BaseAdapter implements Applic
 
     private Activity activity;
     private List<VideoModel> videoModels;
-    private YouTubeThumbnailLoader thumbnailLoader;
+    //private YouTubeThumbnailLoader thumbnailLoader;
 
     public VideoThumbnailListBaseAdapter(Activity activity, List<VideoModel> videoModels) {
         this.activity = activity;
@@ -81,15 +81,29 @@ public class VideoThumbnailListBaseAdapter extends BaseAdapter implements Applic
                 @Override
                 public void onInitializationSuccess(
                         YouTubeThumbnailView youTubeThumbnailView,
-                        YouTubeThumbnailLoader youTubeThumbnailLoader) {
+                        final YouTubeThumbnailLoader youTubeThumbnailLoader) {
 
-                    thumbnailLoader = youTubeThumbnailLoader;
+                    /*thumbnailLoader = youTubeThumbnailLoader;
+                    thumbnailLoader.setOnThumbnailLoadedListener(new ThumbnailLoadedListener());
+                    thumbnailLoader.setVideo(model.getVideoId());*/
 
-                            thumbnailLoader
-                            .setOnThumbnailLoadedListener(new ThumbnailLoadedListener());
+                    youTubeThumbnailLoader.setVideo(model.getVideoId());
+                    youTubeThumbnailLoader.setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+                        @Override
+                        public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                            try {
+                                if (youTubeThumbnailLoader != null) {
+                                    youTubeThumbnailLoader.release();
+                                    Log.e("releaseListThumbnailView>>>", "YouTubeThumbnailLoader");
+                                }
+                            }catch (Exception e){e.printStackTrace();}
+                        }
 
-                    thumbnailLoader
-                            .setVideo(model.getVideoId());
+                        @Override
+                        public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -106,7 +120,7 @@ public class VideoThumbnailListBaseAdapter extends BaseAdapter implements Applic
     }
 
 
-    private final class ThumbnailLoadedListener implements
+   /* private final class ThumbnailLoadedListener implements
             YouTubeThumbnailLoader.OnThumbnailLoadedListener {
         @Override
         public void onThumbnailError(YouTubeThumbnailView arg0, ErrorReason arg1) {
@@ -124,6 +138,6 @@ public class VideoThumbnailListBaseAdapter extends BaseAdapter implements Applic
                 Log.e("releaseListThumbnailView>>>","YouTubeThumbnailLoader");
             }
         }catch (Exception e){e.printStackTrace();}
-    }
+    }*/
 
 }

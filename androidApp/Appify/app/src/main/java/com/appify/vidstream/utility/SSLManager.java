@@ -40,16 +40,25 @@ public class SSLManager {
                     if(Hostname.contains("appifyworld.com")){
                         System.out.println(" return true");
                         return true;
-                    }else if(Hostname.contains("youtube.com")){
+                    }else if(Hostname.contains("google")){
                         System.out.println(" return true");
                         return true;
-                    }else if(Hostname.contains("googleadservices.com")){
+                    }else if(Hostname.contains("firebase")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("youtube")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains("googleadservices")){
                         System.out.println(" return true");
                         return true;
                     }else if(Hostname.contains("admob")){
                         System.out.println(" return true");
                         return true;
                     }else if(Hostname.contains("inmobi")){
+                        System.out.println(" return true");
+                        return true;
+                    }else if(Hostname.contains(".com")){
                         System.out.println(" return true");
                         return true;
                     }
