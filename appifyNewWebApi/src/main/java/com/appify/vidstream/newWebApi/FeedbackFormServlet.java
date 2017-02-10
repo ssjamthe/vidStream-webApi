@@ -35,11 +35,11 @@ public class FeedbackFormServlet extends HttpServlet {
 
 
     @Override
-    public void doGet(
+    public void doPost(
             HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.print("Inside DoGet Of FeedbackFormServlet");
+        System.out.print("Inside DoPost Of FeedbackFormServlet");
         RRLogs rrLogs = new RRLogs();
 
         Map<String, String[]> params = paramsProvider.get();

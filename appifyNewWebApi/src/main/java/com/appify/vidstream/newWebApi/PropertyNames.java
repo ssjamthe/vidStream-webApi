@@ -1,12 +1,12 @@
 package com.appify.vidstream.newWebApi;
 
 public interface PropertyNames {
-	String DB_URL = "url";
+    String DB_URL = "url";
     String DB_DRIVER_CLASS_NAME = "driverClassName";
     String DB_USER_NAME = "username";
     String DB_PASSWORD = "password";
     String DB_MAX_CONNECTIONS = "maxConnections";
-    String IMAGE_IP_ADDRESS="image_ip_address";
+    String IMAGE_IP_ADDRESS = "image_ip_address";
 
     String MIN_INTERVAL_INTERSTITIAL = "min_interval_interstitial";
     String NO_CHILDREN_MESSAGE = "no_children_message";
@@ -29,5 +29,6 @@ public interface PropertyNames {
     String OTHER_APPS_CATEGORY_NAME = "other_apps_cat_name";
     String OTHER_APPS_CATEGORY_IMAGE_ID = "other_apps_cat_image_id";
     String APP_ICON_IMAGE_PREFIX = "icon_image_app_";
+    String SHOW_BANNER = "show_banner";
 
 }

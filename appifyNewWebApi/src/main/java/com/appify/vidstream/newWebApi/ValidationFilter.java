@@ -20,47 +20,53 @@ import java.util.Map;
  * Created by swapnil on 04/12/16.
  */
 @Singleton
-public class ValidationFilter implements Filter
-{
-    private AppDataLoader appDataLoader;
-    
-    static final Logger filterLogger = Logger.getLogger(ValidationFilter.class);
+public class ValidationFilter implements Filter {
+	private AppDataLoader appDataLoader;
 
-    @Inject
-    public ValidationFilter(AppDataLoader appDataLoader) {
-        this.appDataLoader = appDataLoader;
-    }
+	static final Logger filterLogger = Logger.getLogger(ValidationFilter.class);
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        filterLogger.info("ValidationFilter is initiated");
-    }
+	@Inject
+	public ValidationFilter(AppDataLoader appDataLoader) {
+		this.appDataLoader = appDataLoader;
+	}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String tokenHeader = httpRequest.getHeader("token");
-        String appId = request.getParameter("appId");
-        
-        Map<String, AppInfo> appsInfoMap = new HashMap<String, AppInfo>();
-        appsInfoMap = appDataLoader.getAppsData();
-        AppInfo appInfo = appsInfoMap.get(appId);
-        List<String> tokens = appInfo.getTokens();
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		filterLogger.info("ValidationFilter is initiated");
+	}
 
-        if(tokens.contains(tokenHeader)){
-            chain.doFilter(request, response);
-        }
-        else{
-            httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND,"Invalid Token");
-            filterLogger.error("Invalid Token");
-        }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		
+		if (httpRequest.getRequestURI().equals(httpRequest.getContextPath()+"/imageServlet")) {
+			chain.doFilter(request, response);
+		} else {
+			String tokenHeader = httpRequest.getHeader("token");
+			String appId = request.getParameter("appId");
 
-    }
+			Map<String, AppInfo> appsInfoMap = new HashMap<String, AppInfo>();
+			appsInfoMap = appDataLoader.getAppsData();
+			AppInfo appInfo = appsInfoMap.get(appId);
+			List<String> tokens = appInfo.getTokens();
 
-    @Override
-    public void destroy() {
+			System.out.println("get uri " + ((HttpServletRequest) request).getRequestURI());
 
-    }
+			if (tokens.contains(tokenHeader)) {
+				chain.doFilter(request, response);
+			} else {
+				httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid Token");
+				filterLogger.error("Invalid Token");
+			}
+		}
+
+	}
+
+	@Override
+	public void destroy() {
+
+	}
 }

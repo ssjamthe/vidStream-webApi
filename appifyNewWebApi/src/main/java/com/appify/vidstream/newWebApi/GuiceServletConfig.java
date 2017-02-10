@@ -39,6 +39,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
             protected void configureServlets() {
                 System.out.print("Inside GuiceServlet config");
                 serve("*loadApp").with(LoadAppServlet.class);
+                serve("*loadCategories").with(LoadCategoriesForHomeCategorizationServlet.class);
                 serve("*imageServlet").with(GetImageServlet.class);
                 serve("*videoViewed").with(VideoViewedServlet.class);
                 serve("*feedbackForm").with(FeedbackFormServlet.class);

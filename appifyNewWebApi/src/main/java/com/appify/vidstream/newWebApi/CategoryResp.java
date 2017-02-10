@@ -11,7 +11,7 @@ public class CategoryResp {
 
     private String id;
     private String name;
-    private String img;
+    private String image;
     private CategoryResp[] categories;
     private VideoResp[] videos;
 
@@ -50,14 +50,14 @@ public class CategoryResp {
 	/**
 	 * @return the imgURL
 	 */
-	public String getImg() {
-		return img;
+	public String getImage() {
+		return image;
 	}
 
 	/**
 	 * @param imgURL the imgURL to set
 	 */
-	public void setImgURL(String img) {
-		this.img = img;
+	public void setImgURL(String image) {
+		this.image = image;
 	}
 }

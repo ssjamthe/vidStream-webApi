@@ -42,7 +42,7 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
 	/**
 	 * TODO : Move some functionality to other class.
 	 */
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		Map<String, String[]> params = paramsProvider.get();
 		ChildrenEntitiesResponse response = new ChildrenEntitiesResponse();
