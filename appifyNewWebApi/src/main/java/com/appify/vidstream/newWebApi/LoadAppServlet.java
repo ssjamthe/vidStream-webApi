@@ -1,6 +1,7 @@
 package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.*;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
@@ -40,9 +41,8 @@ public class LoadAppServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        System.out.print("Inside DoGet Of LoadAppServlet");
         RRLogs rrLogs = new RRLogs();
         long startTime = System.currentTimeMillis();
         Map<String, AppInfo> appsInfoMap = appDataLoader.getAppsData();
@@ -53,7 +53,11 @@ public class LoadAppServlet extends HttpServlet {
 
         AppInfo appInfo = appsInfoMap.get(appId);
 
-        String installTimestamp = params.get("installTimestamp")[0];
+        String installTimestamp;
+        if(params.get("installTimestamp") != null)
+        	installTimestamp = params.get("installTimestamp")[0];
+        else
+        	installTimestamp = null;
         String deviceId = params.get("deviceId")[0];
         LoadAppResponse response = new LoadAppResponse();
 
@@ -95,7 +99,7 @@ public class LoadAppServlet extends HttpServlet {
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = mapper.writeValueAsString(response);
-
+        
         // Sending data to RRLogs
         String apiname = "loadApp.java";
         String requestparam = "{" + "appId=" + appId

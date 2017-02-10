@@ -26,9 +26,11 @@ public class JDBCAppDataLoader extends AppDataLoader {
 
     private static final Integer DEFAULT_MIN_INTERVAL_INTERSTITIAL = 50; //seconds
     private static final String DEFAULT_NO_CHILDREN_MESSAGE = "No Content";
-    private static final Boolean DEFAULT_SHOW_AD_MOVING_INSIDE = true;
+    private static final boolean DEFAULT_SHOW_AD_MOVING_INSIDE = true;
     private static final Float DEFAULT_INMOBI_AD_WEIGHTAGE = 0.3f;
     private static final Integer DEFAULT_VIDEOS_PER_CALL = 10;
+    private static final boolean DEFAULT_SHOW_BANNER = true;
+
 
     private DataSource dataSource;
     private Provider<PropertyHelper> propertyHelperProvider;
@@ -93,6 +95,8 @@ public class JDBCAppDataLoader extends AppDataLoader {
                         PropertyNames.INMOBI_AD_WEIGHTAGE, DEFAULT_INMOBI_AD_WEIGHTAGE));
                 appInfo.setVideosPerCall(
                         propertyHelper.getIntProperty(PropertyNames.VIDEOS_PER_CALL, DEFAULT_VIDEOS_PER_CALL));
+                appInfo.setShowBanner(propertyHelper.getBooleanProperty(PropertyNames.SHOW_BANNER,
+                        DEFAULT_SHOW_BANNER));
 
                 List<Categorization> categorizations = categorizationDataLoader.getCategorizationsForApp(appId);
                 appInfo.setCategorizations(ImmutableList.copyOf(categorizations));
