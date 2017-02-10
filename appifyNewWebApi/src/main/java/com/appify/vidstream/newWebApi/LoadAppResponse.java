@@ -12,7 +12,7 @@ public class LoadAppResponse {
     private boolean showAdMovingInside;
     private float showInmobiAdWeightage;
     private int minIntervalInterstitial;
-    private String appBgImageURL;
+    private String appBgImageUrl;
     private int videosPerCall;
     private String noContentMessage;
     private CategorizationResp[] categorizations;
@@ -67,17 +67,17 @@ public class LoadAppResponse {
     }
 
 	/**
-	 * @return the appBgImageURL
+	 * @return the appBgImageUrl
 	 */
-	public String getAppBgImageURL() {
-		return appBgImageURL;
+	public String getAppBgImageUrl() {
+		return appBgImageUrl;
 	}
 
 	/**
-	 * @param appBgImageURL the appBgImageURL to set
+	 * @param appBgImageUrl the appBgImageUrl to set
 	 */
-	public void setAppBgImageURL(String appBgImageURL) {
-		this.appBgImageURL = appBgImageURL;
+	public void setAppBgImageUrl(String appBgImageUrl) {
+		this.appBgImageUrl = appBgImageUrl;
 	}
 	
 	public CategorizationResp[] getCategorizations() {
