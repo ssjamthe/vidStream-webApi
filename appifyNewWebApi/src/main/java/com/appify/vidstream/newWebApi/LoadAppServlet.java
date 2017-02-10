@@ -43,7 +43,7 @@ public class LoadAppServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        RRLogs rrLogs = new RRLogs();
+    	RRLogs rrLogs = new RRLogs();
         long startTime = System.currentTimeMillis();
         Map<String, AppInfo> appsInfoMap = appDataLoader.getAppsData();
 
