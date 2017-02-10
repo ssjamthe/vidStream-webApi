@@ -57,7 +57,8 @@ public class JDBCCategorizationDataLoader {
                 categorization.setChildType(EntityType.CATEGORY);
 
                 List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
-                categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect(Collectors.toList())));
+                categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect
+                        (Collectors.toList())));
 
                 categorizations.add(categorization);
             }
@@ -80,6 +81,11 @@ public class JDBCCategorizationDataLoader {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String image = rs.getString("image");
+
+                // Temporary code to avoid Personalized categories.
+                if ("Personalized".equals(name)) {
+                    continue;
+                }
 
                 Categorization categorization = new Categorization();
                 categorization.setId(Integer.toString(id));
