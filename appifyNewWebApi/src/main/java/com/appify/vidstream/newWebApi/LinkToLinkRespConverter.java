@@ -13,7 +13,7 @@ public class LinkToLinkRespConverter {
         linkResp.setId(link.getId());
         linkResp.setName(link.getName());
         linkResp.setLinkUrl(link.getLinkUrl());
-        linkResp.setImg(link.getImageURL());
+        linkResp.setImage(link.getImageURL());
         return linkResp;
     }
 }
