@@ -7,7 +7,7 @@ public class LinkResp {
 
     private String id;
     private String name;
-    private String img;
+    private String image;
     private String linkUrl;
 
     public String getId() {
@@ -26,12 +26,12 @@ public class LinkResp {
         this.name = name;
     }
 
-    public String getImg() {
-        return img;
+    public String getImage() {
+        return image;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getLinkUrl() {
