@@ -50,38 +50,6 @@ public class JDBCCategorizationDataLoader {
                 String name = rs.getString("name");
                 String image = rs.getString("image");
 
-                Categorization categorization = new Categorization();
-                categorization.setId(Integer.toString(id));
-                categorization.setName(name);
-                categorization.setImageURL(webAPIUtil.getImageURL(image));
-                categorization.setChildType(EntityType.CATEGORY);
-
-                List<Category> categories = categoryDataLoader.getCategoriesForCategorization(Integer.toString(id));
-                categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect
-                        (Collectors.toList())));
-
-                categorizations.add(categorization);
-            }
-
-            return categorizations;
-        } catch (SQLException ex) {
-            throw new RuntimeException("Problem getting categorization data.", ex);
-        }
-    }
-
-    public Map<String, Categorization> getCategorizationsMapForApp(String appId) {
-
-        try (Connection con = dataSource.getConnection();) {
-            Map<String, Categorization> categorizationMap = new HashMap<String, Categorization>();
-            String sql = "select id,name,image from categorization where app_id='" + appId + "'";
-
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String image = rs.getString("image");
-
                 // Temporary code to avoid Personalized categories.
                 if ("Personalized".equals(name)) {
                     continue;
@@ -97,12 +65,10 @@ public class JDBCCategorizationDataLoader {
                 categorization.setChildren(ImmutableList.copyOf(categories.stream().map(c -> (Entity) c).collect
                         (Collectors.toList())));
 
-                categorizationMap.put(categorization.getId(), categorization);
-
+                categorizations.add(categorization);
             }
 
-            return categorizationMap;
-
+            return categorizations;
         } catch (SQLException ex) {
             throw new RuntimeException("Problem getting categorization data.", ex);
         }

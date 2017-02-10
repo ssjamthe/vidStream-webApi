@@ -1,7 +1,6 @@
 package com.appify.vidstream.newWebApi;
 
 import com.appify.vidstream.newWebApi.data.*;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestParameters;
@@ -92,7 +91,7 @@ public class LoadAppServlet extends HttpServlet {
         response.setShowAdMovingInside(appInfo.isShowAdMovingInside());
         response.setShowBanner(appInfo.isShowBanner());
         response.setShowInmobiAdWeightage(appInfo.getInmobiAdWeightage());
-        response.setAppBgImageURL(appInfo.getAppBgImageURL());
+        response.setAppBgImageUrl(appInfo.getAppBgImageURL());
         response.setMinIntervalInterstitial(appInfo.getMinIntervalInterstitial());
         response.setNoContentMessage(appInfo.getNoChildrenMsg());
         response.setVideosPerCall(appInfo.getVideosPerCall());
