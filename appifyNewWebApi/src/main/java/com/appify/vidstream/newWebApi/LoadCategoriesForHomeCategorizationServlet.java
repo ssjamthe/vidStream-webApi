@@ -40,6 +40,7 @@ public class LoadCategoriesForHomeCategorizationServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         long startTime = System.currentTimeMillis();
         ChildrenEntitiesResponse response = new ChildrenEntitiesResponse();
         CategoryResp[] categoryResps = new CategoryResp[categoryLoaders.size()];
