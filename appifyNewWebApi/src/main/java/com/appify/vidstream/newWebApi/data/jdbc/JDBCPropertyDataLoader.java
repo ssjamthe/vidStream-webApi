@@ -36,8 +36,8 @@ public class JDBCPropertyDataLoader extends PropertyDataLoader {
 
         Map<String, String> props = new HashMap<String, String>();
 
-        try {
-            Connection con = dataSource.getConnection();
+        try(Connection con = dataSource.getConnection();) {
+
             String sql = "select prop_name,prop_value from property_table";
 
             Statement stmt = con.createStatement();

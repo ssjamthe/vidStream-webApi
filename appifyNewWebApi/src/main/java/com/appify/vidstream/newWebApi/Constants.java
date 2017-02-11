@@ -5,7 +5,7 @@ package com.appify.vidstream.newWebApi;
  */
 public class Constants {
 
-    public static final String PROPERTY_FILE_PATH = "/appify/conf/vidStreamWebApi/conf.properties";
+    public static final String PROPERTY_FILE_PATH = "/appify/conf/appifyNewWebApi/conf.properties";
     public static final String PROPERTY_NAME_FOR_VIDEO_COUNT = "max_videos_for_user_app";
     public static final String PROPERTY_VALUE_FOR_VIDEO_COUNT = "20";
     public static final String DEFAULT_ENTRIES_PER_PAGE = "10";
