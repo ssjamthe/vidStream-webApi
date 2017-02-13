@@ -38,7 +38,7 @@ public class VideoViewedServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(
+    public void doPost(
             HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException{
         videoViewedServletLogger.info("Inside VideoViewedServlet doGet method");
