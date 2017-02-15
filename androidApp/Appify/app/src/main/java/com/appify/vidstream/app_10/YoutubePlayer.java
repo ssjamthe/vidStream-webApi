@@ -1,5 +1,6 @@
 package com.appify.vidstream.app_10;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -65,6 +66,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -268,7 +270,14 @@ public class YoutubePlayer extends YouTubeBaseActivity implements YouTubePlayer.
 					VolleyLog.d(TAG, "Spin Error: " + volleyError.getMessage());
 					System.out.println("VideoViewedUser_URL errorMessage= "+volleyError.getMessage());
 				}
-			});
+			}){
+				@Override
+				public Map<String, String> getHeaders() throws AuthFailureError {
+					HashMap<String, String> headers = new HashMap<String, String>();
+					headers.put(TOKEN_KEY, TOKEN_VALUE);
+					return headers;
+				}
+			};
 			RequestQueue videoviewedrequestQueue = Volley.newRequestQueue(YoutubePlayer.this);
 			videoviewedrequestQueue.add(videoViewedRequest);
 		}catch (Exception e){
