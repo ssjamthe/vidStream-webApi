@@ -81,10 +81,10 @@ public class OthersWatchingVideosCategoryLoader extends CategoryDataLoader {
 	public Category getTopLevelCategory() {
 		Category category = new Category();
 		category.setId(ID);
-		category.setName(propertyHelper.getStringProperty(PropertyNames.OTHERSWATCHING_CATEGORY_NAME,
+		category.setName(propertyHelper.getStringProperty(PropertyNames.OTHERS_WATCHING_CATEGORY_NAME,
 				DEFAULT_OTHER_WATCHING_CATEGORY_NAME));
 		category.setImageURL(webAPIUtil
-				.getImageURL(propertyHelper.getStringProperty(PropertyNames.OTHERSWATCHING_CATEGORY_IMAGE_ID, null)));
+				.getImageURL(propertyHelper.getStringProperty(PropertyNames.OTHERS_WATCHING_CATEGORY_IMAGE_ID, null)));
 		return category;
 	}
 
