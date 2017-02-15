@@ -22,8 +22,8 @@ public interface PropertyNames {
     String MOSTLY_VIEWED_CATEGORY_IMAGE_ID = "mostly_viewed_cat_image_id_new";
     String MOSTLY_VIEWED_CATEGORY_NAME = "mostly_viewed_category_name";
     String MAX_VIDEOS_FOR_USER_APP = "max_videos_for_user_app";
-    String OTHERSWATCHING_CATEGORY_NAME = "othersWatching";
-    String OTHERSWATCHING_CATEGORY_IMAGE_ID = "othersWatching_cat_image_id_new";
+    String OTHERS_WATCHING_CATEGORY_NAME = "othersWatching";
+    String OTHERS_WATCHING_CATEGORY_IMAGE_ID = "others_watching_cat_image_id_new";
     String RECENTLY_VIEWED_CATEGORY_IMAGE_ID = "recently_viewed_cat_image_id_new";
     String RECENTLY_VIEWED_CATEGORY_NAME = "recently_viewed_cat_name";
     String OTHER_APPS_CATEGORY_NAME = "other_apps_cat_name";
