@@ -11,8 +11,8 @@ import java.util.Map;
 public enum VideoAttribute {
 
     // Data names must match with names in data base if present.
-    MOSTLY_VIEWED("MostViewed", "views_count"), RECENTLY_VIEWED("ViewTime", "view_time"), UPLOAD_TIME("UploadTime",
-            "published_date"), TIME_ADDED("TimeAdded", "time_added");
+    MOSTLY_VIEWED("Most Viewed", "views_count"), RECENTLY_VIEWED("View Time", "view_time"), UPLOAD_TIME("Upload Time",
+            "published_date"), TIME_ADDED("Time Added", "time_added");
 
     private static final ImmutableMap<String, VideoAttribute> API_NAME_MAP;
     private static final ImmutableMap<String, VideoAttribute> DATA_NAME_MAP;
