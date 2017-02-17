@@ -66,8 +66,6 @@ public class JDBCAppDataLoader extends AppDataLoader {
 
             String sql = "select id,name,bg_image,status,date_created,date_modified from application";
 
-            Map<String, AppInfo> appInfoMap = new HashMap<String, AppInfo>();
-
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -76,8 +74,6 @@ public class JDBCAppDataLoader extends AppDataLoader {
                 String name = rs.getString("name");
                 String bgImage = rs.getString("bg_image");
                 String status = rs.getString("status");
-                Timestamp dateCreated = rs.getTimestamp("date_created");
-                Timestamp dateModified = rs.getTimestamp("date_modified");
 
                 PropertyHelper propertyHelper = propertyHelperProvider.get();
                 AppInfo appInfo = new AppInfo();

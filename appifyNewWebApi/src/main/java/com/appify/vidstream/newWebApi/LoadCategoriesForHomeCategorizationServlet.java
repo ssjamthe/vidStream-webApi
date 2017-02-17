@@ -74,6 +74,7 @@ public class LoadCategoriesForHomeCategorizationServlet extends HttpServlet {
         rrLogs.getLoadAppData(apiname, requestparam, jsonResponse, responseTime, authenticationError);
 
         resp.setContentType("application/json");
+		resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(jsonResponse.toString());
 
     }

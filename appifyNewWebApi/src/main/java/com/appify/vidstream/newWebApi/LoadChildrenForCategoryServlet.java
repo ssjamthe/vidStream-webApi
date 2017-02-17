@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
 
 	private Provider<Map<String, String[]>> paramsProvider;
 	private List<CategoryDataLoader> categoryLoaders;
-	private CategoryDataLoader defaultCategoryLoader;
 	private ExploreCategoryDataLoader exploreCategoryLoader;
 
 	@Inject
@@ -49,7 +49,13 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
 
 		String appId = params.get("appId")[0];
 		String catIdWithPrefix = params.get("catId")[0];
-		String orderAttr = params.get("orderAttr")[0];
+
+		String orderAttr;
+		if (params.get("orderAttr") != null) {
+			orderAttr = params.get("orderAttr")[0];
+		} else {
+			orderAttr = null;
+		}
 		String pageNoParam = params.get("page_no")[0];
 		String entriesPerPageParam = params.get("entries_per_page")[0];
 		String deviceId = params.get("deviceId")[0];
@@ -133,8 +139,11 @@ public class LoadChildrenForCategoryServlet extends HttpServlet {
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonResponse = mapper.writeValueAsString(response);
+		
+		System.out.println(jsonResponse);
 
 		resp.setContentType("application/json");
+		resp.setCharacterEncoding("UTF-8");
 		resp.getWriter().write(jsonResponse.toString());
 
 	}

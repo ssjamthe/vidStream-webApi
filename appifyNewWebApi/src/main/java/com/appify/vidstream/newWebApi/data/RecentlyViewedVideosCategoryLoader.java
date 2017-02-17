@@ -73,8 +73,12 @@ public class RecentlyViewedVideosCategoryLoader extends CategoryDataLoader {
                 }
             }
 
+            // Making sure Recently viewed attribute is at top.
+            List<String> atributeNamesList = new ArrayList<String>();
+            atributeNamesList.add(VideoAttribute.RECENTLY_VIEWED.getDataName());
+            atributeNamesList.addAll(attributeNames);
             ImmutableList<Entity> orderedVideosList = OrderedVideosListHelper.createOrderedVideosList(videos,
-                    attributeNames);
+            		atributeNamesList);
             EntityCollection entityCollection = new EntityCollection();
             entityCollection.setEntityType(EntityType.ORDERED_VIDEOS);
             entityCollection.setEntities(orderedVideosList);

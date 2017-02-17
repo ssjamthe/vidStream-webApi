@@ -366,17 +366,8 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                 flag = true;
             }
 
-            String SendOrderAttribute = null;
-            if(Category_ID.equalsIgnoreCase(RecentlyViewedID)){
-                SendOrderAttribute = LOADSORTEDVIDEOSURL_VIEWTIMEID;
-            }else{
-                SendOrderAttribute = LOADSORTEDVIDEOSURL_UPLOADTIMEID;
-            }
-
-            System.out.println("Page No = "+PAGE_NO);
-            System.out.println("Entries = "+EntriesPerPage_Position);
             final String Cat1PageNo = String.valueOf(PAGE_NO);
-            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES+"?appId="+URLEncoder.encode(APP_ID)+"&catId="+URLEncoder.encode(Category_ID)+"&orderAttr="+URLEncoder.encode(SendOrderAttribute)+"&page_no="+URLEncoder.encode(Cat1PageNo)+"&entries_per_page="+URLEncoder.encode(EntriesPerPage_Position)+"&deviceId="+URLEncoder.encode(getdeviceID);
+            final String loadChildCatURL = URL_IP_ADDRESS + URL_LOADCHILDCATEGORIES+"?appId="+URLEncoder.encode(APP_ID)+"&catId="+URLEncoder.encode(Category_ID)+"&page_no="+URLEncoder.encode(Cat1PageNo)+"&entries_per_page="+URLEncoder.encode(EntriesPerPage_Position)+"&deviceId="+URLEncoder.encode(getdeviceID);
             System.out.println("loadChildCatURL = "+loadChildCatURL);
             JsonObjectRequest childCategoryVideoRequest = new JsonObjectRequest(Request.Method.POST, loadChildCatURL, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -529,24 +520,10 @@ public class CategoryScreen extends AppCompatActivity implements ApplicationCons
                             flag = true;
                         }
                         String selectedOrder = orderText.getText().toString();
-                        if (selectedOrder.equals(LOADSORTEDVIDEOSURL_MOSTVIEWED)) {
-                            SelectedOrderValue = LOADSORTEDVIDEOSURL_MOSTVIEWEDID;
-                            PAGE_NO = 1;
-                        } else if(selectedOrder.equals(LOADSORTEDVIDEOSURL_VIEWTIME)){
-                            SelectedOrderValue = LOADSORTEDVIDEOSURL_VIEWTIMEID;
-                            PAGE_NO = 1;
-                        } else{
-                            SelectedOrderValue = LOADSORTEDVIDEOSURL_UPLOADTIMEID;
-                            PAGE_NO = 1;
-                        }
-
-                        System.out.println("Page No Order = " + PAGE_NO);
-                        System.out.println("Entries Order = " + EntriesPerPage_Position);
                         String CatPageNo = String.valueOf(PAGE_NO);
-                        System.out.println("Requesting and calling method for getting Videos");
 
                         //Requesting and calling method for getting Videos
-                        LoadVideos(APP_ID, OrderAttributeCategoryValue, SelectedOrderValue, CatPageNo, EntriesPerPage_Position, getdeviceID);
+                        LoadVideos(APP_ID, OrderAttributeCategoryValue, selectedOrder, CatPageNo, EntriesPerPage_Position, getdeviceID);
                     }catch (Exception e){e.printStackTrace();}
                 }
                 @Override

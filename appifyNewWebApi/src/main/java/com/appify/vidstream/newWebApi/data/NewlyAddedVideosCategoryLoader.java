@@ -88,7 +88,7 @@ public class NewlyAddedVideosCategoryLoader extends CategoryDataLoader {
                     List<Entity> children = entity.getChildren();
                     attributes.addAll(children.stream().map(child -> child.getName()).collect(Collectors.toSet()));
                     List<Video> currNewVideos = children.stream().filter(child -> child.getName().
-                            equals(VideoAttribute.TIME_ADDED.getDataName())).flatMap(child -> child.getChildren()
+                            equals(VideoAttribute.ADDED_TO_APP.getDataName())).flatMap(child -> child.getChildren()
                             .stream()).
                             map(video -> (Video) video).filter(video -> getDaysBeforeVideoAdded(video) <=
                             daysToConsider)
