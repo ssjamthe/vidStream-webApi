@@ -26,7 +26,7 @@ public class JDBCOrderedVideosDataLoader {
         try (Connection con = dataSource.getConnection();) {
 
             List<OrderedVideos> orderedVideosList = new ArrayList<>();
-            Map<Integer, Video> videoMap = new HashMap<>();
+            Map<String, Video> videoMap = new HashMap<>();
 
 
             //Attribute names must be unique
@@ -56,9 +56,11 @@ public class JDBCOrderedVideosDataLoader {
                     video.setName(name);
                     video.setDateAdded(dateAdded);
                     Map<String, Integer> attributeValues = new HashMap<String, Integer>();
-                    attributeValues.put(VideoAttribute.TIME_ADDED.getDataName(), (int) dateAdded.getTime() / (1000 * 60 * 60));
-                    attributeNames.add(VideoAttribute.TIME_ADDED.getDataName());
+                    attributeValues.put(VideoAttribute.ADDED_TO_APP.getDataName(), (int) dateAdded.getTime() / (1000 * 60 * 60));
+                    attributeNames.add(VideoAttribute.ADDED_TO_APP.getDataName());
                     video.setAttributeValues(attributeValues);
+                    
+                    videoMap.put(id, video);
 
                 }
 

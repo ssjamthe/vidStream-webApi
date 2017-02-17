@@ -3,6 +3,7 @@ package com.appify.vidstream.newWebApi.data;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
  */
 public class OrderedVideosListHelper {
 
-    public static ImmutableList<Entity> createOrderedVideosList(List<Video> videos, Set<String> attributes) {
+    public static ImmutableList<Entity> createOrderedVideosList(List<Video> videos, Collection<String> attributes) {
         ImmutableList.Builder<Entity> orderedVideosListBuilder = ImmutableList.builder();
         for (String attribute : attributes) {
             VideoAttributeReverseComparator comparator = new VideoAttributeReverseComparator(attribute);

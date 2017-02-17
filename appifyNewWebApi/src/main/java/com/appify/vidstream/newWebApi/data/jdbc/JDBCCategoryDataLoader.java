@@ -18,134 +18,99 @@ import java.util.stream.Collectors;
  */
 public class JDBCCategoryDataLoader {
 
-    private DataSource dataSource;
-    private JDBCOrderedVideosDataLoader videoDataLoader;
-    private WebAPIUtil webAPIUtil;
+	private DataSource dataSource;
+	private JDBCOrderedVideosDataLoader videoDataLoader;
+	private WebAPIUtil webAPIUtil;
 
-    @Inject
-    JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader, WebAPIUtil webAPIUtil) {
+	@Inject
+	JDBCCategoryDataLoader(DataSource dataSource, JDBCOrderedVideosDataLoader videoDataLoader, WebAPIUtil webAPIUtil) {
 
-        this.dataSource = dataSource;
-        this.videoDataLoader = videoDataLoader;
-        this.webAPIUtil = webAPIUtil;
-    }
+		this.dataSource = dataSource;
+		this.videoDataLoader = videoDataLoader;
+		this.webAPIUtil = webAPIUtil;
+	}
 
-    public List<Category> getCategoriesForCategorization(String categorizationId) {
+	public List<Category> getCategoriesForCategorization(String categorizationId) {
 
-        try (Connection con = dataSource.getConnection();) {
-            List<Category> categories = new ArrayList<Category>();
+		try (Connection con = dataSource.getConnection();) {
+			List<Category> categories = new ArrayList<Category>();
 
-            //Getting top level categories.
-            String sql = "select id,name,image from category where categorization_id='"
-                    + categorizationId + "' and id not in (select child_category_id from " +
-                    "parent_child_category_mappings)";
+			// Getting top level categories.
+			String sql = "select id,name,image from category where categorization_id='" + categorizationId
+					+ "' and id not in (select child_category_id from " + "parent_child_category_mappings)";
 
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String name = rs.getString("name");
-                String image = rs.getString("image");
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				String id = rs.getString("id");
+				String name = rs.getString("name");
+				String image = rs.getString("image");
 
-                Category category = new Category();
-                category.setId(id);
-                category.setName(name);
-                category.setImageURL(webAPIUtil.getImageURL(image));
-                setChildren(category);
+				Category category = new Category();
+				category.setId(id);
+				category.setName(name);
+				category.setImageURL(webAPIUtil.getImageURL(image));
+				setChildren(category);
 
-                categories.add(category);
-            }
+				categories.add(category);
+			}
 
-            return categories;
-        } catch (SQLException ex) {
-            throw new RuntimeException("Problem getting categories data.", ex);
-        }
+			return categories;
+		} catch (SQLException ex) {
+			throw new RuntimeException("Problem getting categories data.", ex);
+		}
 
-    }
+	}
 
-    public Map<String, Category> getCategoriesMapForCategorization(String categorizationId) {
+	private void setChildren(Category parentCategory) {
+		try (Connection con = dataSource.getConnection();) {
 
-        try (Connection con = dataSource.getConnection();) {
-            Map<String, Category> categoryMap = new HashMap<String, Category>();
+			Queue<Category> parentQueue = new LinkedList<>();
+			parentQueue.offer(parentCategory);
 
-            //Getting top level categories.
-            String sql = "select id,name,image from category where categorization_id='"
-                    + categorizationId + "' and id not in (select child_category_id from " +
-                    "parent_child_category_mappings)";
+			while (!parentQueue.isEmpty()) {
 
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String name = rs.getString("name");
-                String image = rs.getString("image");
+				Category currParent = parentQueue.poll();
 
-                Category category = new Category();
-                category.setId(id);
-                category.setName(name);
-                category.setImageURL(webAPIUtil.getImageURL(image));
-                setChildren(category);
+				String sql = "select id,name,image from category where id in (select child_category_id "
+						+ "from parent_child_category_mappings where parent_category_id='" + currParent.getId() + "')";
 
-                categoryMap.put(id, category);
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
 
-            }
+				ImmutableList.Builder<Entity> childCategoriesBuilder = ImmutableList.builder();
 
-            return categoryMap;
-        } catch (SQLException ex) {
-            throw new RuntimeException("Problem getting categories data.", ex);
-        }
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String name = rs.getString("name");
+					String image = rs.getString("image");
 
-    }
+					Category category = new Category();
+					category.setId(Integer.toString(id));
+					category.setName(name);
+					category.setImageURL(webAPIUtil.getImageURL(image));
 
-    private void setChildren(Category parentCategory) {
-        try (Connection con = dataSource.getConnection();) {
+					childCategoriesBuilder.add(category);
 
-            Queue<Category> parentQueue = new LinkedList<>();
-            parentQueue.offer(parentCategory);
+					parentQueue.offer(category);
+				}
 
-            while (!parentQueue.isEmpty()) {
+				ImmutableList<Entity> childCategories = childCategoriesBuilder.build();
 
-                Category currParent = parentQueue.poll();
+				if (childCategories.isEmpty()) {
+					List<OrderedVideos> videos = videoDataLoader.getOrderedVideosForCategory(currParent.getId());
+					currParent.setChildType(EntityType.ORDERED_VIDEOS);
+					currParent.setChildren(
+							ImmutableList.copyOf(videos.stream().map(v -> (Entity) v).collect(Collectors.toList())));
 
-                String sql = "select id,name,image from category where id in (select child_category_id " +
-                        "from parent_child_category_mappings where parent_category_id='" + currParent.getId() + "')";
+				} else {
+					currParent.setChildType(EntityType.CATEGORY);
+					currParent.setChildren(childCategories);
+				}
+			}
 
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-
-                ImmutableList.Builder<Entity> childCategoriesBuilder = ImmutableList.builder();
-
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    String image = rs.getString("image");
-
-                    Category category = new Category();
-                    category.setId(Integer.toString(id));
-                    category.setName(name);
-                    category.setImageURL(webAPIUtil.getImageURL(image));
-
-                    childCategoriesBuilder.add(category);
-
-                    parentQueue.offer(category);
-                }
-
-                ImmutableList<Entity> childCategories = childCategoriesBuilder.build();
-
-                if (childCategories.isEmpty()) {
-                    List<OrderedVideos> videos = videoDataLoader.getOrderedVideosForCategory(currParent.getId());
-                    currParent.setChildType(EntityType.ORDERED_VIDEOS);
-                    currParent.setChildren(ImmutableList.copyOf(videos.stream().map(v -> (Entity) v).collect
-                            (Collectors.toList())));
-
-                } else {
-                    currParent.setChildType(EntityType.CATEGORY);
-                    currParent.setChildren(childCategories);
-                }
-            }
-
-        } catch (SQLException ex) {
-            throw new RuntimeException("Problem getting categories data.", ex);
-        }
-    }
+		} catch (SQLException ex) {
+			throw new RuntimeException("Problem getting categories data.", ex);
+		}
+	}
 }

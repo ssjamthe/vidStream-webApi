@@ -22,8 +22,8 @@ public class Video extends Entity {
 
     public Video(Video other) {
         super(other);
-        this.attributeValues = other.attributeValues;
-        this.dateAdded = other.dateAdded;
+        this.attributeValues = new HashMap<>(other.attributeValues);
+        this.dateAdded = new Timestamp(other.dateAdded.getTime());
     }
 
     public Map<String, Integer> getAttributeValues() {
