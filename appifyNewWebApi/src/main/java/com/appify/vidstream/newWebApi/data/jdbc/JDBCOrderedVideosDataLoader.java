@@ -61,7 +61,7 @@ public class JDBCOrderedVideosDataLoader {
                     video.setAttributeValues(attributeValues);
                     
                     videoMap.put(id, video);
-
+                    videos.add(video);
                 }
 
                 String attributeName = rs.getString("attribute_name");
@@ -70,9 +70,6 @@ public class JDBCOrderedVideosDataLoader {
                 attributeNames.add(attributeName);
 
                 video.getAttributeValues().put(attributeName, attributeValue);
-
-                videos.add(video);
-
             }
 
             for (String attributeName : attributeNames) {
