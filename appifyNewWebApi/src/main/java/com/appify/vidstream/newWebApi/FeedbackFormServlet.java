@@ -54,6 +54,7 @@ public class FeedbackFormServlet extends HttpServlet {
         String jsonResponse = mapper.writeValueAsString(allData);
 
         response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
         response.getWriter().write(jsonResponse.toString());
 
         // Sending data to RRLogs
