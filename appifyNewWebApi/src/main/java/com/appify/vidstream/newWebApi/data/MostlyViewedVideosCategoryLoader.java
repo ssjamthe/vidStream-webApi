@@ -99,8 +99,15 @@ public class MostlyViewedVideosCategoryLoader extends CategoryDataLoader {
 				}
 			}
 		}
+		
+		// Making mostly viewed as first attribute.
+		List<String> attributesList = new ArrayList<String>();
+		attributesList.add(VideoAttribute.MOSTLY_VIEWED.getDataName());
+		attributes.remove(VideoAttribute.MOSTLY_VIEWED.getDataName());
+		attributesList.addAll(attributes);
+		
 
-		return OrderedVideosListHelper.createOrderedVideosList(ImmutableList.copyOf(topVideosQueue), attributes);
+		return OrderedVideosListHelper.createOrderedVideosList(ImmutableList.copyOf(topVideosQueue), attributesList);
 
 	}
 
